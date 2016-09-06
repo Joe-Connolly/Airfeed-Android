@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -25,7 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 public class TrackingService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
 
-
+    //testing ignore
+//    double increment =  1.0;
+//    Runnable mR;
 
     private DatabaseReference mDatabase;
     private String mUserName;
@@ -35,8 +38,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         @Override
         public void onLocationChanged(Location location) {
             Log.d("service", "location updated, location = " + location + "");
-
             mDatabase.child(Constants.USERS_TABLE_NAME).child(mUserName).setValue(new Latlng(location.getLatitude(), location.getLongitude()));
+
         }
     };
 
@@ -50,6 +53,22 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         mUserName = prefs.getString(Constants.USERNAME_KEY, "someDefaultValue");
 
         startLocationUpdates();
+
+
+
+//        //ignore just for testing
+//        mR = new Runnable() {
+//            public void run() {
+//                mDatabase.child(Constants.USERS_TABLE_NAME).child(mUserName).setValue(new Latlng(42 + increment, 73));
+//                increment++;
+//                Handler h = new Handler();
+//                h.postDelayed(mR, 1000);
+//            }
+//        };
+//        Handler h = new Handler();
+//        h.postDelayed(mR, 1000);
+
+
 
         return super.onStartCommand(intent, flags, startId);
     }
