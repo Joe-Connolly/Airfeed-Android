@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private HeatmapTileProvider mHeatMapProvider;
     private ArrayList<Marker> mMarkers;
     private TileOverlay mOverlay;
+    private boolean mPermissionGranted;
     private ValueEventListener mUserDatabaseChangedListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -80,9 +82,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Place place = placeSnapshot.getValue(Place.class);
                 Log.d(TAG, place.location);
                 Marker marker = mMap.addMarker((new MarkerOptions().position(new LatLng(place.latitude, place.longitude))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.frat)))
+                        .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
                         .title(place.location)
-                        .snippet("" + place.people));
+                        .snippet("" + place.people)));
                 mMarkers.add(marker);
 //                users.add(new LatLng(location.latitude, location.longitude));
 //                mMap.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
@@ -100,6 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // ...
         }
     };
+
 
     private void removeMarkersIfNecessary() {
         if (mMarkers != null && mMarkers.size() > 0){
@@ -119,6 +122,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Constants.prepare();
 
         //Load the username from internal storage
         mUserName = getIntent().getStringExtra(Constants.USERNAME_KEY);
@@ -144,6 +149,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         else {
             //No need to request permissions, start using location
+            mPermissionGranted = true;
             startUsingLocation();
         }
 
@@ -177,19 +183,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // permission was granted, yay!
             //Start tracking users location
             startUsingLocation();
+            mPermissionGranted = true;
 
 
         } else {
 
             // permission denied, boo!
             //Tell the user that they are a jackass for disabling the permission
-            Toast.makeText(this, "App must access location", Toast.LENGTH_LONG);
-            finish();
+            NeedLocationDialogFragment dialog = new NeedLocationDialogFragment();
+            dialog.show(getSupportFragmentManager(), TAG);
+            mPermissionGranted = false;
+            //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
         }
         return;
     }
 
 
+    //Override without calling super to prevent bug from launching need location fragment in async callback
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
+    }
 
     /**
      * Manipulates the map once available.
@@ -211,9 +225,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Always unregister receivers and unbind service when app is closed out of
     public void onStop(){
         super.onStop();
-//        stopService(new Intent(this, TrackingService.class));
-        mGoogleApiClient.disconnect();
-        Log.d(TAG, "stopping service");
     }
 
     @Override
@@ -225,8 +236,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.getUiSettings().setRotateGesturesEnabled(false);
 //            LatLng location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
             //For testing
-            LatLng location = new LatLng(43.7022, -72.2896);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14.0f));
+            LatLng location = new LatLng(Constants.HANOVER_LATITUDE, Constants.HANOVER_LONGITUDE);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16.0f));
             //No need to stay connected, now that we have location
             mGoogleApiClient.disconnect();
             //For now just initialize heatmap with current location

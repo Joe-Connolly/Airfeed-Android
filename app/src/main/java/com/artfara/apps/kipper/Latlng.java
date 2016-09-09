@@ -2,6 +2,9 @@ package com.artfara.apps.kipper;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Van on 8/31/16.
  * This class is structured so that it can be inserted or queried from
@@ -24,4 +27,10 @@ public class Latlng {
         this.longitude = longitude;
     }
 
+    public Map<String, Object> toMap(){
+        Map<String, Object> latLngMap = new HashMap<>();
+        latLngMap.put("latitude", latitude);
+        latLngMap.put("longitude", longitude);
+        return latLngMap;
+    }
 }

@@ -42,16 +42,33 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private DatabaseReference mDatabase;
     private String mUserName;
     private GoogleApiClient mGoogleApiClient;
-    private ArrayList<Place> mPlaces;
+    private ArrayList<Place> mCurrentPlaces;
+    private SharedPreferences mPrefs;
+
     public LocationListener mLocationListener = new com.google.android.gms.location.LocationListener() {
 
         @Override
         public void onLocationChanged(Location location) {
-
-//            mLocation = location;
             Log.d(TAG, "location updated, location = " + location + "");
-            //add new location to database
-            mDatabase.child(Constants.USERS_TABLE_NAME).child(mUserName).setValue(new Latlng(location.getLatitude(), location.getLongitude()));
+            String ID = mPrefs.getString(Constants.ID_KEY, null);
+            //If user is not already in database, add them
+            Log.d(TAG, "loading key = " + Constants.ID_KEY + " " + ID);
+            if (ID == null){
+                ID = mDatabase.child(Constants.USERS_TABLE_NAME).push().getKey();
+                mPrefs.edit().putString(Constants.ID_KEY, ID).commit();
+                Log.d(TAG, "saving key = " + Constants.ID_KEY + " " + ID);
+            }
+
+            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude());
+
+            Map<String, Object> childUpdates = new HashMap<>();
+            childUpdates.put(ID, loc.toMap());
+            mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
+
+
+
+//            mDatabase.child(Constants.USERS_TABLE_NAME).child(mUserName).setValue(new Latlng(location.getLatitude(), location.getLongitude()));
+            //add a listener to perform a onetime check to determine whether to increment or decrement userCount of nearby places
             mDatabase.child(Constants.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mSingleEventListner);
 
         }
@@ -61,13 +78,15 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     ValueEventListener mSingleEventListner = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-//            mLocation = new LatLng(43.705446, -72.288828);
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            //Get location from user click in MapsActivity.java for testing purposes
             mLocation = new LatLng(prefs.getFloat("latitude", 0), prefs.getFloat("longitude", 0));
             for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
                 Place place = placeSnapshot.getValue(Place.class);
+
                 //If user used to be at a place, but now left, decrement count
                 if (userWasAtPlace(place) && !userIsAtPlace(place)) {
+                    //user is no longer at place so remove them from mCurrentPlaces ArrayList
                     removePlace(place);
                     //decrement user count in database
                     mHashMap = new HashMap<String, Object>();
@@ -78,20 +97,20 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 }
                 //If user was not at place, but now is, increment count
                 if (!userWasAtPlace(place) && userIsAtPlace(place)) {
-                    mPlaces.add(place);
+                    //user is now at place, so add it to mCurrentPlaces ArrayList
+                    mCurrentPlaces.add(place);
                     //increment user count in database
                     mHashMap = new HashMap<String, Object>();
                     place.people++;
                     mHashMap.put("people", place.people);
                     mDatabase.child(Constants.PLACES_TABLE_NAME).child(place.location).updateChildren(mHashMap);
-
-
                 }
 
             }
-            for (int i = 0; i < mPlaces.size(); i++){
-                Log.d(TAG, "place = " + mPlaces.get(i).location);
-                Log.d(TAG, mPlaces.get(i).latitude + " - " + mPlaces.get(i).longitude);
+            //for testing, ignore
+            for (int i = 0; i < mCurrentPlaces.size(); i++){
+                Log.d(TAG, "place = " + mCurrentPlaces.get(i).location);
+                Log.d(TAG, mCurrentPlaces.get(i).latitude + " - " + mCurrentPlaces.get(i).longitude);
             }
 
         }
@@ -102,35 +121,45 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             }
         };
 
-    private void removePlace(Place place) {
-        for (int i = 0; i < mPlaces.size(); i++){
-            if (mPlaces.get(i).latitude == place.latitude) {
-                mPlaces.remove(i);
-            }
-        }
+
+
+    private boolean userIsAtPlace(Place place) {
+        float[] distance = new float[1]; //stores distance
+        Location.distanceBetween(place.latitude, place.longitude, mLocation.latitude, mLocation.longitude, distance);
+        return distance[0] < place.radius;
     }
 
     private boolean userWasAtPlace(Place place) {
-        for (int i = 0; i < mPlaces.size(); i++){
-            if (mPlaces.get(i).latitude == place.latitude) {
+        //If user was at place it would be stored in the mCurrentPlaces array
+        for (int i = 0; i < mCurrentPlaces.size(); i++){
+            if (mCurrentPlaces.get(i).latitude == place.latitude) {
                 return true;
             }
 
         }
         return false;
     }
+    private void removePlace(Place place) {
+        for (int i = 0; i < mCurrentPlaces.size(); i++){
+            if (mCurrentPlaces.get(i).latitude == place.latitude) {
+                mCurrentPlaces.remove(i);
+            }
+        }
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("service", "onStartCommand");
 
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mUserName = prefs.getString(Constants.USERNAME_KEY, "someDefaultValue");
 
 
-        mPlaces = new ArrayList<>();
+        mCurrentPlaces = new ArrayList<>();
         startLocationUpdates();
 
 
@@ -154,11 +183,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
 
 
-    private boolean userIsAtPlace(Place place){
-        float [] distance = new float[1];
-        Location.distanceBetween(place.latitude, place.longitude, mLocation.latitude, mLocation.longitude, distance);
-        return distance[0] < place.radius; //Math.sqrt(Math.pow(place.latitude - mLocation.latitude, 2) + Math.pow(place.longitude - mLocation.longitude,2)) < place.radius;
-        }
+
 
     private void startLocationUpdates() {
         // Create an instance of GoogleAPIClient.
