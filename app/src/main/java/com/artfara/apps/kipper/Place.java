@@ -32,4 +32,8 @@ public class Place {
         this.type = type;
     }
 
+    public String toString(){
+        return location + " rad = " + radius + " people = " + people;
+    }
+
 }

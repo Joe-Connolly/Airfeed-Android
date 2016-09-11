@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,12 +42,10 @@ import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap;
-    private String mUserName;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLocation;
+
     private DatabaseReference mDatabase;
     private String TAG = " maps class";
     private HeatmapTileProvider mHeatMapProvider;
@@ -59,11 +60,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                  Latlng location = userSnapshot.getValue(Latlng.class);
                  users.add(new LatLng(location.latitude, location.longitude));
-                 mMap.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
+//                 mMap.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
 
                  Log.d(TAG, location.latitude + " - " + location.longitude);
             }
-            mHeatMapProvider.setData(users);
+            if (users.size() > 0) {mHeatMapProvider.setData(users);}
             mOverlay.clearTileCache();
         }
 
@@ -80,18 +81,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             removeMarkersIfNecessary();
             for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
                 Place place = placeSnapshot.getValue(Place.class);
-                Log.d(TAG, place.location);
+                String placeName = placeSnapshot.getKey();
+                //set the snippet to be people or person depending on if there are 1 or more people
+                String snippet = (place.people == 1) ? place.people + " person" : place.people + " people";
                 Marker marker = mMap.addMarker((new MarkerOptions().position(new LatLng(place.latitude, place.longitude))
                         .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
-                        .title(place.location)
-                        .snippet("" + place.people)));
+                        .title(placeName)
+                        .snippet(snippet)));
                 mMarkers.add(marker);
-//                users.add(new LatLng(location.latitude, location.longitude));
-//                mMap.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
-//
-//                Log.d(TAG, location.latitude + " - " + location.longitude);
-                //BitmapDescriptorFactory
-              //  .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
             }
         }
 
@@ -118,58 +115,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //Fill constants hashmap that determines which markers to be used for each place on map
         Constants.prepare();
 
-        //Load the username from internal storage
-        mUserName = getIntent().getStringExtra(Constants.USERNAME_KEY);
+        //Initialize an arraylist of map markers, to be used later to delete the markers
         mMarkers = new ArrayList<>();
 
-        Log.d("android version = ", "" + Build.VERSION.SDK_INT);
-
-
-        //Check permissions for Android API 22 and up
-        if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // must request the permission.
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    0);
-
-            // onRequestPermissionsResult() gets the
-            // result of the request.
-
-        }
-
-        else {
-            //No need to request permissions, start using location
-            mPermissionGranted = true;
-            startUsingLocation();
-        }
-
-
-    }
-
-    //Start location tracking service, and start getting location (to zoom in map)
-    public void startUsingLocation(){
-        Intent intent = new Intent(this, TrackingService.class);
-        startService(intent);
-
-        // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-        mGoogleApiClient.connect();
     }
 
     @Override
@@ -182,7 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // permission was granted, yay!
             //Start tracking users location
-            startUsingLocation();
+            initializeMap();
             mPermissionGranted = true;
 
 
@@ -190,8 +147,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // permission denied, boo!
             //Tell the user that they are a jackass for disabling the permission
-            NeedLocationDialogFragment dialog = new NeedLocationDialogFragment();
-            dialog.show(getSupportFragmentManager(), TAG);
+//            NeedLocationDialogFragment dialog = new NeedLocationDialogFragment();
+//            dialog.show(getSupportFragmentManager(), TAG);
+            // must request the permission.
+            Toast.makeText(this, "Sorry, we need your location", Toast.LENGTH_LONG).show();
+//            Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    ActivityCompat.requestPermissions(getCallingActivity(),
+//                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                            0);
+//                }
+//            }, 2000);
+             ActivityCompat.requestPermissions(this,
+                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                     0);
             mPermissionGranted = false;
             //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
         }
@@ -218,60 +189,78 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        //Check permissions for Android API 22 and up to use location
+        if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // must request the permission.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    0);
+
+            // onRequestPermissionsResult() gets the
+            // result of the request.
+
+        }
+
+        else {
+            //No need to request permissions, start using location
+            mPermissionGranted = true;
+            initializeMap();
+        }
+
+
+
+
 
     }
 
+    public void initializeMap(){
+        //Launch location tracking service
+        Intent intent = new Intent(this, TrackingService.class);
+        startService(intent);
+
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
+        mMap.setMyLocationEnabled(true);
+//            LatLng location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+        //For testing
+        LatLng location = new LatLng(Constants.HANOVER_LATITUDE, Constants.HANOVER_LONGITUDE);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16.0f));
+        //For now just initialize heatmap with current location
+        ArrayList<LatLng> data = new ArrayList<>();
+        data.add(location);
+        //Initialize heatmap to be populated later
+        mHeatMapProvider = new HeatmapTileProvider.Builder()
+                .data(data)
+                .build();
+        // Add a tile overlay to the map, using the heat map tile provider.
+        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
+        //connect to firebase database and add markers for places and set data for heatmap
+        populateMap();
+
+
+        //For testing, save clicks
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+        {
+            @Override
+            public void onMapClick(LatLng loc)
+            {
+                //For testing
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                prefs.edit().putFloat("latitude", (float) loc.latitude).commit();
+                prefs.edit().putFloat("longitude", (float) loc.longitude).commit();
+            }
+        });
+
+        mMap.setInfoWindowAdapter(new PopUpAdapter(getLayoutInflater()));
+    }
 
     //Always unregister receivers and unbind service when app is closed out of
     public void onStop(){
         super.onStop();
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        //Save last known location
-        mLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mMap != null && mLocation != null){
-            mMap.getUiSettings().setRotateGesturesEnabled(false);
-//            LatLng location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-            //For testing
-            LatLng location = new LatLng(Constants.HANOVER_LATITUDE, Constants.HANOVER_LONGITUDE);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16.0f));
-            //No need to stay connected, now that we have location
-            mGoogleApiClient.disconnect();
-            //For now just initialize heatmap with current location
-            ArrayList<LatLng> data = new ArrayList<>();
-            data.add(location);
-            //Initialize heatmap to be populated later
-            mHeatMapProvider = new HeatmapTileProvider.Builder()
-                    .data(data)
-                    .build();
-            // Add a tile overlay to the map, using the heat map tile provider.
-            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
-            //connect to firebase database and add markers for all connected users
-            populateMap();
-
-
-            //For testing, save clicks
-            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
-            {
-                @Override
-                public void onMapClick(LatLng loc)
-                {
-                    //For testing
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    prefs.edit().putFloat("latitude", (float) loc.latitude).commit();
-                    prefs.edit().putFloat("longitude", (float) loc.longitude).commit();
-//                    Toast.makeText(getApplicationContext(), "lat = " + loc.latitude + "  long = " + loc.longitude, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-        else {
-            Log.d(TAG, "mMap = " + mMap + " mLocation = " + mLocation);
-        }
-
-    }
     //connect to firebase database and add markers for all connected users
     private void populateMap() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -281,13 +270,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    public void onKipperIconClicked(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/jose.conrador.1"));
+        startActivity(browserIntent);
 
     }
 }
