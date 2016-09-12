@@ -48,6 +48,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private ArrayList<Place> mCurrentPlaces;
     private SharedPreferences mPrefs;
 
+    private boolean mLocationUpdatesApplied = false;
+
     public LocationListener mLocationListener = new com.google.android.gms.location.LocationListener() {
 
         @Override
@@ -90,7 +92,6 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 //            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             //Get location from user click in MapsActivity.java for testing purposes
             // mLocation = new LatLng(prefs.getFloat("latitude", 0), prefs.getFloat("longitude", 0));
-            Log.d(TAG, "count = " + mCount);
             for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
                 Place place = placeSnapshot.getValue(Place.class);
                 String placeName = placeSnapshot.getKey();
@@ -183,40 +184,29 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         }
     }
 
-
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("service", "onStartCommand");
+    public void onCreate(){
+        Log.d("service", "onCreate");
 
+
+        if (mLocationUpdatesApplied){
+            return;
+        }
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mCount = prefs.getInt("count", 0);
-        mCount++;
-        prefs.edit().putInt("count", mCount).commit();
+
 
 
 
         mCurrentPlaces = new ArrayList<>();
         startLocationUpdates();
+    }
 
 
-
-//        //ignore just for testing
-//        mR = new Runnable() {
-//            public void run() {
-//                mDatabase.child(Constants.USERS_TABLE_NAME).child(mUserName).setValue(new Latlng(42 + increment, 73));
-//                increment++;
-//                Handler h = new Handler();
-//                h.postDelayed(mR, 1000);
-//            }
-//        };
-//        Handler h = new Handler();
-//        h.postDelayed(mR, 1000);
-
-
-
+    //OnStartCommand gets called multiple times, so use onCreate() instead
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -225,6 +215,15 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
 
     private void startLocationUpdates() {
+
+        mLocationUpdatesApplied = true;
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mCount = mPrefs.getInt("count", 0);
+        mCount++;
+        mPrefs.edit().putInt("count", mCount).commit();
+        Log.d(TAG, "count = " + mCount);
+
+
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
