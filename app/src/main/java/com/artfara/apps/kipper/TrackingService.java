@@ -39,6 +39,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     //testing ignore
 //    double increment =  1.0;
 //    Runnable mR;
+    private int mCount;
     private Map<String, Object> mHashMap;
     private LatLng mLocation;
     private DatabaseReference mDatabase;
@@ -89,6 +90,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 //            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             //Get location from user click in MapsActivity.java for testing purposes
             // mLocation = new LatLng(prefs.getFloat("latitude", 0), prefs.getFloat("longitude", 0));
+            Log.d(TAG, "count = " + mCount);
             for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
                 Place place = placeSnapshot.getValue(Place.class);
                 String placeName = placeSnapshot.getKey();
@@ -190,7 +192,10 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mUserName = prefs.getString(Constants.USERNAME_KEY, "someDefaultValue");
+        mCount = prefs.getInt("count", 0);
+        mCount++;
+        prefs.edit().putInt("count", mCount).commit();
+
 
 
         mCurrentPlaces = new ArrayList<>();

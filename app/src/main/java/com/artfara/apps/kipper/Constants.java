@@ -9,6 +9,7 @@ import java.util.Map;
 public class Constants {
     //Constants to be used throughout the class
     public final static String USERNAME_KEY = "com.artfara.kipper.USERNAME";
+    public final static String PLACE_TITLE_KEY = "com.artfara.kipper.USERNAME";
     public final static String USERS_TABLE_NAME = "users";
     public final static String PLACES_TABLE_NAME = "testplaces";
     public static final String ID_KEY = "id";

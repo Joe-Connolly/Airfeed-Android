@@ -42,7 +42,7 @@ import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
 
@@ -253,7 +253,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+
         mMap.setInfoWindowAdapter(new PopUpAdapter(getLayoutInflater()));
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     //Always unregister receivers and unbind service when app is closed out of
@@ -271,8 +273,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     public void onKipperIconClicked(View view) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/jose.conrador.1"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/Kipper-262599437466908/?fref=ts&__mref=message_bubble"));
         startActivity(browserIntent);
 
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra(Constants.PLACE_TITLE_KEY, marker.getTitle());
+        startActivity(intent);
     }
 }
