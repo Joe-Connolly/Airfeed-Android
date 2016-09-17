@@ -55,14 +55,11 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "location updated, location = " + location + "");
-            String ID = mPrefs.getString(Constants.ID_KEY, null);
+//            String ID = mPrefs.getString(Constants.ID_KEY, null);
             //If user is not already in database, add them
-            Log.d(TAG, "loading key = " + Constants.ID_KEY + " " + ID);
-            if (ID == null){
-                ID = mDatabase.child(Constants.USERS_TABLE_NAME).push().getKey();
-                mPrefs.edit().putString(Constants.ID_KEY, ID).commit();
-                Log.d(TAG, "saving key = " + Constants.ID_KEY + " " + ID);
-            }
+
+//            if (ID == null){
+
 
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude());
             mLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -73,7 +70,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 //            loc = new Latlng(prefs.getFloat("latitude", 0), prefs.getFloat("longitude", 0));
 
             Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put(ID, loc.toMap());
+            childUpdates.put(mID, loc.toMap());
             mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
 
 
@@ -156,7 +153,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 Log.w(TAG, "getUser:onCancelled", databaseError.toException());
             }
         };
-
+    private String mID;
 
 
     private boolean userIsAtPlace(Place place) {
@@ -255,6 +252,10 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
+        mID = mDatabase.child(Constants.USERS_TABLE_NAME).push().getKey();
+        Log.d(TAG, "loading key = " + Constants.ID_KEY + " " + mID);
+
 
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
