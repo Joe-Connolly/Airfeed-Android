@@ -37,7 +37,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private static final String TAG = "Tracking Service ";
 
     //testing ignore
-//    double increment =  1.0;
+    double increment =  .05;
 //    Runnable mR;
     private int mCount;
     private Map<String, Object> mHashMap;
@@ -60,8 +60,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
 //            if (ID == null){
 
-
-            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude());
+            increment++;
+            Latlng loc = new Latlng(location.getLatitude() + increment, location.getLongitude());
             mLocation = new LatLng(location.getLatitude(), location.getLongitude());
             //for testing
 //            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -258,8 +258,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
 
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(2000);
+        mLocationRequest.setInterval(6000);
+        mLocationRequest.setFastestInterval(4000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, mLocationListener);

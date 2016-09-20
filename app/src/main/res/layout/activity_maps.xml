@@ -22,4 +22,11 @@
         android:layout_height="wrap_content"
         android:src="@drawable/kipper_logo"
         android:onClick="onKipperIconClicked"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/map"
+        android:layout_alignBottom="@id/map"
+        android:src="@drawable/arrow"
+        android:onClick="onKipperIconClicked"/>
 </RelativeLayout>
