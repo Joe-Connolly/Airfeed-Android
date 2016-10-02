@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 public class TrackingService extends Service implements GoogleApiClient.ConnectionCallbacks,
@@ -54,14 +55,14 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "location updated, location = " + location + "");
+//            Log.d(TAG, "location updated, location = " + location + "");
 //            String ID = mPrefs.getString(Constants.ID_KEY, null);
             //If user is not already in database, add them
 
 //            if (ID == null){
 
             increment++;
-            Latlng loc = new Latlng(location.getLatitude() + increment, location.getLongitude());
+            Latlng loc = new Latlng(location.getLatitude() + increment, location.getLongitude(), true);
             mLocation = new LatLng(location.getLatitude(), location.getLongitude());
             //for testing
 //            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -92,8 +93,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
                 Place place = placeSnapshot.getValue(Place.class);
                 String placeName = placeSnapshot.getKey();
-                Log.d(TAG, "iterating through " + placeName);
-                Log.d(TAG, "places = " + mCurrentPlaces.toString());
+//                Log.d(TAG, "iterating through " + placeName);
+//                Log.d(TAG, "places = " + mCurrentPlaces.toString());
                 //If user used to be at a place, but now left, decrement count
                 if (userWasAtPlace(place) && !userIsAtPlace(place)) {
                     Log.d(TAG, "Decrementing place = " + placeName + " places = " + mCurrentPlaces.toString());
@@ -105,7 +106,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                         public Transaction.Result doTransaction(MutableData mutableData) {
                             Place place = mutableData.getValue(Place.class);
                             if (place == null) {
-                                Log.d(TAG, "data is null");
+//                                Log.d(TAG, "data is null");
                                 return Transaction.success(mutableData);
                             }
                             place.people--;
@@ -119,7 +120,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 }
                 //If user was not at place, but now is, increment count
                 if (!userWasAtPlace(place) && userIsAtPlace(place)) {
-                    Log.d(TAG, "Incrementing place = " + placeName + "places = " + mCurrentPlaces.toString());
+//                    Log.d(TAG, "Incrementing place = " + placeName + "places = " + mCurrentPlaces.toString());
                     //user is now at place, so add it to mCurrentPlaces ArrayList
                     mCurrentPlaces.add(place);
                     //increment user count in database
@@ -143,7 +144,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
             }
             //for testing, ignore
             for (int i = 0; i < mCurrentPlaces.size(); i++){
-                Log.d(TAG, mCurrentPlaces.get(i).latitude + " - " + mCurrentPlaces.get(i).longitude);
+//                Log.d(TAG, mCurrentPlaces.get(i).latitude + " - " + mCurrentPlaces.get(i).longitude);
             }
 
         }
@@ -159,7 +160,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     private boolean userIsAtPlace(Place place) {
         float[] distance = new float[1]; //stores distance
         Location.distanceBetween(place.latitude, place.longitude, mLocation.latitude, mLocation.longitude, distance);
-        Log.d(TAG, "User is at " + place.location + " within" + place.radius + " ? " + (distance[0] < place.radius));
+//        Log.d(TAG, "User is at " + place.location + " within" + place.radius + " ? " + (distance[0] < place.radius));
         return distance[0] < place.radius;
     }
 
@@ -264,8 +265,17 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, mLocationListener);
 
-    }
 
+        Random random = new Random();
+//        for testing add 1000 users to database
+        for (int i = 0; i < 1000; i++) {
+            String id = "" + i;
+            double lat = 0.010 * random.nextDouble() + 43.7010;
+            double lng = -0.010 * random.nextDouble() + -72.2890;
+            mDatabase.child(Constants.USERS_TABLE_NAME).child(id).setValue(new Latlng(lat, lng, false));
+        }
+
+    }
 
     //*******************************************************************************************
     //ALL METHODS and FIELDS BELOW THIS LINE ARE NOT USED

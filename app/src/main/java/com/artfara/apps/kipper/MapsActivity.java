@@ -2,17 +2,17 @@ package com.artfara.apps.kipper;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,27 +33,34 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import java.util.ArrayList;
+import java.util.concurrent.ScheduledFuture;
+//change fragment to appcompact
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
-
+    private ScheduledFuture<?> mTask;
     private DatabaseReference mDatabase;
     private String TAG = " maps class";
     private HeatmapTileProvider mHeatMapProvider;
     private ArrayList<Marker> mMarkers;
     private TileOverlay mOverlay;
+    private int mUpdatable;
     private boolean mPermissionGranted;
     private double mStudentsWithAppRatio;
     private ValueEventListener mUserDatabaseChangedListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+//            if (!(mUpdatable % 10 == 0)){
+//                return;
+//            }
+//            Log.d(TAG, "countable " + mUpdatable);
             ArrayList<LatLng> users = new ArrayList<>();
-            Log.d(TAG, "There are " + dataSnapshot.getChildrenCount() + " users");
+//            Log.d(TAG, "There are " + dataSnapshot.getChildrenCount() + " users");
             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                  Latlng location = userSnapshot.getValue(Latlng.class);
                  users.add(new LatLng(location.latitude, location.longitude));
-                 Log.d(TAG, location.latitude + " - " + location.longitude);
+//                 Log.d(TAG, location.latitude + " - " + location.longitude);
             }
             if (users.size() > 0) {mHeatMapProvider.setData(users);}
             mOverlay.clearTileCache();
@@ -69,15 +76,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ValueEventListener mPlaceDatabaseChangedListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+//            if (!(mUpdatable % 10 == 0)){
+//                return;
+//            }
+//            Log.d(TAG, "countable " + mUpdatable);
             removeMarkersIfNecessary();
+            mMap.clear();
+            Log.d(TAG, "clearing map");
             for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
                 Place place = placeSnapshot.getValue(Place.class);
                 String placeName = placeSnapshot.getKey();
-                Log.d(TAG, placeName + " " + place.people);
+                Log.d(TAG, "Before ratio " + placeName + " " + place.people + " ratio" + mStudentsWithAppRatio);
                 //Inflate the number of people based on how many users have their location provided
                 place.people = ((Double) (mStudentsWithAppRatio * place.people.doubleValue())).intValue();
                 //set the snippet to be people or person depending on if there are 1 or more people
-
+                Log.d(TAG, placeName + " " + place.people + " ratio" + mStudentsWithAppRatio);
                 String snippet = (place.people == 1) ? place.people + " person" : place.people + " people";
                 Marker marker = mMap.addMarker((new MarkerOptions().position(new LatLng(place.latitude, place.longitude))
                         .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
@@ -98,8 +111,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ValueEventListener mRatioSingleEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            Ratio ratioResult = dataSnapshot.getValue(Ratio.class);
+            DBConstants ratioResult = dataSnapshot.getValue(DBConstants.class);
             mStudentsWithAppRatio = ratioResult.ratioValue;
+            Log.d(TAG, "ratio called " + ratioResult.ratioValue);
 
         }
 
@@ -112,12 +126,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     };;
 
 
+
     private void removeMarkersIfNecessary() {
         if (mMarkers != null && mMarkers.size() > 0){
             for (int i = 0; i < mMarkers.size(); i++) {
                 mMarkers.get(i).remove();
             }
             mMarkers = new ArrayList<>();
+        }
+        else{
+            Log.d(TAG, "there are no markers");
         }
     }
 
@@ -127,6 +145,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        if (savedInstanceState != null) {
+            mStudentsWithAppRatio = savedInstanceState.getDouble(Constants.RATIO_KEY);
+        }
+
+        Log.d(TAG, "onCreate");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -137,6 +160,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Initialize an arraylist of map markers, to be used later to delete the markers
         mMarkers = new ArrayList<>();
+
+        final ImageView listButtion = (ImageView) findViewById(R.id.listButton);
+        listButtion.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getAction()==MotionEvent.ACTION_DOWN){
+                    ((ImageView) view).setImageDrawable(getDrawable(R.drawable.list_button_darker));
+                    Log.d(TAG, "pressed down");
+                }
+
+                if (event.getAction()==MotionEvent.ACTION_UP){
+                    ((ImageView) view).setImageDrawable(getDrawable(R.drawable.list_button));
+                    Log.d(TAG, "pressed up");
+                }
+                Log.d(TAG, "neither");
+
+                return true;
+            }
+        });
 
     }
 
@@ -174,6 +217,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //No call for super(). Bug on API Level > 11.
+        outState.putDouble(Constants.RATIO_KEY, mStudentsWithAppRatio);
     }
 
     /**
@@ -242,34 +286,65 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //For testing, save clicks
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
-        {
-            @Override
-            public void onMapClick(LatLng loc)
-            {
-                //For testing
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                prefs.edit().putFloat("latitude", (float) loc.latitude).commit();
-                prefs.edit().putFloat("longitude", (float) loc.longitude).commit();
-            }
-        });
+//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+//        {
+//            @Override
+//            public void onMapClick(LatLng loc)
+//            {
+//                //For testing
+//                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//                prefs.edit().putFloat("latitude", (float) loc.latitude).commit();
+//                prefs.edit().putFloat("longitude", (float) loc.longitude).commit();
+//            }
+//        });
 
 
         mMap.setInfoWindowAdapter(new PopUpAdapter(getLayoutInflater()));
         mMap.setOnInfoWindowClickListener(this);
+
+        //To keep app from freezing, make sure it only updates itself every 10 seconds
+//        ScheduledExecutorService scheduler =
+//                Executors.newSingleThreadScheduledExecutor();
+//        mTask = scheduler.scheduleAtFixedRate
+//                (new Runnable() {
+//                    public void run() {
+//                      mUpdatable++;
+////                    Log.d(TAG, mUpdatable + "");
+//                    }
+//                }, 6, 1, TimeUnit.SECONDS);
     }
 
+
+
+
+    public void onResume(){
+        Log.d(TAG, "onResume");
+
+        super.onResume();
+    }
+
+    public void onPause(){
+        Log.d(TAG, "onPause");
+
+        super.onPause();
+    }
     //Always unregister receivers and unbind service when app is closed out of
     public void onStop(){
+        Log.d(TAG, "onStop");
+        removeMarkersIfNecessary();
         super.onStop();
     }
+
+
+
 
     //connect to firebase database and add markers for all connected users
     private void populateMap() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child(Constants.CONSTANTS_TABLE_NAME).addListenerForSingleValueEvent(mRatioSingleEventListener);
+        mDatabase.child(Constants.CONSTANTS_TABLE_NAME).addValueEventListener(mRatioSingleEventListener);
         mDatabase.child(Constants.USERS_TABLE_NAME).addValueEventListener(mUserDatabaseChangedListener);
         mDatabase.child(Constants.PLACES_TABLE_NAME).addValueEventListener(mPlaceDatabaseChangedListener);
+        Log.d(TAG, "listeners set");
 
     }
 
