@@ -55,7 +55,10 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ChatActivity" android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".ChatActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ListViewActivity"></activity>
     </application>
 
 </manifest>
