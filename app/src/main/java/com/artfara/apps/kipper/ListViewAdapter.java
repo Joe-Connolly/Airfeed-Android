@@ -6,7 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -19,6 +22,7 @@ public class ListViewAdapter extends BaseAdapter {
     private static ArrayList<Place> activePlaces; //ArrayList to hold Entiries in the Adapter
     private Context c; //Holds context adapter was created in
 
+    private static final String TAG = " ListAdapter";
     private LayoutInflater mInflater;
 
     public ListViewAdapter(Context context, boolean usePlaceTotalsAsEntries) {
@@ -32,10 +36,27 @@ public class ListViewAdapter extends BaseAdapter {
 //    public static ArrayList<ExerciseEntry> getEntries(){
 //        return entries;
 //    }
+//    public static void setEntries(ArrayList<Place> places){
+//        activePlaces = places;
+//    }
     public static void setEntries(ArrayList<Place> places){
-        activePlaces = places;
+        ArrayList<Place> placeTotals = new ArrayList<>();
+        Log.d(TAG, " places.Global " + places);
+
+        for (int i = 0; i < Constants.PLACE_TOTALS_TEMPLATES.length; i++){
+            Place placeTotal = new Place(Constants.PLACE_TOTALS_TEMPLATES[i].location, Constants.PLACE_TOTALS_TEMPLATES[i].type);
+            for (Place place:places){
+                if (place.type.equals(placeTotal.type)){
+                    placeTotal.people += place.people;
+                }
+            }
+            placeTotals.add(placeTotal);
+        }
+
+        activePlaces = placeTotals;
     }
     public int getCount() {
+        Log.d(TAG, "" + activePlaces);
         return activePlaces.size();
     }
 
@@ -52,12 +73,17 @@ public class ListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = new ViewHolder();
 
+        Place currentPlace = activePlaces.get(position);
         View rowView = mInflater.inflate(R.layout.custom_row_view, null);
-        holder.txtLine1 = (TextView) rowView.findViewById(R.id.line1);
+        holder.txtPlaceName = (TextView) rowView.findViewById(R.id.placeName);
+        holder.txtPeopleCount = (TextView) rowView.findViewById(R.id.peopleCount);
+        holder.placeTypeImage = (ImageView) rowView.findViewById(R.id.placeTypeImage);
 //        holder.img=(ImageView) rowView.findViewById(R.id.imageView1);
 //        holder.tv.setText(result[position]);
 
-        holder.txtLine1.setText("fgsdsd");
+        holder.txtPlaceName.setText(currentPlace.location);
+        holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
+        holder.placeTypeImage.setImageDrawable(c.getDrawable(Constants.PLACES.get(currentPlace.type)));
 
         Log.d("Adapter ", "called " );
 
@@ -68,7 +94,7 @@ public class ListViewAdapter extends BaseAdapter {
 //            convertView = mInflater.inflate(R.layout.custom_row_view, null);
 //            holder = new ViewHolder();
 //            //Get handles on both textviews
-//            holder.txtLine1 = (TextView) convertView.findViewById(R.id.line1);
+//            holder.txtPlaceName = (TextView) convertView.findViewById(R.id.line1);
 ////            holder.txtLine2 = (TextView) convertView.findViewById(R.id.line2);
 //
 //            convertView.setTag(holder);
@@ -81,7 +107,7 @@ public class ListViewAdapter extends BaseAdapter {
 ////        String line1 = getLine1(entry);
 ////        String line2 = getLine2(entry);
 //        //Set header to top textview
-//        holder.txtLine1.setText("" + activePlaces.get(position));
+//        holder.txtPlaceName.setText("" + activePlaces.get(position));
 ////        //Set subheader to bottom textview
 ////        holder.txtLine2.setText(String.valueOf(line2));
 
@@ -113,7 +139,9 @@ public class ListViewAdapter extends BaseAdapter {
 //    }
     //Empty class to hold both Textviews
     static class ViewHolder {
-        TextView txtLine1;
+        TextView txtPlaceName;
+        TextView txtPeopleCount;
+        ImageView placeTypeImage;
 //        TextView txtLine2;
     }
 }

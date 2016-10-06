@@ -41,7 +41,6 @@
         android:layout_alignBottom="@id/map"
         android:src="@drawable/list_button"
         android:alpha=".73"
-        android:onClick="onListButtonClicked"
         />
     <!--android:onClick="onListButtonClicked"-->
 </RelativeLayout>

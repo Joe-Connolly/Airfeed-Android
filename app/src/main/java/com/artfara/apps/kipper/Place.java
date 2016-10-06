@@ -32,6 +32,13 @@ public class Place {
         this.type = type;
     }
 
+    //For use in Listview (lat, long, and rad are not important there)
+    public Place(String location, String type) {
+        this.location = location;
+        this.type = type;
+        this.people = 0;
+    }
+
     public String toString(){
         return location + " rad = " + radius + " people = " + people;
     }

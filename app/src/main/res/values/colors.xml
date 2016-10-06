@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="dartmouthGreen">#006e39</color>
+    <color name="gray">#bebebd</color>
 </resources>

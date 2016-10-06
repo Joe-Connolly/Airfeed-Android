@@ -16,6 +16,8 @@ public class Constants {
     public static final double HANOVER_LATITUDE = 43.703272;
     public static final double HANOVER_LONGITUDE = -72.288633;
     public static final String CONSTANTS_TABLE_NAME = "Constants";
+    public static final Place[] PLACE_TOTALS_TEMPLATES = new Place[] {new Place("Frats", "frat"), new Place("Food", "food"),
+            new Place("Libraries", "library"), new Place("Gyms","gym")};
     public static Map<String, Integer> PLACES = new HashMap<>();
 
     public static void prepare() {
