@@ -18,7 +18,13 @@ public class Constants {
     public static final String CONSTANTS_TABLE_NAME = "Constants";
     public static final Place[] PLACE_TOTALS_TEMPLATES = new Place[] {new Place("Frats", "frat"), new Place("Food", "food"),
             new Place("Libraries", "library"), new Place("Gyms","gym")};
+    public static final String PLACE_TYPE_KEY = "place type";
     public static Map<String, Integer> PLACES = new HashMap<>();
+    public static final class STATE {
+        public static final int NORMAL = 0;
+        public static final int LIT = 1;
+        public static final int OVER_CAPACITY = 2;
+    }
 
     public static void prepare() {
         PLACES.put("frat", R.drawable.frat_marker);

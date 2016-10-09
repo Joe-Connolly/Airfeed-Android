@@ -58,7 +58,8 @@
         <activity
             android:name=".ChatActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ListViewActivity"></activity>
+        <activity android:name=".TotalsListViewActivity" />
+        <activity android:name=".PlacesListViewActivity"></activity>
     </application>
 
 </manifest>

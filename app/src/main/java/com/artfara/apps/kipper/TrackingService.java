@@ -266,14 +266,14 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 mGoogleApiClient, mLocationRequest, mLocationListener);
 
 
-        Random random = new Random();
-//        for testing add 1000 users to database
-        for (int i = 0; i < 1000; i++) {
-            String id = "" + i;
-            double lat = 0.010 * random.nextDouble() + 43.7010;
-            double lng = -0.010 * random.nextDouble() + -72.2890;
-            mDatabase.child(Constants.USERS_TABLE_NAME).child(id).setValue(new Latlng(lat, lng, false));
-        }
+//        Random random = new Random();
+////        for testing add 1000 users to database
+//        for (int i = 0; i < 1000; i++) {
+//            String id = "" + i;
+//            double lat = 0.010 * random.nextDouble() + 43.7010;
+//            double lng = -0.010 * random.nextDouble() + -72.2890;
+//            mDatabase.child(Constants.USERS_TABLE_NAME).child(id).setValue(new Latlng(lat, lng, false));
+//        }
 
     }
 

@@ -17,19 +17,21 @@ public class Place {
     public String location;
     public Integer people;
     public String type;
+    public int state;
 
 
     public Place() {
         // Default constructor required for calls to DataSnapshot.getValue(Latlng.class)
     }
 
-    public Place(double latitude, double longitude, double radius, String location, int userCount, String type) {
+    public Place(double latitude, double longitude, double radius, String location, int userCount, String type, int state) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
         this.location = location;
         this.people = userCount;
         this.type = type;
+        this.state = state;
     }
 
     //For use in Listview (lat, long, and rad are not important there)
