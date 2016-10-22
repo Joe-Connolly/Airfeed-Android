@@ -1,7 +1,5 @@
 package com.artfara.apps.kipper;
 
-import android.util.Log;
-
 /**
  * Created by Van on 10/6/16.
  */
@@ -10,7 +8,7 @@ public class Utils {
 
     public static String getPeopleString(Place place){
         //Inflate the number of people based on how many users have their location provided
-        int people = ((Double) (MapsActivity.mStudentsWithAppRatio * place.people.doubleValue())).intValue();
+        int people = ((Double) (Globals.studentsWithAppRatio * place.people.doubleValue())).intValue();
         String peopleString = "";
 //        Log.d("utils",  place.location + " " + place.state);
         switch (place.state){

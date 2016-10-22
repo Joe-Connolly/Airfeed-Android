@@ -72,7 +72,7 @@ public class TotalsListViewAdapter extends BaseAdapter {
 
 
         holder.txtPlaceName.setText(currentPlace.location);
-        holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
+//        holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
         holder.placeTypeImage.setImageDrawable(c.getDrawable(Constants.PLACES.get(currentPlace.type)));
 
 

@@ -61,9 +61,9 @@ public class PlacesListViewAdapter extends BaseAdapter {
             activePlaces = tempPlaces;
         }
     }
-    
-   
-    
+
+
+
     public int getCount() {
         Log.d(TAG, "" + activePlaces);
         return activePlaces.size();
@@ -89,7 +89,7 @@ public class PlacesListViewAdapter extends BaseAdapter {
 
 
         holder.txtPlaceName.setText(currentPlace.location);
-        holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
+//        holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
         holder.placeTypeImage.setImageDrawable(c.getDrawable(Constants.PLACES.get(currentPlace.type)));
 
         Log.d(TAG, "called " );
