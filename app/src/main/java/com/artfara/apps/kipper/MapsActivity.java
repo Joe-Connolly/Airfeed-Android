@@ -1,16 +1,35 @@
 package com.artfara.apps.kipper;
 
+import android.*;
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Typeface;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.*;
 
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +37,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -28,7 +49,10 @@ public class MapsActivity extends AppCompatActivity {
     private static final String TAG = "Maps Activity ";
     private ScheduledFuture<?> mQueryUsersTask;
     private ScheduledFuture<?> mQueryPlacesTask;
+    private ScheduledFuture<?> mQueryPostsTask;
     private DatabaseReference mDatabase;
+    private CustomFragmentPageAdapter mCustomAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,71 +60,139 @@ public class MapsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.d(TAG,"onCreate");
 
-//        MapsFragment mapsFragment = new MapsFragment();
-//        // Update the layout
-//        getSupportFragmentManager().beginTransaction().add(R.id.view_group, mapsFragment).commit();
-
+        Constants.prepare();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
+            toolbar.setTitle("");
             setSupportActionBar(toolbar);
+            TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
+            Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
+            title.setTypeface(typeFaceBold);
         }
 
+
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-
-
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        //Only start app if we have the permissions we need to access location
+        if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            //We need to request permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    0);
+        }
+        else{
+            //No need to ask for permission
+            initializeApplication();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            //permission was granted, yay!
+            //Start tracking users location
+            initializeApplication();
 
 
+        } else {
 
+            // permission denied, boo!
+            // Tell the user that they are a jackass for disabling the permission
+            // must request the permission.
+            Toast.makeText(this, "Sorry, we need your location", Toast.LENGTH_LONG).show();
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    0);
+            //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
+        }
+        return;
+    }
 
-
+    private void initializeApplication() {
 
         ScheduledExecutorService scheduler =
                 Executors.newSingleThreadScheduledExecutor();
-//        mQueryUsersTask = scheduler.scheduleAtFixedRate
-//                (new Runnable() {
-//                    public void run() {
-//
-//                    }
-//                }, 3, 1, TimeUnit.SECONDS);
+        mQueryUsersTask = scheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        mDatabase.child(Constants.USERS_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
+                    }
+                }, 100, 15000, TimeUnit.MILLISECONDS);
         mQueryPlacesTask = scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
-
                         mDatabase.child(Constants.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
                     }
-                }, 3, 1, TimeUnit.SECONDS);
+                }, 100, 15000, TimeUnit.MILLISECONDS);
+
+//        mQueryPostsTask = scheduler.scheduleAtFixedRate
+//                (new Runnable() {
+//                    public void run() {
+//                        mDatabase.child(Constants.POSTS_NEW_TABLE_NAME).addListenerForSingleValueEvent(mPostsSingleEventListener);
+//                    }
+//                }, 100, 15000, TimeUnit.MILLISECONDS);
+
+        PostDatabaseHelper postDatabaseHelper = new PostDatabaseHelper();
+        postDatabaseHelper.downloadPosts();
+
+        scheduleLocationTracking();
+    }
+
+    private void scheduleLocationTracking() {
+//        Intent intent = new Intent(this, TrackingService.class);
+//        startService(intent);
+
+        //Start JobScheduler Tracking Service
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        ComponentName serviceName = new ComponentName(this, TrackingJobService.class);
+        int jobId = 1;
+        JobInfo.Builder builder;
+        if (Build.VERSION.SDK_INT >= 24) {
+            builder = new JobInfo.Builder(jobId, serviceName)
+                    .setPeriodic(1000000)
+                    .setRequiresDeviceIdle(false) // does not matter if deviec is idle
+                    .setRequiresCharging(false) // we don't care if the device is charging or not
+                    .setPersisted(true); // start on boot
+        } else {
+            builder = new JobInfo.Builder(jobId, serviceName)
+                    .setPeriodic(60000)
+                    .setRequiresDeviceIdle(false) // does not matter if device is idle
+                    .setRequiresCharging(false) // we don't care if the device is charging or not
+                    .setPersisted(true); // start on boot
+        }
+        int result = jobScheduler.schedule(builder.build());
+        if (result == JobScheduler.RESULT_SUCCESS) Log.d(TAG, "Job scheduled successfully!");
+
+        //Start Alarm Manager Tracking Service
+        Utils.startAlarmTrackingService(this);
 
     }
 
 
-
-
-    private ValueEventListener mPlacesSingleEventListener = new ValueEventListener() {
+    private ValueEventListener mUsersSingleEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-
-            ArrayList<Place> places = new ArrayList<>();
-            for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
-                Place place = placeSnapshot.getValue(Place.class);
-                String placeName = placeSnapshot.getKey();
-//                Log.d(TAG, "place = " + placeName + " " + place.people);
-                //Add place to places so it can be accessed from listView
-                places.add(place);
+            ArrayList<LatLng> users = new ArrayList<>();
+            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                //GMAPS heatmap API can only take 1000 locations
+                if (users.size() > 997) break;
+                Latlng location = userSnapshot.getValue(Latlng.class);
+                users.add(new LatLng(location.latitude, location.longitude));
             }
-            Globals.globalPlaces = places;
-//            TotalsListViewAdapter.setEntries(places);
-//            if (TotalsListViewActivity.customBaseAdapter != null){
-//                TotalsListViewActivity.customBaseAdapter.notifyDataSetChanged();
-//            }
-//            PlacesListViewAdapter.setAllEntries(places);
-//            if (PlacesListViewActivity.customBaseAdapter != null){
-//                PlacesListViewActivity.customBaseAdapter.notifyDataSetChanged();
-//            }
+            Globals.globalUsers = users;
         }
 
         @Override //autogenerated
@@ -112,6 +204,43 @@ public class MapsActivity extends AppCompatActivity {
     };
 
 
+    private ValueEventListener mPlacesSingleEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+            ArrayList<Place> places = new ArrayList<>();
+            for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
+                Place place = placeSnapshot.getValue(Place.class);
+                places.add(place);
+            }
+            Globals.globalPlaces = places;
+        }
+        @Override //autogenerated
+        public void onCancelled(DatabaseError databaseError) {
+            // Getting Post failed, log a message
+            Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            // ...
+        }
+    };
+
+//
+//    private ValueEventListener mPostsSingleEventListener = new ValueEventListener() {
+//        @Override
+//        public void onDataChange(DataSnapshot dataSnapshot) {
+//            HashMap<String, Post> posts = new HashMap<>();
+//            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                Post post = postSnapshot.getValue(Post.class);
+//                posts.put(postSnapshot.getKey(), post);
+//            }
+//            Globals.globalPosts = posts;
+//            Log.d(TAG, " Downloading Posts");
+//        }
+//
+//        @Override
+//        public void onCancelled(DatabaseError databaseError) {
+//
+//        }
+//    };
 
     public void onStop(){
         super.onStop();
@@ -129,24 +258,29 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return new MapsFragment();
                 case 1:
+                    return new TotalsFragment();
+                case 2:
+                    return new ChatFragment();
                 default:
                     return new TotalsFragment();
             }
         }
-
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "HEATMAP";
+                    return "MAP";
                 case 1:
+                    return "FEED";
+                case 2:
+                    return "CHAT";
                 default:
-                    return "PLACES";
+                    return "FEED";
             }
         }
     }

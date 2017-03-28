@@ -17,16 +17,18 @@ public class Latlng {
     public Double latitude;
     public Double longitude;
     public boolean isDeletable;
+    public String lastUpdated;
 
 
     public Latlng() {
         // Default constructor required for calls to DataSnapshot.getValue(Latlng.class)
     }
 
-    public Latlng(double latitude, double longitude,  boolean isDeletable) {
+    public Latlng(double latitude, double longitude,  boolean isDeletable, String lastUpdated) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.isDeletable = isDeletable;
+        this.lastUpdated = lastUpdated;
     }
 
     public Map<String, Object> toMap(){
@@ -34,6 +36,7 @@ public class Latlng {
         latLngMap.put("latitude", latitude);
         latLngMap.put("longitude", longitude);
         latLngMap.put("isDeletable", isDeletable);
+        latLngMap.put("lastUpdated", lastUpdated);
         return latLngMap;
     }
 }

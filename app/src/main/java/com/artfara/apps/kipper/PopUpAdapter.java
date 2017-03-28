@@ -27,15 +27,18 @@ class PopUpAdapter implements GoogleMap.InfoWindowAdapter {
     public View getInfoContents(Marker marker) {
         View popup=inflater.inflate(R.layout.popup, null);
 
+        Typeface typeFaceBold = Typeface.createFromAsset(inflater.getContext().getAssets(), "Comfortaa-Bold.ttf");
+        Typeface typeFaceLight = Typeface.createFromAsset(inflater.getContext().getAssets(), "Comfortaa-Light.ttf");
+
         TextView tvTitle =(TextView) popup.findViewById(R.id.title);
-        tvTitle .setText(marker.getTitle());
+        tvTitle.setText(marker.getTitle());
+        tvTitle.setTypeface(typeFaceLight);
 
         TextView tvSnippet =(TextView)popup.findViewById(R.id.snippet);
         tvSnippet.setText(marker.getSnippet());
+        tvSnippet.setTypeface(typeFaceBold);
 
-        TextView tvChatMsg =(TextView)popup.findViewById(R.id.chatmsg);
-        tvChatMsg.setTypeface(null, Typeface.ITALIC);
-        tvChatMsg.setText("Tap for chat");
+
 
 
         return(popup);

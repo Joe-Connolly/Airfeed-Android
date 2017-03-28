@@ -9,6 +9,8 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -17,13 +19,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MapsActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".TrackingJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -37,17 +43,26 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-
         <service
             android:name=".TrackingService"
             android:enabled="true"
             android:exported="true" />
+        <!-- <receiver android:name=".AlarmReceiver"></receiver> -->
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="AlarmReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
-        <activity
-            android:name=".ChatActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".TotalsListViewActivity" />
+        <service android:name=".TrackingIntentService" />
+
         <activity android:name=".PlacesListViewActivity" />
+        <activity android:name=".ChatReplyListViewActivity" />
+        <activity android:name=".PostActivity"></activity>
     </application>
 
 </manifest>

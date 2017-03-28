@@ -10,24 +10,22 @@
         android:id="@+id/placeTypeImage"
         android:layout_width="55dp"
         android:layout_height="55dp"
+        android:paddingRight="10dp"
         />
 
     <TextView android:id="@+id/placeName"
-        android:textSize="26sp"
+        android:paddingLeft="4dp"
+        android:textSize="23sp"
         android:textStyle="bold"
-        android:textColor="@color/dartmouthGreen"
+        android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <TextView android:id="@+id/peopleCount"
-        android:textSize="12sp"
+        android:textSize="19sp"
         android:padding="7dp"
         android:textStyle="bold"
         android:textColor="@color/gray"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="end"/>
-    <!--<TextView android:id="@+id/line2"-->
-        <!--android:textSize="14sp"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"/>-->
 </LinearLayout>

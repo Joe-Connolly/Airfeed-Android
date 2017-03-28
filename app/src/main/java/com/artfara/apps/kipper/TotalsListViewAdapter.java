@@ -2,6 +2,7 @@ package com.artfara.apps.kipper;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,12 +31,12 @@ public class TotalsListViewAdapter extends BaseAdapter {
         mInflater = ( LayoutInflater )context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         c = context;
+        activePlaces = new ArrayList<>();
     }
 
-    public static void setEntries(ArrayList<Place> places){
+    public void setEntries(ArrayList<Place> places){
         ArrayList<Place> placeTotals = new ArrayList<>();
 //        Log.d(TAG, " places.Global " + places);
-
         for (int i = 0; i < Constants.PLACE_TOTALS_TEMPLATES.length; i++){
             Place placeTotal = new Place(Constants.PLACE_TOTALS_TEMPLATES[i].location, Constants.PLACE_TOTALS_TEMPLATES[i].type);
             for (Place place:places){
@@ -46,7 +47,10 @@ public class TotalsListViewAdapter extends BaseAdapter {
             placeTotals.add(placeTotal);
         }
 
+
         activePlaces = placeTotals;
+
+      notifyDataSetChanged();
     }
     public int getCount() {
 //        Log.d(TAG, "" + activePlaces);
@@ -66,13 +70,19 @@ public class TotalsListViewAdapter extends BaseAdapter {
         ViewHolder holder = new ViewHolder();
         final Place currentPlace = activePlaces.get(position);
         View rowView = mInflater.inflate(R.layout.custom_row_view, null);
+
+        Typeface typeFaceBold = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Bold.ttf");
+        Typeface typeFaceLight = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Light.ttf");
+
         holder.txtPlaceName = (TextView) rowView.findViewById(R.id.placeName);
         holder.txtPeopleCount = (TextView) rowView.findViewById(R.id.peopleCount);
         holder.placeTypeImage = (ImageView) rowView.findViewById(R.id.placeTypeImage);
 
 
         holder.txtPlaceName.setText(currentPlace.location);
-//        holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
+        holder.txtPlaceName.setTypeface(typeFaceLight);
+        holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
+        holder.txtPeopleCount.setTypeface(typeFaceBold);
         holder.placeTypeImage.setImageDrawable(c.getDrawable(Constants.PLACES.get(currentPlace.type)));
 
 
