@@ -82,22 +82,22 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        //update replies if available
-        ArrayList<Post> entries;
-        HashMap<String, Post> replies = PostDatabaseHelper.getPosts().get(mPostId).replies;
-        if (replies != null){
-            entries = new ArrayList<>(replies.values());
-        }
-        else{
-            entries = new ArrayList<>();
-            Log.d(TAG, "Replies null");
-        }
-
-
-        //Add origional post to front of entries
-        entries.add(0, PostDatabaseHelper.getPosts().get(mPostId));
-
-        customBaseAdapter.setEntries(entries);
+//        //update replies if available
+//        ArrayList<Post> entries;
+//        HashMap<String, Post> replies = PostDatabaseHelper.getPosts().get(mPostId).replies;
+//        if (replies != null){
+//            entries = new ArrayList<>(replies.values());
+//        }
+//        else{
+//            entries = new ArrayList<>();
+//            Log.d(TAG, "Replies null");
+//        }
+//
+//
+//        //Add original post to front of entries
+//        entries.add(0, PostDatabaseHelper.getPosts().get(mPostId));
+//
+        customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
 
 
     }

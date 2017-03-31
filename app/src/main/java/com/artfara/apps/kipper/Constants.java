@@ -11,7 +11,7 @@ public class Constants {
     public final static String TEST_KEY = "testKey";
     public final static String USERS_TABLE_NAME = "users";
     public final static String PLACES_TABLE_NAME = "testplaces";
-    public final static String POSTS_NEW_TABLE_NAME = "Posts";
+    public final static String POSTS_TABLE_NAME = "Posts";
     public final static String POSTS_HOT_TABLE_NAME = "Posts_Hot";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final String ID_KEY = "id";

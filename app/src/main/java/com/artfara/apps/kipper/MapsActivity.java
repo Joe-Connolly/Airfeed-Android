@@ -141,7 +141,7 @@ public class MapsActivity extends AppCompatActivity {
 //        mQueryPostsTask = scheduler.scheduleAtFixedRate
 //                (new Runnable() {
 //                    public void run() {
-//                        mDatabase.child(Constants.POSTS_NEW_TABLE_NAME).addListenerForSingleValueEvent(mPostsSingleEventListener);
+//                        mDatabase.child(Constants.POSTS_TABLE_NAME).addListenerForSingleValueEvent(mPostsSingleEventListener);
 //                    }
 //                }, 100, 15000, TimeUnit.MILLISECONDS);
 

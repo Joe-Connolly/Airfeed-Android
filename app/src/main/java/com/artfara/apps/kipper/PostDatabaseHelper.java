@@ -12,10 +12,13 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 /**
@@ -25,17 +28,43 @@ public class PostDatabaseHelper {
 
     private static final String TAG = " DatabaseHelper ";
     private static HashMap<String, Post> mGlobalPosts;
-    private static HashMap<String, Post> hotPosts;
-    private static HashMap<String, Post> newPosts;
     private static DatabaseReference mDatabase;
     private static String mPostType;
 
-    public static HashMap<String, Post>  getPosts(){
-        return mGlobalPosts;
+    public static ArrayList<Post>  getPosts(){
+        ArrayList<Post> posts = new ArrayList<>(mGlobalPosts.values());
+        if (mPostType.equals(Constants.POSTS_TYPE_NEW)){
+            sortDescending(posts);
+        }
+        else{
+            sortAscending(posts);
+            //TODO sortAscending by voteCount
+        }
+        formatTime(posts);
+        return posts;
     }
 
-    public static  HashMap<String, Post> getReplies(String postID){
-        return mGlobalPosts.get(postID).replies;
+
+    public static  ArrayList<Post> getReplies(String postID){
+        ArrayList<Post> replies = new ArrayList<>(mGlobalPosts.get(postID).replies.values());
+        //Grab entries
+//        ArrayList<Post> entries;
+        Log.d(TAG, "PostKey = " + postID);
+//        HashMap<String, Post> replies = Globals.globalPosts.get(mPostId).replies;
+//        if (replies != null){
+//            entries = (new ArrayList<>(Globals.globalPosts.get(mPostId).replies.values()));
+//        }
+//        else{
+//            entries = new ArrayList<>();
+//        }
+
+        Log.d(TAG, "Adding entry first");
+        //Add origional post to front of entries
+        replies.add(0, mGlobalPosts.get(postID));
+        formatTime(replies);
+        setUserLetters(replies);
+        sortDescending(replies);
+        return replies;
     }
 
     public static void setUserLetters(ArrayList<Post> posts) {
@@ -61,9 +90,9 @@ public class PostDatabaseHelper {
         String userID = Utils.getUserID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
 
-        DatabaseReference postDatabase =  FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_NEW_TABLE_NAME);
+        DatabaseReference postDatabase =  FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
         post.ID = postDatabase.push().getKey();
-        newPosts.put(post.ID, post);
+        mGlobalPosts.put(post.ID, post);
         postDatabase.child(post.ID).setValue(post);
     }
 
@@ -72,95 +101,52 @@ public class PostDatabaseHelper {
         long time = System.currentTimeMillis();
         String userID = Utils.getUserID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
-        String replyId = mDatabase.push().getKey();
+
+        DatabaseReference repliesDatabase =  FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME)
+                .child(parentPostID).child(Constants.REPLIES_TABLE_NAME);
+
+        String replyId = repliesDatabase.push().getKey();
         post.ID = replyId;
-
-
-        if (newPosts.get(parentPostID) != null){
-            DatabaseReference repliesDatabase =  FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_NEW_TABLE_NAME)
-                    .child(parentPostID).child(Constants.REPLIES_TABLE_NAME);
-            HashMap<String, Post> replies = newPosts.get(parentPostID).replies;
-            if (replies == null) {
-                replies = new HashMap<>();
-            }
-            replies.put(replyId, post);
-            repliesDatabase.child(replyId).setValue(post);
+        HashMap<String, Post> replies = mGlobalPosts.get(parentPostID).replies;
+        if (replies == null) {
+            //Does this make replies point to a new hashmap?
+            replies = new HashMap<>();
         }
-        if (hotPosts.get(parentPostID) != null){
-            DatabaseReference repliesDatabase =  FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_HOT_TABLE_NAME)
-                    .child(parentPostID).child(Constants.REPLIES_TABLE_NAME);
-            HashMap<String, Post> replies = hotPosts.get(parentPostID).replies;
-            if (replies == null) {
-                replies = new HashMap<>();
-            }
-            replies.put(replyId, post);
-            repliesDatabase.child(replyId).setValue(post);
-        }
+        replies.put(replyId, post);
+        repliesDatabase.child(replyId).setValue(post);
     }
 
-    public static void incrementPost(Post post){
-        if (newPosts.get(post.ID) != null){
-            newPosts.get(post.ID).voteCount++;
-            Log.d(TAG, " vote " + newPosts.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_NEW_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
-        }
-        if (hotPosts.get(post.ID) != null){
-            hotPosts.get(post.ID).voteCount++;
-            Log.d(TAG, " vote " + newPosts.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_HOT_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
-        }
 
+    public static void incrementPost(Post post){
+        mGlobalPosts.get(post.ID).voteCount++;
+        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+        mDatabase.child(Constants.POSTS_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
     }
 
     public static void decrementPost(Post post){
-        if (newPosts.get(post.ID) != null){
-            newPosts.get(post.ID).voteCount--;
-            Log.d(TAG, " vote " + newPosts.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_NEW_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
-
-        }
-        if (hotPosts.get(post.ID) != null){
-            hotPosts.get(post.ID).voteCount--;
-            Log.d(TAG, " vote " + hotPosts.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_HOT_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
-        }
-      }
+        mGlobalPosts.get(post.ID).voteCount--;
+        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+        mDatabase.child(Constants.POSTS_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
+    }
 
     public static void incrementReply(Post post, String parentPostID){
-        if (newPosts.get(parentPostID) != null){
-            newPosts.get(parentPostID).replies.get(post.ID).voteCount++;
-            Log.d(TAG, " vote " + newPosts.get(parentPostID).replies.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_NEW_TABLE_NAME).child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
-
-        }
-        if (hotPosts.get(parentPostID) != null){
-            hotPosts.get(parentPostID).replies.get(post.ID).voteCount++;
-            Log.d(TAG, " vote " + hotPosts.get(parentPostID).replies.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_HOT_TABLE_NAME).child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
-
-        }
+        mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount++;
+        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
+        mDatabase.child(Constants.POSTS_TABLE_NAME).child(parentPostID).child("replies").child(post.ID).runTransaction(mUpVoteHandler);
     }
     public static void decrementReply(Post post, String parentPostID){
-        if (newPosts.get(parentPostID) != null){
-            newPosts.get(parentPostID).replies.get(post.ID).voteCount--;
-            Log.d(TAG, " vote " + newPosts.get(parentPostID).replies.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_NEW_TABLE_NAME).child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
-        }
-        if (hotPosts.get(parentPostID) != null){
-            hotPosts.get(parentPostID).replies.get(post.ID).voteCount--;
-            Log.d(TAG, " vote " + hotPosts.get(parentPostID).replies.get(post.ID).voteCount);
-            mDatabase.child(Constants.POSTS_HOT_TABLE_NAME).child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
-        }
+        mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount--;
+        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
+        mDatabase.child(Constants.POSTS_TABLE_NAME).child(parentPostID).child("replies").child(post.ID).runTransaction(mDownVoteHandler);
     }
 
 
     public void downloadPosts(){
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child(Constants.POSTS_NEW_TABLE_NAME).addListenerForSingleValueEvent(mNewPostsSingleEventListener);
-        mDatabase.child(Constants.POSTS_HOT_TABLE_NAME).addListenerForSingleValueEvent(mHotPostsSingleEventListener);
+        mDatabase.child(Constants.POSTS_TABLE_NAME).addListenerForSingleValueEvent(mPostsSingleEventListener);
+        mPostType = Constants.POSTS_TYPE_NEW;
     }
-
-    private ValueEventListener mNewPostsSingleEventListener = new ValueEventListener() {
+    private ValueEventListener mPostsSingleEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             HashMap<String, Post> posts = new HashMap<>();
@@ -169,15 +155,12 @@ public class PostDatabaseHelper {
                 if (post.replies == null){
                     post.replies = new HashMap<>();
                 }
-
                 for (String replyID : post.replies.keySet()){
                     post.replies.get(replyID).ID = replyID;
                 }
                 posts.put(postSnapshot.getKey(), post);
             }
-            newPosts = posts;
             mGlobalPosts = posts;
-            mPostType = Constants.POSTS_TYPE_NEW;
             Log.d(TAG, " Downloading Posts");
         }
 
@@ -185,30 +168,7 @@ public class PostDatabaseHelper {
         public void onCancelled(DatabaseError databaseError) {
         }
     };
-    private ValueEventListener mHotPostsSingleEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            HashMap<String, Post> posts = new HashMap<>();
-            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                Post post = postSnapshot.getValue(Post.class);
-                if (post.replies == null){
-                    post.replies = new HashMap<>();
-                }
 
-                for (String replyID : post.replies.keySet()){
-                    post.replies.get(replyID).ID = replyID;
-                }
-
-                posts.put(postSnapshot.getKey(), post);
-            }
-            hotPosts = posts;
-            Log.d(TAG, " Downloading Posts");
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
 
 
     private static com.google.firebase.database.Transaction.Handler mUpVoteHandler =
@@ -263,18 +223,16 @@ public class PostDatabaseHelper {
     public static void showPosts(String postType){
         if (postType.equals(Constants.POSTS_TYPE_HOT) && mPostType.equals(Constants.POSTS_TYPE_NEW)){
             Log.d(TAG, "show HOT");
-            mGlobalPosts = hotPosts;
             mPostType = Constants.POSTS_TYPE_HOT;
         }
         else if (postType.equals(Constants.POSTS_TYPE_NEW) && mPostType.equals(Constants.POSTS_TYPE_HOT)){
-            mGlobalPosts = newPosts;
+            Log.d(TAG, "show NEW");
             mPostType = Constants.POSTS_TYPE_NEW;
         }
     }
 
 
     public static void formatTime(ArrayList<Post> posts) {
-        Calendar calendar;
         for (Post post:posts){
             post.displayedTime = DateUtils.getRelativeTimeSpanString(post.timeInMilliseconds,
                     System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString();

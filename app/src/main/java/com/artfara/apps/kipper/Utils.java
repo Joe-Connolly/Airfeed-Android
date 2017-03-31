@@ -54,7 +54,7 @@ public class Utils {
 
     public static void updatePost(Post currentPost, String mParentPostId) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference postRef = database.getReference().child(Constants.POSTS_NEW_TABLE_NAME).child(currentPost.ID);
+        DatabaseReference postRef = database.getReference().child(Constants.POSTS_TABLE_NAME).child(currentPost.ID);
         postRef.child("voteCount").setValue(currentPost.voteCount);
     }
 

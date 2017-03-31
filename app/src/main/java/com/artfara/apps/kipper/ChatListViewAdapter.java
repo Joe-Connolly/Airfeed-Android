@@ -41,14 +41,14 @@ public class ChatListViewAdapter extends BaseAdapter {
 
     public void setEntries(ArrayList<Post> posts){
         mPosts = posts;
-        PostDatabaseHelper.formatTime(posts);
-        if (mIsPost) {
-            PostDatabaseHelper.sortDescending(posts);
-        }
-        else{
-            PostDatabaseHelper.sortAscending(posts);
-            PostDatabaseHelper.setUserLetters(posts);
-        }
+//        PostDatabaseHelper.formatTime(posts);
+//        if (mIsPost) {
+//            PostDatabaseHelper.sortDescending(posts);
+//        }
+//        else{
+//            PostDatabaseHelper.sortAscending(posts);
+//            PostDatabaseHelper.setUserLetters(posts);
+//        }
       notifyDataSetChanged();
     }
     public int getCount() {

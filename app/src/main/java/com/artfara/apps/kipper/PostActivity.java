@@ -21,7 +21,7 @@ public class PostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-//        mPostDatabase = FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_NEW_TABLE_NAME);
+//        mPostDatabase = FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
         mParentPostID = getIntent().getStringExtra(Constants.POST_ID_KEY);
 
 

@@ -45,7 +45,7 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 PostDatabaseHelper.showPosts(Constants.POSTS_TYPE_HOT);
-                customBaseAdapter.setEntries(new ArrayList<>(PostDatabaseHelper.getPosts().values()));
+                customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         });
         Button showNewButton = (Button) rootView.findViewById(R.id.shownew);
@@ -53,7 +53,7 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 PostDatabaseHelper.showPosts(Constants.POSTS_TYPE_NEW);
-                customBaseAdapter.setEntries(new ArrayList<>(PostDatabaseHelper.getPosts().values()));
+                customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         });
 
@@ -89,7 +89,7 @@ public class ChatFragment extends Fragment {
                 mHandler.postDelayed(this, 200);
             }
             else{
-                customBaseAdapter.setEntries(new ArrayList<>(PostDatabaseHelper.getPosts().values()));
+                customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
         }
         }
     };
