@@ -12,14 +12,11 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by Joe Connolly on 12/13/16.
@@ -30,15 +27,22 @@ public class PostDatabaseHelper {
     private static HashMap<String, Post> mGlobalPosts;
     private static DatabaseReference mDatabase;
     private static String mPostType;
+    private static ArrayBlockingQueue<Post> mAddReplyQueue;
 
-    public static ArrayList<Post>  getPosts(){
+
+    public PostDatabaseHelper(){
+        mAddReplyQueue = new ArrayBlockingQueue<>(100);
+    }
+
+
+     public static ArrayList<Post>  getPosts(){
+         if (mGlobalPosts == null) return null;
         ArrayList<Post> posts = new ArrayList<>(mGlobalPosts.values());
         if (mPostType.equals(Constants.POSTS_TYPE_NEW)){
-            sortDescending(posts);
+            sortDescendingByTime(posts);
         }
         else{
-            sortAscending(posts);
-            //TODO sortAscending by voteCount
+            sortDescendingByVoteCount(posts);
         }
         formatTime(posts);
         return posts;
@@ -63,7 +67,7 @@ public class PostDatabaseHelper {
         replies.add(0, mGlobalPosts.get(postID));
         formatTime(replies);
         setUserLetters(replies);
-        sortDescending(replies);
+        sortDescendingByTime(replies);
         return replies;
     }
 
@@ -90,7 +94,7 @@ public class PostDatabaseHelper {
         String userID = Utils.getUserID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
 
-        DatabaseReference postDatabase =  FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
+        DatabaseReference postDatabase =  mDatabase.child(Constants.POSTS_TABLE_NAME);
         post.ID = postDatabase.push().getKey();
         mGlobalPosts.put(post.ID, post);
         postDatabase.child(post.ID).setValue(post);
@@ -102,7 +106,7 @@ public class PostDatabaseHelper {
         String userID = Utils.getUserID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
 
-        DatabaseReference repliesDatabase =  FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME)
+        DatabaseReference repliesDatabase =  mDatabase.child(Constants.POSTS_TABLE_NAME)
                 .child(parentPostID).child(Constants.REPLIES_TABLE_NAME);
 
         String replyId = repliesDatabase.push().getKey();
@@ -113,7 +117,10 @@ public class PostDatabaseHelper {
             replies = new HashMap<>();
         }
         replies.put(replyId, post);
-        repliesDatabase.child(replyId).setValue(post);
+//        repliesDatabase.child(replyId).updateChildren(post.toMap());
+        mAddReplyQueue.add(post);
+        mDatabase.child(Constants.POSTS_TABLE_NAME)
+                .child(parentPostID).runTransaction(mAddReplyHandler);
     }
 
 
@@ -169,6 +176,18 @@ public class PostDatabaseHelper {
         }
     };
 
+//    private ValueEventListener mAddReplySingleEventListener = new ValueEventListener() {
+//        @Override
+//        public void onDataChange(DataSnapshot dataSnapshot) {
+//            HashMap<String, Post> posts = new HashMap<>();
+//            replyID =
+//            if posts.get()
+//        }
+//
+//        @Override
+//        public void onCancelled(DatabaseError databaseError) {
+//        }
+//    };
 
 
     private static com.google.firebase.database.Transaction.Handler mUpVoteHandler =
@@ -204,21 +223,49 @@ public class PostDatabaseHelper {
                 public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
             };
 
-    public static void sortDescending(ArrayList<Post> posts) {
+    private static com.google.firebase.database.Transaction.Handler mAddReplyHandler =
+            new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+                    Post post = mutableData.getValue(Post.class);
+                    if (post == null) {
+                        return Transaction.success(mutableData);
+                    }
+                    Post reply = mAddReplyQueue.poll();
+                    if (post.replies == null) {
+                        post.replies = new HashMap<>();
+                    }
+                    post.replies.put(reply.ID, reply);
+                    mutableData.setValue((post.ID != null ? post : null));
+                    return Transaction.success(mutableData);
+                }
+                @Override
+                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
+            };
+
+    public static void sortDescendingByTime(ArrayList<Post> posts) {
         Collections.sort(posts, new Comparator<Post>() {
             @Override
             public int compare(Post post1, Post post2) {
                 return ((Long) post2.timeInMilliseconds).compareTo(post1.timeInMilliseconds);
             }
         });
-    }   public static void sortAscending(ArrayList<Post> posts) {
+    }   public static void sortAscendingByTime(ArrayList<Post> posts) {
         Collections.sort(posts, new Comparator<Post>() {
             @Override
             public int compare(Post post1, Post post2) {
                 return ((Long) post1.timeInMilliseconds).compareTo(post2.timeInMilliseconds);
             }
         });
+    } public static void sortDescendingByVoteCount(ArrayList<Post> posts) {
+        Collections.sort(posts, new Comparator<Post>() {
+            @Override
+            public int compare(Post post1, Post post2) {
+                return (new Integer(post2.voteCount)).compareTo(post1.voteCount);
+            }
+        });
     }
+
 
     public static void showPosts(String postType){
         if (postType.equals(Constants.POSTS_TYPE_HOT) && mPostType.equals(Constants.POSTS_TYPE_NEW)){

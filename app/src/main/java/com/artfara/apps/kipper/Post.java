@@ -26,4 +26,15 @@ public class Post {
         this.timeInMilliseconds = time;
     }
 
+    public HashMap<String, Object> toMap(){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("ID", ID);
+        map.put("text", text);
+        map.put("replies", replies);
+        map.put("voteCount", voteCount);
+        map.put("timeInMilliseconds", timeInMilliseconds);
+        map.put("userID", userID);
+        return map;
+    }
+
 }

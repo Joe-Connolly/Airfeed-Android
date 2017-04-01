@@ -52,7 +52,7 @@ public class PlacesListViewAdapter extends BaseAdapter {
                 }
             }
 //            // Sorting
-//            Collections.sortDescending(tempPlaces, new Comparator<Place>() {
+//            Collections.sortDescendingByTime(tempPlaces, new Comparator<Place>() {
 //                @Override
 //                public int compare(Place place1, Place place2){
 //                    return  place2.people.compareTo(place1.people);

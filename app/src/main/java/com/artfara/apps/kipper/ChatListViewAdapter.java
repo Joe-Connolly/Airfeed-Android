@@ -43,10 +43,10 @@ public class ChatListViewAdapter extends BaseAdapter {
         mPosts = posts;
 //        PostDatabaseHelper.formatTime(posts);
 //        if (mIsPost) {
-//            PostDatabaseHelper.sortDescending(posts);
+//            PostDatabaseHelper.sortDescendingByTime(posts);
 //        }
 //        else{
-//            PostDatabaseHelper.sortAscending(posts);
+//            PostDatabaseHelper.sortAscendingByTime(posts);
 //            PostDatabaseHelper.setUserLetters(posts);
 //        }
       notifyDataSetChanged();
