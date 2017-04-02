@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -22,6 +23,7 @@ public class ChatFragment extends Fragment {
     private Handler mHandler;
     private ChatListViewAdapter customBaseAdapter;
     private static final String TAG = " Chat Fragment ";
+    private PostDatabaseHelper mPostDatabaseHelper;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -36,6 +38,7 @@ public class ChatFragment extends Fragment {
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(getActivity(), PostActivity.class);
                 startActivity(intent);
             }
@@ -54,6 +57,17 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 PostDatabaseHelper.showPosts(Constants.POSTS_TYPE_NEW);
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
+            }
+        });
+        Button refreshButton = (Button) rootView.findViewById(R.id.refresh);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customBaseAdapter.setEntries(new ArrayList<Post>());
+                PostDatabaseHelper.downloadPosts();
+                //update posts as soon as they become available
+                mHandler = new Handler();
+                mHandler.postDelayed(mPopulateListViewRunnable, 100);
             }
         });
 
@@ -75,16 +89,23 @@ public class ChatFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        //update markers as soon as they become available
-        mHandler = new Handler();
-        mHandler.postDelayed(mPopulateListViewRunnable, 200);
+
+        //Refresh only if necessary
+        if (PostDatabaseHelper.isTimeToRefresh()) {
+            customBaseAdapter.setEntries(new ArrayList<Post>());
+
+            PostDatabaseHelper.downloadPosts();
+            //update posts as soon as they become available
+            mHandler = new Handler();
+            mHandler.postDelayed(mPopulateListViewRunnable, 100);
+        }
     }
 
 
     Runnable mPopulateListViewRunnable = new Runnable() {
         public void run() {
             //If data has not yet been downloaded, try again later
-            if (PostDatabaseHelper.getPosts() == null){
+            if (PostDatabaseHelper.mFinishedDownloading == false){
                 Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, 200);
             }

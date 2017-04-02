@@ -23,14 +23,21 @@
             android:text="Hot"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_weight=".50" />
+            android:layout_weight=".33" />
 
         <Button
             android:id="@+id/shownew"
             android:text="New"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_weight=".50" />
+            android:layout_weight=".33" />
+        <Button
+            android:id="@+id/refresh"
+            android:text="Refresh"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight=".34" />
+
 
     </LinearLayout>
     <ListView

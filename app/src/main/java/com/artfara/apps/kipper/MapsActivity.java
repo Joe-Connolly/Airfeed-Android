@@ -146,7 +146,7 @@ public class MapsActivity extends AppCompatActivity {
 //                }, 100, 15000, TimeUnit.MILLISECONDS);
 
         PostDatabaseHelper postDatabaseHelper = new PostDatabaseHelper();
-        postDatabaseHelper.downloadPosts();
+
 
         scheduleLocationTracking();
     }
