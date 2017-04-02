@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -33,8 +35,8 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-        Button postButton = (Button) rootView.findViewById(R.id.post);
+        final View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
+        final Button postButton = (Button) rootView.findViewById(R.id.post);
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +81,46 @@ public class ChatFragment extends Fragment {
         final ListView listview = (ListView) rootView.findViewById(R.id.ListViewPosts);
 
         listview.setAdapter(customBaseAdapter);
+        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private int mLastFirstVisibleItem;
+            private long mLastTimeUpdated;
+            private static final long REFRESH_RATE = 500;
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
+                if(mLastFirstVisibleItem < firstVisibleItem)
+                {
+                    Log.i("SCROLLING DOWN","TRUE");
+                    if (isAcceptableToChangeState()) {
+                        LinearLayout wrapperLayout = (LinearLayout) rootView.findViewById(R.id.wrapper);
+                        wrapperLayout.setVisibility(LinearLayout.GONE);
+                        postButton.setVisibility(Button.GONE);
+                    }
+                }
+                if(mLastFirstVisibleItem > firstVisibleItem)
+                {
+                    Log.i("SCROLLING UP","TRUE");
+                    if (isAcceptableToChangeState()) {
+                        LinearLayout wrapperLayout = (LinearLayout) rootView.findViewById(R.id.wrapper);
+                        wrapperLayout.setVisibility(LinearLayout.VISIBLE);
+                        postButton.setVisibility(Button.VISIBLE);
+                    }
+                }
+               mLastFirstVisibleItem=firstVisibleItem;
+            }
+            public boolean isAcceptableToChangeState(){
+                long currTime = System.currentTimeMillis();
+                if ((currTime - mLastTimeUpdated) > REFRESH_RATE){
+                    mLastTimeUpdated = currTime;
+                    return true;
+                }
+                return false;
+            }
+        });
 
         return rootView;
         // Inflate the layout for this fragment
