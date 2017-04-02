@@ -4,6 +4,7 @@ package com.artfara.apps.kipper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,8 +39,8 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-        final Button postButton = (Button) rootView.findViewById(R.id.post);
-        postButton.setOnClickListener(new View.OnClickListener() {
+        final LinearLayout postLayout = (LinearLayout) rootView.findViewById(R.id.wrapper_post);
+        postLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -72,6 +75,13 @@ public class ChatFragment extends Fragment {
                 mHandler.postDelayed(mPopulateListViewRunnable, 100);
             }
         });
+        RadioGroup hotNewRadioGroup = (RadioGroup) rootView.findViewById(R.id.hotNewRadioGroup);
+        hotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
+            }
+        });
 
 
         //Create Custom Adapter
@@ -79,7 +89,6 @@ public class ChatFragment extends Fragment {
 
         //Grab a handle on ListView
         final ListView listview = (ListView) rootView.findViewById(R.id.ListViewPosts);
-
         listview.setAdapter(customBaseAdapter);
         listview.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int mLastFirstVisibleItem;
@@ -96,21 +105,21 @@ public class ChatFragment extends Fragment {
                 {
                     Log.i("SCROLLING DOWN","TRUE");
                     if (isAcceptableToChangeState()) {
-                        LinearLayout wrapperLayout = (LinearLayout) rootView.findViewById(R.id.wrapper);
-                        wrapperLayout.setVisibility(LinearLayout.GONE);
-                        postButton.setVisibility(Button.GONE);
+                        RelativeLayout wrapperLayout = (RelativeLayout) rootView.findViewById(R.id.wrapper);
+                        wrapperLayout.setVisibility(RelativeLayout.GONE);
+                        postLayout.setVisibility(LinearLayout.GONE);
                     }
                 }
                 if(mLastFirstVisibleItem > firstVisibleItem)
                 {
                     Log.i("SCROLLING UP","TRUE");
                     if (isAcceptableToChangeState()) {
-                        LinearLayout wrapperLayout = (LinearLayout) rootView.findViewById(R.id.wrapper);
-                        wrapperLayout.setVisibility(LinearLayout.VISIBLE);
-                        postButton.setVisibility(Button.VISIBLE);
+                        RelativeLayout wrapperLayout = (RelativeLayout) rootView.findViewById(R.id.wrapper);
+                        wrapperLayout.setVisibility(RelativeLayout.VISIBLE);
+                        postLayout.setVisibility(LinearLayout.VISIBLE);
                     }
                 }
-               mLastFirstVisibleItem=firstVisibleItem;
+               mLastFirstVisibleItem = firstVisibleItem;
             }
             public boolean isAcceptableToChangeState(){
                 long currTime = System.currentTimeMillis();
