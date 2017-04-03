@@ -3,13 +3,18 @@ package com.artfara.apps.kipper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -59,7 +64,6 @@ public class ChatListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final boolean isPost = (position == 0 ? true : mIsPost);
 
-
         ViewHolder holder = new ViewHolder();
 
         final Post currentPost = mPosts.get(position);
@@ -70,8 +74,8 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.txtVoteCount = (TextView) rowView.findViewById(R.id.voteCount);
         holder.txtTime = (TextView) rowView.findViewById(R.id.time);
         holder.txtNumReplies = (TextView) rowView.findViewById(R.id.numReplies);
-        holder.upVoteButton = (Button) rowView.findViewById(R.id.upVoteButton);
-        holder.downVoteButton = (Button) rowView.findViewById(R.id.downVoteButton);
+        holder.upVoteButton = (ImageView) rowView.findViewById(R.id.upVoteButton);
+        holder.downVoteButton = (ImageView) rowView.findViewById(R.id.downVoteButton);
 
 
         holder.postBody.setText(currentPost.text);
@@ -79,6 +83,18 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.txtVoteCount.setText("" + currentPost.voteCount);
         holder.txtTime.setText(currentPost.displayedTime + " ");
 
+        int amountVoted =  mPrefs.getInt(currentPost.ID, 0);
+        Log.d(TAG, "ID = " + currentPost.ID + " amountVoted " + amountVoted );
+        switch (amountVoted){
+            case 1:
+                Log.d(TAG, "ID = " + currentPost.ID + " 1 executed");
+                holder.upVoteButton.setImageResource(R.drawable.library_marker);
+                break;
+            case -1:
+                Log.d(TAG, "ID = " + currentPost.ID + " -1 executed");
+                holder.downVoteButton.setImageResource(R.drawable.library_marker);
+                break;
+        }
 
         holder.upVoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,7 +165,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         TextView txtVoteCount;
         TextView txtUserLetter;
         TextView txtNumReplies;
-        Button upVoteButton;
-        Button downVoteButton;
+        ImageView upVoteButton;
+        ImageView downVoteButton;
     }
 }

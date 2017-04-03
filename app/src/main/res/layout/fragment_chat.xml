@@ -17,12 +17,6 @@
             android:layout_alignParentLeft="true"
             android:text="Refresh" />
 
-        <!--<Button-->
-        <!--android:id="@+id/showhot"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Hot" />-->
-
         <RadioGroup
             android:id="@+id/hotNewRadioGroup"
             android:layout_width="wrap_content"
