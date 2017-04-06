@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.media.Image;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,15 +86,12 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.txtTime.setText(currentPost.displayedTime + " ");
 
         int amountVoted =  mPrefs.getInt(currentPost.ID, 0);
-        Log.d(TAG, "ID = " + currentPost.ID + " amountVoted " + amountVoted );
         switch (amountVoted){
             case 1:
-                Log.d(TAG, "ID = " + currentPost.ID + " 1 executed");
-                holder.upVoteButton.setImageResource(R.drawable.library_marker);
+                holder.upVoteButton.setImageResource(R.drawable.up_vote_button_pressed);
                 break;
             case -1:
-                Log.d(TAG, "ID = " + currentPost.ID + " -1 executed");
-                holder.downVoteButton.setImageResource(R.drawable.library_marker);
+                holder.downVoteButton.setImageResource(R.drawable.down_vote_button_pressed);
                 break;
         }
 
@@ -132,7 +131,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         });
 
         if (mIsPost) {
-            holder.txtNumReplies.setText(currentPost.replies.size() + " replies");
+            holder.txtNumReplies.setText(currentPost.replies.size() + " rep.");
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

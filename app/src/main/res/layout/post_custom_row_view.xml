@@ -86,7 +86,7 @@
                 android:id="@+id/upVoteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/frat_marker"
+                android:src="@drawable/up_vote_button_normal"
                 android:gravity="center"
                 android:padding="1dp" />
             <TextView android:id="@+id/voteCount"
@@ -102,7 +102,7 @@
                 android:id="@+id/downVoteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/frat_marker"
+                android:src="@drawable/down_vote_button_normal"
                 android:gravity="center"
                 android:padding="1dp" />
         </LinearLayout>

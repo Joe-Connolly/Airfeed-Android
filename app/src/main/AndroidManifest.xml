@@ -62,7 +62,8 @@
 
         <activity android:name=".PlacesListViewActivity" />
         <activity android:name=".ChatReplyListViewActivity" />
-        <activity android:name=".PostActivity"></activity>
+        <activity android:name=".PostActivity"
+            android:windowSoftInputMode="stateVisible"></activity>
     </application>
 
 </manifest>

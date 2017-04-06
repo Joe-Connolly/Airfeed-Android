@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
@@ -64,7 +65,7 @@ public class ChatFragment extends Fragment {
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         });
-        Button refreshButton = (Button) rootView.findViewById(R.id.refresh);
+        ImageButton refreshButton = (ImageButton) rootView.findViewById(R.id.refresh);
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +80,7 @@ public class ChatFragment extends Fragment {
         hotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+
                 Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
             }
         });
@@ -93,7 +95,7 @@ public class ChatFragment extends Fragment {
         listview.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int mLastFirstVisibleItem;
             private long mLastTimeUpdated;
-            private static final long REFRESH_RATE = 500;
+            private static final long REFRESH_RATE = 50;
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
@@ -150,6 +152,10 @@ public class ChatFragment extends Fragment {
             mHandler = new Handler();
             mHandler.postDelayed(mPopulateListViewRunnable, 100);
         }
+        else{
+            //Could slow stuff down
+            customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
+        }
     }
 
 
@@ -162,7 +168,7 @@ public class ChatFragment extends Fragment {
             }
             else{
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
-        }
+            }
         }
     };
 

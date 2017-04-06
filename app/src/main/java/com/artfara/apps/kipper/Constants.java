@@ -27,6 +27,7 @@ public class Constants {
     public static final String POSTS_TYPE_HOT = "HOT";
     public static final String POSTS_TYPE_NEW = "NEW";
     public static final long REFRESH_RATE = 600000;
+    public static final int POST_MAXLENGTH = 20;
 
     public static Map<String, Integer> PLACES = new HashMap<>();
 //    public static final class STATE {
