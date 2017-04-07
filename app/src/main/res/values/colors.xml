@@ -5,7 +5,8 @@
     <color name="colorAccent">#40ccff</color>
     <color name="white">#ffffff</color>
     <color name="dartmouthGreen">#006e39</color>
-    <color name="gray">#bebebd</color>
-    <color name="black">#615a5a</color>
+    <color name="gray">#dcdcdc</color>
+    <color name="black">#000000</color>
     <color name="transparent">#0000</color>
+    <color name="slightWhite">#f1eeee</color>
 </resources>

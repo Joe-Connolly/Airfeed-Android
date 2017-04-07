@@ -30,6 +30,8 @@ public class ChatFragment extends Fragment {
     private ChatListViewAdapter customBaseAdapter;
     private static final String TAG = " Chat Fragment ";
     private PostDatabaseHelper mPostDatabaseHelper;
+    private View mRootView;
+    private LinearLayout mPostButtonLayout;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -39,9 +41,9 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-        final LinearLayout postLayout = (LinearLayout) rootView.findViewById(R.id.wrapper_post);
-        postLayout.setOnClickListener(new View.OnClickListener() {
+        mRootView = inflater.inflate(R.layout.fragment_chat, container, false);
+        mPostButtonLayout = (LinearLayout) mRootView.findViewById(R.id.wrapper_post);
+        mPostButtonLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -49,7 +51,7 @@ public class ChatFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        Button showHotButton = (Button) rootView.findViewById(R.id.showhot);
+        Button showHotButton = (Button) mRootView.findViewById(R.id.showhot);
         showHotButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +59,7 @@ public class ChatFragment extends Fragment {
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         });
-        Button showNewButton = (Button) rootView.findViewById(R.id.shownew);
+        Button showNewButton = (Button) mRootView.findViewById(R.id.shownew);
         showNewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +67,7 @@ public class ChatFragment extends Fragment {
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         });
-        ImageButton refreshButton = (ImageButton) rootView.findViewById(R.id.refresh);
+        ImageButton refreshButton = (ImageButton) mRootView.findViewById(R.id.refresh);
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,7 +78,7 @@ public class ChatFragment extends Fragment {
                 mHandler.postDelayed(mPopulateListViewRunnable, 100);
             }
         });
-        RadioGroup hotNewRadioGroup = (RadioGroup) rootView.findViewById(R.id.hotNewRadioGroup);
+        RadioGroup hotNewRadioGroup = (RadioGroup) mRootView.findViewById(R.id.hotNewRadioGroup);
         hotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
@@ -90,12 +92,12 @@ public class ChatFragment extends Fragment {
         customBaseAdapter = new ChatListViewAdapter(getActivity(), null);
 
         //Grab a handle on ListView
-        final ListView listview = (ListView) rootView.findViewById(R.id.ListViewPosts);
+        final ListView listview = (ListView) mRootView.findViewById(R.id.ListViewPosts);
         listview.setAdapter(customBaseAdapter);
         listview.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int mLastFirstVisibleItem;
             private long mLastTimeUpdated;
-            private static final long REFRESH_RATE = 50;
+            private static final long REFRESH_RATE = 400;
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
@@ -107,18 +109,14 @@ public class ChatFragment extends Fragment {
                 {
                     Log.i("SCROLLING DOWN","TRUE");
                     if (isAcceptableToChangeState()) {
-                        RelativeLayout wrapperLayout = (RelativeLayout) rootView.findViewById(R.id.wrapper);
-                        wrapperLayout.setVisibility(RelativeLayout.GONE);
-                        postLayout.setVisibility(LinearLayout.GONE);
+                        hideTabs();
                     }
                 }
                 if(mLastFirstVisibleItem > firstVisibleItem)
                 {
                     Log.i("SCROLLING UP","TRUE");
                     if (isAcceptableToChangeState()) {
-                        RelativeLayout wrapperLayout = (RelativeLayout) rootView.findViewById(R.id.wrapper);
-                        wrapperLayout.setVisibility(RelativeLayout.VISIBLE);
-                        postLayout.setVisibility(LinearLayout.VISIBLE);
+                        showTabs();
                     }
                 }
                mLastFirstVisibleItem = firstVisibleItem;
@@ -133,10 +131,9 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        return rootView;
+        return mRootView;
         // Inflate the layout for this fragment
     }
-
 
     @Override
     public void onResume() {
@@ -172,6 +169,23 @@ public class ChatFragment extends Fragment {
         }
     };
 
+    public void hideTabs(){
+        RelativeLayout wrapperLayout = (RelativeLayout) mRootView.findViewById(R.id.wrapper);
+        wrapperLayout.setVisibility(RelativeLayout.GONE);
+        mPostButtonLayout.setVisibility(LinearLayout.GONE);
+        ((MapsActivity) getActivity()).hideTabs();
+    }
 
+    public void showTabs(){
+        RelativeLayout wrapperLayout = (RelativeLayout) mRootView.findViewById(R.id.wrapper);
+        wrapperLayout.setVisibility(RelativeLayout.VISIBLE);
+        mPostButtonLayout.setVisibility(LinearLayout.VISIBLE);
+        ((MapsActivity) getActivity()).showTabs();
+    }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        showTabs();
+    }
 }

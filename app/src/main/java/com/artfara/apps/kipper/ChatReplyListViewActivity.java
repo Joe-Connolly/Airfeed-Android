@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,10 +30,20 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
 
 
-        Button postButton = (Button) findViewById(R.id.postButton);
-        postButton.setOnClickListener(new View.OnClickListener() {
+//        Button postButton = (Button) findViewById(R.id.postButton);
+//        postButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(ChatReplyListViewActivity.this, PostActivity.class);
+//                intent.putExtra(Constants.POST_ID_KEY, mPostId);
+//                startActivity(intent);
+//            }
+//        });
+        LinearLayout postLayout = (LinearLayout) findViewById(R.id.wrapper_post);
+        postLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(ChatReplyListViewActivity.this, PostActivity.class);
                 intent.putExtra(Constants.POST_ID_KEY, mPostId);
                 startActivity(intent);

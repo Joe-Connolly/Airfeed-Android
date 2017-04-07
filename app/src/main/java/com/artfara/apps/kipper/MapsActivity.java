@@ -52,6 +52,7 @@ public class MapsActivity extends AppCompatActivity {
     private ScheduledFuture<?> mQueryPostsTask;
     private DatabaseReference mDatabase;
     private CustomFragmentPageAdapter mCustomAdapter;
+    private TabLayout mTabLayout;
 
 
     @Override
@@ -73,10 +74,10 @@ public class MapsActivity extends AppCompatActivity {
 
 
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
-        tabLayout.setupWithViewPager(viewPager);
+        mTabLayout.setupWithViewPager(viewPager);
 
 
         //Only start app if we have the permissions we need to access location
@@ -247,6 +248,12 @@ public class MapsActivity extends AppCompatActivity {
         Log.d(TAG, "onStop");
     }
 
+    public void hideTabs(){
+        mTabLayout.setVisibility(TabLayout.GONE);
+    }
+    public void showTabs(){
+        mTabLayout.setVisibility(TabLayout.VISIBLE);
+    }
 
     private class CustomFragmentPageAdapter extends FragmentPagerAdapter {
         public CustomFragmentPageAdapter(FragmentManager supportFragmentManager) {

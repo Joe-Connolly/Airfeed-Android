@@ -14,6 +14,11 @@
         <item name="colorPrimaryDark">@color/gray</item>
         <item name="textColorError">@color/design_textinput_error_color_light</item>
     </style>
+
+    <style name="ListView" parent="@android:style/Widget.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">6px</item>
+    </style>
 </resources>
 
 

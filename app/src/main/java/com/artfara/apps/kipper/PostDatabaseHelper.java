@@ -277,10 +277,10 @@ public class PostDatabaseHelper {
 
     public static void formatTime(ArrayList<Post> posts) {
         for (Post post:posts){
-            post.displayedTime = DateUtils.getRelativeTimeSpanString(post.timeInMilliseconds,
-                    System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
+            post.displayedTime = getRelativeTimeSpanString(post.timeInMilliseconds);
         }
     }
+
 
     public static boolean isTimeToRefresh() {
         long currentTime = System.currentTimeMillis();
@@ -291,4 +291,26 @@ public class PostDatabaseHelper {
         return false;
     }
 
+    private static final String ABBR_YEAR = "y";
+    private static final String ABBR_WEEK = "w";
+    private static final String ABBR_DAY = "d";
+    private static final String ABBR_HOUR = "h";
+    private static final String ABBR_MINUTE = "m";
+
+    public static String getRelativeTimeSpanString(long timeMillis) {
+        long span = Math.max(System.currentTimeMillis() - timeMillis, 0);
+        if (span >= DateUtils.YEAR_IN_MILLIS) {
+            return (span / DateUtils.YEAR_IN_MILLIS) + ABBR_YEAR;
+        }
+        if (span >= DateUtils.WEEK_IN_MILLIS) {
+            return (span / DateUtils.WEEK_IN_MILLIS) + ABBR_WEEK;
+        }
+        if (span >= DateUtils.DAY_IN_MILLIS) {
+            return (span / DateUtils.DAY_IN_MILLIS) + ABBR_DAY;
+        }
+        if (span >= DateUtils.HOUR_IN_MILLIS) {
+            return (span / DateUtils.HOUR_IN_MILLIS) + ABBR_HOUR;
+        }
+        return (span / DateUtils.MINUTE_IN_MILLIS) + ABBR_MINUTE;
+    }
 }

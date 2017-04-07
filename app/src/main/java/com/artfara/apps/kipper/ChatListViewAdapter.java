@@ -75,7 +75,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.txtUserLetter = (TextView) rowView.findViewById(R.id.userLetter);
         holder.txtVoteCount = (TextView) rowView.findViewById(R.id.voteCount);
         holder.txtTime = (TextView) rowView.findViewById(R.id.time);
-        holder.txtNumReplies = (TextView) rowView.findViewById(R.id.numReplies);
+        holder.txtNumReplies = (TextView) rowView.findViewById(R.id.repliesNumber);
         holder.upVoteButton = (ImageView) rowView.findViewById(R.id.upVoteButton);
         holder.downVoteButton = (ImageView) rowView.findViewById(R.id.downVoteButton);
 
@@ -131,7 +131,8 @@ public class ChatListViewAdapter extends BaseAdapter {
         });
 
         if (mIsPost) {
-            holder.txtNumReplies.setText(currentPost.replies.size() + " rep.");
+            int numReplies = currentPost.replies.size();
+            holder.txtNumReplies.setText((numReplies > 0) ? numReplies + " replies" : "");
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

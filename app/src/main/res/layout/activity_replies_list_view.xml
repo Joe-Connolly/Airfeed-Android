@@ -29,11 +29,38 @@
             android:fadingEdge="vertical"
             android:layout_below="@+id/toolbar"/>
 
-        <Button
-            android:id="@+id/postButton"
+    <LinearLayout
+        android:id="@+id/wrapper_post"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff"
+        android:orientation="vertical">
+
+        <View
             android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/gray" />
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="Reply" />
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:padding="6dp">
+            <ImageView
+                android:id="@+id/postButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/post_icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gray"
+                android:layout_gravity="center_vertical"
+                android:text="REPLY"
+                android:textSize="22dp"/>
+        </LinearLayout>
+    </LinearLayout>
 
     </RelativeLayout>
