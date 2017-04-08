@@ -145,8 +145,7 @@ public class MapsActivity extends AppCompatActivity {
 //                        mDatabase.child(Constants.POSTS_TABLE_NAME).addListenerForSingleValueEvent(mPostsSingleEventListener);
 //                    }
 //                }, 100, 15000, TimeUnit.MILLISECONDS);
-
-        PostDatabaseHelper postDatabaseHelper = new PostDatabaseHelper();
+        PostDatabaseHelper.initialize();
 
 
         scheduleLocationTracking();
@@ -263,11 +262,11 @@ public class MapsActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new MapsFragment();
+                    return new ChatFragment();
                 case 1:
                     return new TotalsFragment();
                 case 2:
-                    return new ChatFragment();
+                    return new MapsFragment();
                 default:
                     return new TotalsFragment();
             }
@@ -281,11 +280,11 @@ public class MapsActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "MAP";
+                    return "CHAT";
                 case 1:
                     return "FEED";
                 case 2:
-                    return "CHAT";
+                    return "MAP";
                 default:
                     return "FEED";
             }

@@ -61,14 +61,6 @@
         <!--android:layout_height="2dp"-->
         <!--android:background="@color/gray"-->
         <!--android:layout_alignBottom="@+id/wrapper"/>-->
-    <ListView
-        android:id="@+id/ListViewPosts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/wrapper"
-        android:fadingEdge="vertical" />
-
-
     <LinearLayout
         android:id="@+id/wrapper_post"
         android:layout_width="fill_parent"
@@ -87,21 +79,31 @@
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
             android:padding="6dp">
-        <ImageView
-            android:id="@+id/postButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/post_icon" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/gray"
-            android:layout_gravity="center_vertical"
-            android:text="POST"
-            android:textSize="19dp"/>
+            <ImageView
+                android:id="@+id/postButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/post_icon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gray"
+                android:layout_gravity="center_vertical"
+                android:text="POST"
+                android:textSize="19dp"/>
         </LinearLayout>
     </LinearLayout>
+    <ListView
+        android:id="@+id/ListViewPosts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wrapper"
+        android:layout_above="@+id/wrapper_post"
+        android:fadingEdge="vertical" />
+
+
+
 
 </RelativeLayout>
 

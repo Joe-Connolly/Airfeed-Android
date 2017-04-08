@@ -33,13 +33,17 @@ public class PostDatabaseHelper {
     private static long lastTimeRefreshed;
 
 
-    public PostDatabaseHelper(){
+    public static void initialize() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mPostsRef = mDatabase.child(Constants.POSTS_TABLE_NAME);
         mAddReplyQueue = new ArrayBlockingQueue<>(100);
-        mPostType = Constants.POSTS_TYPE_NEW;
         mGlobalPosts = new HashMap<>();
     }
+
+    public static void setPostType(String postType) {
+        mPostType = postType;
+    }
+
 
      public static ArrayList<Post>  getPosts(){
          if (mGlobalPosts == null) return null;
@@ -57,11 +61,11 @@ public class PostDatabaseHelper {
     public static  ArrayList<Post> getReplies(String postID){
         ArrayList<Post> replies = new ArrayList<>(mGlobalPosts.get(postID).replies.values());
         Log.d(TAG, "Replies adding entry first");
-        formatTime(replies);
-        setUserLetters(replies);
-        sortDescendingByTime(replies);
-        //Add origional post to front of entries
+        //Add original post to front of entries
         replies.add(0, mGlobalPosts.get(postID));
+        formatTime(replies);
+        sortAscendingByTime(replies);
+        setUserLetters(replies);
         return replies;
     }
 
@@ -277,8 +281,7 @@ public class PostDatabaseHelper {
 
     public static void formatTime(ArrayList<Post> posts) {
         for (Post post:posts){
-            post.displayedTime = getRelativeTimeSpanString(post.timeInMilliseconds);
-        }
+            post.displayedTime = getRelativeTimeSpanString(post.timeInMilliseconds);}
     }
 
 
@@ -313,4 +316,6 @@ public class PostDatabaseHelper {
         }
         return (span / DateUtils.MINUTE_IN_MILLIS) + ABBR_MINUTE;
     }
+
+
 }

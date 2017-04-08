@@ -29,16 +29,6 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
 
-
-//        Button postButton = (Button) findViewById(R.id.postButton);
-//        postButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(ChatReplyListViewActivity.this, PostActivity.class);
-//                intent.putExtra(Constants.POST_ID_KEY, mPostId);
-//                startActivity(intent);
-//            }
-//        });
         LinearLayout postLayout = (LinearLayout) findViewById(R.id.wrapper_post);
         postLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,11 +61,9 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
 
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(this, mPostId);
-//        customBaseAdapter.setEntries(entries);
 
         //Grab a handle on ListView
         final ListView listview = (ListView) findViewById(R.id.ListViewReplies);
-
         listview.setAdapter(customBaseAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

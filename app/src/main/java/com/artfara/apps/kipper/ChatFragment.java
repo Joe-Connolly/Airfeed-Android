@@ -19,7 +19,6 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /**
@@ -32,6 +31,7 @@ public class ChatFragment extends Fragment {
     private PostDatabaseHelper mPostDatabaseHelper;
     private View mRootView;
     private LinearLayout mPostButtonLayout;
+    private RadioGroup mHotNewRadioGroup;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -74,20 +74,18 @@ public class ChatFragment extends Fragment {
                 customBaseAdapter.setEntries(new ArrayList<Post>());
                 PostDatabaseHelper.downloadPosts();
                 //update posts as soon as they become available
-                mHandler = new Handler();
                 mHandler.postDelayed(mPopulateListViewRunnable, 100);
             }
         });
-        RadioGroup hotNewRadioGroup = (RadioGroup) mRootView.findViewById(R.id.hotNewRadioGroup);
-        hotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        mHotNewRadioGroup = (RadioGroup) mRootView.findViewById(R.id.hotNewRadioGroup);
+        mHotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
 
                 Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
             }
         });
-
-
+        
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(getActivity(), null);
 
@@ -140,6 +138,13 @@ public class ChatFragment extends Fragment {
         super.onResume();
         Log.d(TAG, "onResume");
 
+        //Set what type of posts to display based on radiobutton value
+        if (mHotNewRadioGroup.getCheckedRadioButtonId() == R.id.showhot){
+            PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_HOT);
+        }
+        else {
+            PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_NEW);
+        }
         //Refresh only if necessary
         if (PostDatabaseHelper.isTimeToRefresh()) {
             customBaseAdapter.setEntries(new ArrayList<Post>());
