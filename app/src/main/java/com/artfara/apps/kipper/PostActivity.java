@@ -14,19 +14,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class PostActivity extends AppCompatActivity {
     private static final String TAG = " PostActivity ";
     private String mParentPostID;
-    private DatabaseReference mPostDatabase;
+    private DatabaseReference mDatabase;
+    private String mPostBody;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-//        mPostDatabase = FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mParentPostID = getIntent().getStringExtra(Constants.POST_ID_KEY);
 
 
@@ -59,23 +65,43 @@ public class PostActivity extends AppCompatActivity {
 
     public void onPostClicked(View view) {
 
-        String postBody = ((EditText) findViewById(R.id.postBody)).getText().toString();
-        Log.d(TAG, postBody);
+        mPostBody = ((EditText) findViewById(R.id.postBody)).getText().toString();
+        Log.d(TAG, mPostBody);
         //validate input
-        if (postBody.length() < 1 || postBody.length() >= Constants.POST_MAXLENGTH){
+        if (mPostBody.length() < 1 || mPostBody.length() >= Constants.POST_MAXLENGTH){
             Toast.makeText(this, "Please write between 1-" + Constants.POST_MAXLENGTH + " characters", Toast.LENGTH_SHORT).show();
             return;
         }
-        //Strip excess white space
 
-        //We are adding a post
-        if (mParentPostID == null) {
-            PostDatabaseHelper.addPost(postBody, this);
-        }
-        //We are adding a reply
-        else{
-            PostDatabaseHelper.addReply(postBody, mParentPostID, this);
-        }
-        finish();
+        //Make sure user is valid before posting
+        mDatabase.child(Constants.BANNED_USERS_TABLE_NAME).child(Utils.getUserID(this))
+                .addListenerForSingleValueEvent(mIsUserBannedListener);
     }
+
+    private ValueEventListener mIsUserBannedListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.d(TAG, " add reply ");
+            String bannedString = dataSnapshot.getValue(String.class);
+            //User is valid
+            if (bannedString == null){
+                //We are adding a post
+                if (mParentPostID == null) {
+                    PostDatabaseHelper.addPost(mPostBody, PostActivity.this);
+                }
+                //We are adding a reply
+                else{
+                    PostDatabaseHelper.addReply(mPostBody, mParentPostID, PostActivity.this);
+                }
+                finish();
+            }
+            //User is banned
+            else{
+                Toast.makeText(PostActivity.this, " Your account is banned", Toast.LENGTH_SHORT).show();
+            }
+        }
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
 }

@@ -3,9 +3,11 @@ package com.artfara.apps.kipper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -132,7 +135,10 @@ public class ChatListViewAdapter extends BaseAdapter {
 
         if (mIsPost) {
             int numReplies = currentPost.replies.size();
-            holder.txtNumReplies.setText((numReplies > 0) ? numReplies + " replies" : "");
+            if (numReplies > 0){
+                holder.txtNumReplies.setText((numReplies == 1) ? numReplies + " reply"
+                        : numReplies + " replies");
+            }
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -142,7 +148,15 @@ public class ChatListViewAdapter extends BaseAdapter {
                 }
             });
         }
+
+        //Set custom typefaces
+        Typeface typeFaceBold = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Bold.ttf");
+        holder.txtUserLetter.setTypeface(typeFaceBold);
+
+
+
         return rowView;
+
     }
 
     private boolean alreadyVoted(String id, boolean isUpVoting) {

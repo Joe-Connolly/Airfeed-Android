@@ -3,7 +3,6 @@ package com.artfara.apps.kipper;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +68,7 @@ public class TotalsListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = new ViewHolder();
         final Place currentPlace = activePlaces.get(position);
-        View rowView = mInflater.inflate(R.layout.custom_row_view, null);
+        View rowView = mInflater.inflate(R.layout.totals_custom_row_view, null);
 
         Typeface typeFaceBold = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Bold.ttf");
         Typeface typeFaceLight = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Light.ttf");

@@ -42,11 +42,18 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         mRootView = inflater.inflate(R.layout.fragment_chat, container, false);
+        mHotNewRadioGroup = (RadioGroup) mRootView.findViewById(R.id.hotNewRadioGroup);
+        mHotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
+            }
+        });
         mPostButtonLayout = (LinearLayout) mRootView.findViewById(R.id.wrapper_post);
         mPostButtonLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mHotNewRadioGroup.check(R.id.shownew);
                 Intent intent = new Intent(getActivity(), PostActivity.class);
                 startActivity(intent);
             }
@@ -77,14 +84,7 @@ public class ChatFragment extends Fragment {
                 mHandler.postDelayed(mPopulateListViewRunnable, 100);
             }
         });
-        mHotNewRadioGroup = (RadioGroup) mRootView.findViewById(R.id.hotNewRadioGroup);
-        mHotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
 
-                Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
-            }
-        });
         
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(getActivity(), null);

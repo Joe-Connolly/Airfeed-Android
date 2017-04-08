@@ -223,25 +223,6 @@ public class PostDatabaseHelper {
                 public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
             };
 
-    private static com.google.firebase.database.Transaction.Handler mAddReplyHandler =
-            new Transaction.Handler() {
-                @Override
-                public Transaction.Result doTransaction(MutableData mutableData) {
-                    Post post = mutableData.getValue(Post.class);
-                    if (post == null) {
-                        return Transaction.success(mutableData);
-                    }
-                    Post reply = mAddReplyQueue.poll();
-                    if (post.replies == null) {
-                        post.replies = new HashMap<>();
-                    }
-                    post.replies.put(reply.ID, reply);
-                    mutableData.setValue((post.ID != null ? post : null));
-                    return Transaction.success(mutableData);
-                }
-                @Override
-                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
-            };
 
     public static void sortDescendingByTime(ArrayList<Post> posts) {
         Collections.sort(posts, new Comparator<Post>() {
@@ -268,14 +249,7 @@ public class PostDatabaseHelper {
 
 
     public static void showPosts(String postType){
-        if (postType.equals(Constants.POSTS_TYPE_HOT) && mPostType.equals(Constants.POSTS_TYPE_NEW)){
-            Log.d(TAG, "show HOT");
-            mPostType = Constants.POSTS_TYPE_HOT;
-        }
-        else if (postType.equals(Constants.POSTS_TYPE_NEW) && mPostType.equals(Constants.POSTS_TYPE_HOT)){
-            Log.d(TAG, "show NEW");
-            mPostType = Constants.POSTS_TYPE_NEW;
-        }
+       mPostType = postType;
     }
 
 

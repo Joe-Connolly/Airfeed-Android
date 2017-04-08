@@ -9,6 +9,7 @@ import java.util.Map;
 public class Constants {
     //Constants to be used throughout the class
     public final static String TEST_KEY = "testKey";
+    public final static String BANNED_USERS_TABLE_NAME = "Banned_Users";
     public final static String USERS_TABLE_NAME = "users";
     public final static String PLACES_TABLE_NAME = "testplaces";
     public final static String POSTS_TABLE_NAME = "Posts";
