@@ -12,10 +12,10 @@ import com.google.android.gms.maps.model.Marker;
  * Created by Van on 9/11/16.
  */
 class PopUpAdapter implements GoogleMap.InfoWindowAdapter {
-    LayoutInflater inflater=null;
+    LayoutInflater inflater = null;
 
     PopUpAdapter(LayoutInflater inflater) {
-        this.inflater=inflater;
+        this.inflater = inflater;
     }
 
     @Override
@@ -25,7 +25,7 @@ class PopUpAdapter implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoContents(Marker marker) {
-        View popup=inflater.inflate(R.layout.popup, null);
+        View popup = inflater.inflate(R.layout.popup, null);
 
         Typeface typeFaceBold = Typeface.createFromAsset(inflater.getContext().getAssets(), "Comfortaa-Bold.ttf");
         Typeface typeFaceLight = Typeface.createFromAsset(inflater.getContext().getAssets(), "Comfortaa-Light.ttf");
@@ -34,7 +34,7 @@ class PopUpAdapter implements GoogleMap.InfoWindowAdapter {
         tvTitle.setText(marker.getTitle());
         tvTitle.setTypeface(typeFaceLight);
 
-        TextView tvSnippet =(TextView)popup.findViewById(R.id.snippet);
+        TextView tvSnippet = (TextView) popup.findViewById(R.id.snippet);
         tvSnippet.setText(marker.getSnippet());
         tvSnippet.setTypeface(typeFaceBold);
 

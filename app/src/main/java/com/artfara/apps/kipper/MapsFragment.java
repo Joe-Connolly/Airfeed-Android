@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledFuture;
 
 /**
- * A fragment that launches other parts of the demo application.
+ * Maps Fragment -- that is, THE Maps Fragment
  */
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
@@ -69,7 +69,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         mMapView.getMapAsync(this);
         return v;
-
     }
 
     @Override
@@ -113,7 +112,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-
         mMap.getUiSettings().setRotateGesturesEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
         //If we have permission, enable location
@@ -155,9 +153,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
         Log.d(TAG, "Globals.globalUsers.size()) = " + Globals.globalUsers.size());
         // Add a tile overlay to the map, using the heat map tile provider.
-//        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
+        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
     }
-
 
     private void createMarkers() {
         ArrayList<Place> places = Globals.globalPlaces;
