@@ -28,7 +28,7 @@ public class ChatFragment extends Fragment {
     private Handler mHandler;
     private ChatListViewAdapter customBaseAdapter;
     private static final String TAG = " Chat Fragment ";
-    private PostDatabaseHelper mPostDatabaseHelper;
+//    private PostDatabaseHelper mPostDatabaseHelper;
     private View mRootView;
     private LinearLayout mPostButtonLayout;
     private RadioGroup mHotNewRadioGroup;
@@ -148,7 +148,6 @@ public class ChatFragment extends Fragment {
         //Refresh only if necessary
         if (PostDatabaseHelper.isTimeToRefresh()) {
             customBaseAdapter.setEntries(new ArrayList<Post>());
-
             PostDatabaseHelper.downloadPosts();
             //update posts as soon as they become available
             mHandler = new Handler();

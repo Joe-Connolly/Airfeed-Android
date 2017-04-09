@@ -149,7 +149,7 @@ public class ChatListViewAdapter extends BaseAdapter {
             });
         }
 
-        //Set custom typefaces
+        //Set custom typeface for userLetter
         Typeface typeFaceBold = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Bold.ttf");
         holder.txtUserLetter.setTypeface(typeFaceBold);
 

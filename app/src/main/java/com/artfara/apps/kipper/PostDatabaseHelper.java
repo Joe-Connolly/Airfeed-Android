@@ -30,12 +30,11 @@ public class PostDatabaseHelper {
     private static String mPostType;
     private static ArrayBlockingQueue<Post> mAddReplyQueue;
     public static boolean mFinishedDownloading;
-    private static long lastTimeRefreshed;
+    private static long mTimeLastRefreshed;
 
 
     public static void initialize() {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mPostsRef = mDatabase.child(Constants.POSTS_TABLE_NAME);
+        mPostsRef = FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
         mAddReplyQueue = new ArrayBlockingQueue<>(100);
         mGlobalPosts = new HashMap<>();
     }
@@ -45,20 +44,19 @@ public class PostDatabaseHelper {
     }
 
 
-     public static ArrayList<Post>  getPosts(){
-         if (mGlobalPosts == null) return null;
+    public static ArrayList<Post> getPosts() {
+        if (mGlobalPosts == null) return null;
         ArrayList<Post> posts = new ArrayList<>(mGlobalPosts.values());
-        if (mPostType.equals(Constants.POSTS_TYPE_NEW)){
+        if (mPostType.equals(Constants.POSTS_TYPE_NEW)) {
             sortDescendingByTime(posts);
-        }
-        else{
+        } else {
             sortDescendingByVoteCount(posts);
         }
         formatTime(posts);
         return posts;
     }
 
-    public static  ArrayList<Post> getReplies(String postID){
+    public static ArrayList<Post> getReplies(String postID) {
         ArrayList<Post> replies = new ArrayList<>(mGlobalPosts.get(postID).replies.values());
         Log.d(TAG, "Replies adding entry first");
         //Add original post to front of entries
@@ -72,7 +70,7 @@ public class PostDatabaseHelper {
     public static void setUserLetters(ArrayList<Post> posts) {
         HashMap<String, String> lettersAssigned = new HashMap<>();
         String userLetter;
-        for (Post post:posts) {
+        for (Post post : posts) {
             //Iterate through all posts to be displayed in scrollview
             userLetter = lettersAssigned.get(post.userID);
             if (userLetter == null) {
@@ -86,7 +84,7 @@ public class PostDatabaseHelper {
         }
     }
 
-    public static void addPost(String postBody, Context context){
+    public static void addPost(String postBody, Context context) {
 
         long time = System.currentTimeMillis();
         String userID = Utils.getUserID(context.getApplicationContext());
@@ -97,76 +95,71 @@ public class PostDatabaseHelper {
         mPostsRef.child(post.ID).setValue(post);
     }
 
-    public static void addReply(String postBody, String parentPostID, Context context){
+    public static void addReply(String postBody, String parentPostID, Context context) {
 
         long time = System.currentTimeMillis();
         String userID = Utils.getUserID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
 
-        DatabaseReference repliesDatabase =  mPostsRef
+        DatabaseReference repliesDatabase = mPostsRef
                 .child(parentPostID).child(Constants.REPLIES_TABLE_NAME);
 
         String replyId = repliesDatabase.push().getKey();
         post.ID = replyId;
         HashMap<String, Post> replies = mGlobalPosts.get(parentPostID).replies;
-        if (replies == null) {
-            //Does this make replies point to a new hashmap?
-            replies = new HashMap<>();
-        }
+        if (replies == null) replies = new HashMap<>();
         replies.put(replyId, post);
-//        repliesDatabase.child(replyId).updateChildren(post.toMap());
-        post.parentPostID = parentPostID;
         mAddReplyQueue.add(post);
         mPostsRef.child(parentPostID).addListenerForSingleValueEvent(mAddReplySingleEventListener);
     }
 
 
-    public static void incrementPost(Post post){
+    public static void incrementPost(Post post) {
         mGlobalPosts.get(post.ID).voteCount++;
         Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).runTransaction(mUpVoteHandler);
     }
 
-    public static void decrementPost(Post post){
+    public static void decrementPost(Post post) {
         mGlobalPosts.get(post.ID).voteCount--;
         Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).runTransaction(mDownVoteHandler);
     }
 
-    public static void incrementReply(Post post, String parentPostID){
+    public static void incrementReply(Post post, String parentPostID) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount++;
         Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child("replies").child(post.ID).runTransaction(mUpVoteHandler);
+        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
     }
-    public static void decrementReply(Post post, String parentPostID){
+
+    public static void decrementReply(Post post, String parentPostID) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount--;
         Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child("replies").child(post.ID).runTransaction(mDownVoteHandler);
+        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
     }
 
 
-    public static void downloadPosts(){
+    public static void downloadPosts() {
         mFinishedDownloading = false;
         mPostsRef.addListenerForSingleValueEvent(mPostsSingleEventListener);
     }
+
     private static ValueEventListener mPostsSingleEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             HashMap<String, Post> posts = new HashMap<>();
             for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                 Post post = postSnapshot.getValue(Post.class);
-                if (post.replies == null){
+                if (post.replies == null) {
                     post.replies = new HashMap<>();
                 }
-                for (String replyID : post.replies.keySet()){
+                for (String replyID : post.replies.keySet()) {
                     post.replies.get(replyID).ID = replyID;
                 }
                 posts.put(postSnapshot.getKey(), post);
             }
             mGlobalPosts = posts;
             mFinishedDownloading = true;
-            Log.d(TAG, " global_posts = " + mGlobalPosts);
-            Log.d(TAG, " Downloading Posts");
         }
 
         @Override
@@ -184,6 +177,7 @@ public class PostDatabaseHelper {
             mPostsRef.child(post.ID).child(Constants.REPLIES_TABLE_NAME).child(reply.ID)
                     .updateChildren(reply.toMap());
         }
+
         @Override
         public void onCancelled(DatabaseError databaseError) {
         }
@@ -195,7 +189,7 @@ public class PostDatabaseHelper {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
                     Post post = mutableData.getValue(Post.class);
-                    if (post == null){
+                    if (post == null) {
                         return Transaction.success(mutableData);
                     }
                     post.voteCount++;
@@ -203,15 +197,17 @@ public class PostDatabaseHelper {
                     mutableData.setValue(post);
                     return Transaction.success(mutableData);
                 }
+
                 @Override
-                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
+                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                }
             };
     private static com.google.firebase.database.Transaction.Handler mDownVoteHandler =
             new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
                     Post post = mutableData.getValue(Post.class);
-                    if (post == null){
+                    if (post == null) {
                         return Transaction.success(mutableData);
                     }
                     post.voteCount--;
@@ -219,8 +215,10 @@ public class PostDatabaseHelper {
                     mutableData.setValue(post);
                     return Transaction.success(mutableData);
                 }
+
                 @Override
-                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
+                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                }
             };
 
 
@@ -231,14 +229,18 @@ public class PostDatabaseHelper {
                 return ((Long) post2.timeInMilliseconds).compareTo(post1.timeInMilliseconds);
             }
         });
-    }   public static void sortAscendingByTime(ArrayList<Post> posts) {
+    }
+
+    public static void sortAscendingByTime(ArrayList<Post> posts) {
         Collections.sort(posts, new Comparator<Post>() {
             @Override
             public int compare(Post post1, Post post2) {
                 return ((Long) post1.timeInMilliseconds).compareTo(post2.timeInMilliseconds);
             }
         });
-    } public static void sortDescendingByVoteCount(ArrayList<Post> posts) {
+    }
+
+    public static void sortDescendingByVoteCount(ArrayList<Post> posts) {
         Collections.sort(posts, new Comparator<Post>() {
             @Override
             public int compare(Post post1, Post post2) {
@@ -248,21 +250,22 @@ public class PostDatabaseHelper {
     }
 
 
-    public static void showPosts(String postType){
-       mPostType = postType;
+    public static void showPosts(String postType) {
+        mPostType = postType;
     }
 
 
     public static void formatTime(ArrayList<Post> posts) {
-        for (Post post:posts){
-            post.displayedTime = getRelativeTimeSpanString(post.timeInMilliseconds);}
+        for (Post post : posts) {
+            post.displayedTime = getRelativeTimeSpanString(post.timeInMilliseconds);
+        }
     }
 
 
     public static boolean isTimeToRefresh() {
         long currentTime = System.currentTimeMillis();
-        if (((currentTime - lastTimeRefreshed) > Constants.REFRESH_RATE) || (mGlobalPosts.size() < 1)) {
-            lastTimeRefreshed = currentTime;
+        if (((currentTime - mTimeLastRefreshed) > Constants.REFRESH_RATE) || (mGlobalPosts.size() < 1)) {
+            mTimeLastRefreshed = currentTime;
             return true;
         }
         return false;

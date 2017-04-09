@@ -37,8 +37,6 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
     private DatabaseReference mDatabase;
     private static final String TAG = "Job Service ";
     private GoogleApiClient mGoogleApiClient;
-    private ArrayList<Place> mCurrentPlaces;
-    private SharedPreferences mPrefs;
     private String mID;
     @Override
     public boolean onStartJob(JobParameters params) {
@@ -48,15 +46,7 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mID = mPrefs.getString(Constants.ID_KEY, null);
-        if (mID == null){
-            Log.d(TAG, "ID NULL");
-            mID = mDatabase.child(Constants.USERS_TABLE_NAME).push().getKey();
-
-            mPrefs.edit().putString(Constants.ID_KEY, mID).apply();
-        }
-        mID = Constants.TEST_KEY;
+        mID = Utils.getUserID(getApplicationContext());
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -66,10 +56,6 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
                     .build();
         }
         mGoogleApiClient.connect();
-
-
-
-
         return true;
     }
 
@@ -77,9 +63,6 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
     public boolean onStopJob(JobParameters params) {
 
         Log.d(TAG, "onSTopJob");
-
-
-
         return true;
     }
 
@@ -104,21 +87,12 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "location updated, location = " + location + "");
-            //For testing
-            Date today = new Date();
-            final DateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd hhmmss");
-            dateFormatter.setLenient(false);
-            String s = dateFormatter.format(today);
 
-
-            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "job " +s);
-
+            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "job " + Utils.getCurrentFormattedTime());
 
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(mID, loc.toMap());
             mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
-
-
 
             LocationServices.FusedLocationApi.removeLocationUpdates(
                     mGoogleApiClient, mLocationListener);

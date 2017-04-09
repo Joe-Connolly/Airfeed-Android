@@ -28,10 +28,9 @@ public class TotalsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         Log.d(TAG, "onCreate");
-        // Inflate the layout for this fragment
 
+        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_totals, container, false);
 
         //Create Custom Adapter
@@ -43,15 +42,13 @@ public class TotalsFragment extends Fragment {
         listview.setAdapter(customBaseAdapter);
 
         return rootView;
-
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart");
-        //update markers as soon as they become available
+        //update place total numbers as soon as they become available
         mHandler = new Handler();
         mHandler.postDelayed(mPopulateListViewRunnable, 200);
 

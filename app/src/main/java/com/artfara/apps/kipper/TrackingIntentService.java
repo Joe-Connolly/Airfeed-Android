@@ -34,8 +34,6 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
     private Intent mIntent;
     private DatabaseReference mDatabase;
     private GoogleApiClient mGoogleApiClient;
-    private ArrayList<Place> mCurrentPlaces;
-    private SharedPreferences mPrefs;
     private String mID;
 
     private static final String TAG = "Intent Service ";
@@ -49,19 +47,9 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "onHandleIntent");
-
         mIntent = intent;
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mID = mPrefs.getString(Constants.ID_KEY, null);
-        if (mID == null){
-            Log.d(TAG, "ID NULL");
-            mID = mDatabase.child(Constants.USERS_TABLE_NAME).push().getKey();
-
-            mPrefs.edit().putString(Constants.ID_KEY, mID).apply();
-        }
-        mID = Constants.TEST_KEY;
+        mID = Utils.getUserID(getApplicationContext());
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -71,11 +59,11 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
                     .build();
         }
         mGoogleApiClient.connect();
-
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, " onConnected ");
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
@@ -95,26 +83,16 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "location updated, location = " + location + "");
-            //For testing
-            Date today = new Date();
-            final DateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd hhmmss");
-            dateFormatter.setLenient(false);
-            String s = dateFormatter.format(today);
 
-
-            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "intent " +s);
-
+            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "intent " + Utils.getCurrentFormattedTime());
 
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(mID, loc.toMap());
             mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
 
-
-
             LocationServices.FusedLocationApi.removeLocationUpdates(
                     mGoogleApiClient, mLocationListener);
             mGoogleApiClient.disconnect();
-
 
             AlarmReceiver.completeWakefulIntent(mIntent);
         }

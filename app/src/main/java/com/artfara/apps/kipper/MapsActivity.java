@@ -47,11 +47,9 @@ import java.util.concurrent.TimeUnit;
 public class MapsActivity extends AppCompatActivity {
 
     private static final String TAG = "Maps Activity ";
-    private ScheduledFuture<?> mQueryUsersTask;
-    private ScheduledFuture<?> mQueryPlacesTask;
-    private ScheduledFuture<?> mQueryPostsTask;
+//    private ScheduledFuture<?> mQueryUsersTask;
+//    private ScheduledFuture<?> mQueryPlacesTask;
     private DatabaseReference mDatabase;
-    private CustomFragmentPageAdapter mCustomAdapter;
     private TabLayout mTabLayout;
 
 
@@ -63,6 +61,7 @@ public class MapsActivity extends AppCompatActivity {
 
         Constants.prepare();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        PostDatabaseHelper.initialize();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle("");
@@ -72,13 +71,10 @@ public class MapsActivity extends AppCompatActivity {
             title.setTypeface(typeFaceBold);
         }
 
-
-
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(viewPager);
-
 
         //Only start app if we have the permissions we need to access location
         if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
@@ -107,7 +103,6 @@ public class MapsActivity extends AppCompatActivity {
             //Start tracking users location
             initializeApplication();
 
-
         } else {
 
             // permission denied, boo!
@@ -126,34 +121,23 @@ public class MapsActivity extends AppCompatActivity {
 
         ScheduledExecutorService scheduler =
                 Executors.newSingleThreadScheduledExecutor();
-        mQueryUsersTask = scheduler.scheduleAtFixedRate
+        scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
                         mDatabase.child(Constants.USERS_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
                     }
                 }, 100, 15000, TimeUnit.MILLISECONDS);
-        mQueryPlacesTask = scheduler.scheduleAtFixedRate
+        scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
                         mDatabase.child(Constants.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
                     }
                 }, 100, 15000, TimeUnit.MILLISECONDS);
 
-//        mQueryPostsTask = scheduler.scheduleAtFixedRate
-//                (new Runnable() {
-//                    public void run() {
-//                        mDatabase.child(Constants.POSTS_TABLE_NAME).addListenerForSingleValueEvent(mPostsSingleEventListener);
-//                    }
-//                }, 100, 15000, TimeUnit.MILLISECONDS);
-        PostDatabaseHelper.initialize();
-
-
         scheduleLocationTracking();
     }
 
     private void scheduleLocationTracking() {
-//        Intent intent = new Intent(this, TrackingService.class);
-//        startService(intent);
 
         //Start JobScheduler Tracking Service
         JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -163,7 +147,7 @@ public class MapsActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 24) {
             builder = new JobInfo.Builder(jobId, serviceName)
                     .setPeriodic(1000000)
-                    .setRequiresDeviceIdle(false) // does not matter if deviec is idle
+                    .setRequiresDeviceIdle(false) // does not matter if device is idle
                     .setRequiresCharging(false) // we don't care if the device is charging or not
                     .setPersisted(true); // start on boot
         } else {
@@ -223,24 +207,6 @@ public class MapsActivity extends AppCompatActivity {
         }
     };
 
-//
-//    private ValueEventListener mPostsSingleEventListener = new ValueEventListener() {
-//        @Override
-//        public void onDataChange(DataSnapshot dataSnapshot) {
-//            HashMap<String, Post> posts = new HashMap<>();
-//            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-//                Post post = postSnapshot.getValue(Post.class);
-//                posts.put(postSnapshot.getKey(), post);
-//            }
-//            Globals.globalPosts = posts;
-//            Log.d(TAG, " Downloading Posts");
-//        }
-//
-//        @Override
-//        public void onCancelled(DatabaseError databaseError) {
-//
-//        }
-//    };
 
     public void onStop(){
         super.onStop();

@@ -33,31 +33,11 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         postLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(ChatReplyListViewActivity.this, PostActivity.class);
                 intent.putExtra(Constants.POST_ID_KEY, mPostId);
                 startActivity(intent);
             }
         });
-
-
-//        //Grab entries
-//        ArrayList<Post> entries;
-//        Log.d(TAG, "PostKey = " + mPostId);
-//        HashMap<String, Post> replies = Globals.globalPosts.get(mPostId).replies;
-//        if (replies != null){
-//             entries = (new ArrayList<>(Globals.globalPosts.get(mPostId).replies.values()));
-//        }
-//        else{
-//            entries = new ArrayList<>();
-//        }
-//
-//        Log.d(TAG, "Adding entry first");
-//        //Add origional post to front of entries
-//        entries.add(0, Globals.globalPosts.get(mPostId));
-
-
-
 
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(this, mPostId);
@@ -76,28 +56,10 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-//        //update replies if available
-//        ArrayList<Post> entries;
-//        HashMap<String, Post> replies = PostDatabaseHelper.getPosts().get(mPostId).replies;
-//        if (replies != null){
-//            entries = new ArrayList<>(replies.values());
-//        }
-//        else{
-//            entries = new ArrayList<>();
-//            Log.d(TAG, "Replies null");
-//        }
-//
-//
-//        //Add original post to front of entries
-//        entries.add(0, PostDatabaseHelper.getPosts().get(mPostId));
-//
         customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
-
-
     }
 }

@@ -13,7 +13,6 @@ public class Constants {
     public final static String USERS_TABLE_NAME = "users";
     public final static String PLACES_TABLE_NAME = "testplaces";
     public final static String POSTS_TABLE_NAME = "Posts";
-    public final static String POSTS_HOT_TABLE_NAME = "Posts_Hot";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final String ID_KEY = "id";
     public static final double HANOVER_LATITUDE = 43.703272;
@@ -24,18 +23,13 @@ public class Constants {
     public static final String PLACE_TYPE_KEY = "place type";
     public static final String POST_ID_KEY = "post id";
     public static final String USER_ID_KEY = "username";
-    public static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    public static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
     public static final String POSTS_TYPE_HOT = "HOT";
     public static final String POSTS_TYPE_NEW = "NEW";
     public static final long REFRESH_RATE = 600000;
     public static final int POST_MAXLENGTH = 200;
 
     public static Map<String, Integer> PLACES = new HashMap<>();
-//    public static final class STATE {
-//        public static final int NORMAL = 0;
-//        public static final int LIT = 1;
-//        public static final int OVER_CAPACITY = 2;
-//    }
 
     public static void prepare() {
         PLACES.put("frat", R.drawable.frat_marker);

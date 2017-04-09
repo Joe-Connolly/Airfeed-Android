@@ -12,7 +12,10 @@ import android.util.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Van on 10/6/16.
@@ -39,8 +42,7 @@ public class Utils {
 
     public static String getUserID(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-//        String userID = prefs.getString(Constants.USER_ID_KEY, null);
-        String userID = null;
+        String userID = prefs.getString(Constants.USER_ID_KEY, null);
         if (userID == null){
             userID = Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
@@ -51,5 +53,13 @@ public class Utils {
             prefs.edit().putString(Constants.USER_ID_KEY, userID).apply();
         }
         return userID;
+    }
+
+    public static String getCurrentFormattedTime(){
+        //For testing
+        Date today = new Date();
+        final DateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd hhmmss");
+        dateFormatter.setLenient(false);
+        return dateFormatter.format(today);
     }
 }

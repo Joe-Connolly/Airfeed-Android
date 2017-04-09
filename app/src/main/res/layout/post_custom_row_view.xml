@@ -5,7 +5,6 @@
     android:orientation="horizontal"
     android:padding="15dp">
 
-
     <TextView
         android:id="@+id/userLetter"
         android:layout_width="wrap_content"

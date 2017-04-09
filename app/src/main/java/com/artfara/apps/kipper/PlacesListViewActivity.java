@@ -1,6 +1,5 @@
 package com.artfara.apps.kipper;
 
-import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,7 +10,7 @@ import android.widget.TextView;
 public class PlacesListViewActivity extends AppCompatActivity {
 
     public static PlacesListViewAdapter customBaseAdapter;
-    private static final String TAG = " PlacesListView class";
+    private static final String TAG = " PlacesListView ";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +20,7 @@ public class PlacesListViewActivity extends AppCompatActivity {
 
         //Create Custom Adapter
         customBaseAdapter = new PlacesListViewAdapter(this, placeType);
-        customBaseAdapter.setAllEntries(Globals.globalPlaces);
+        customBaseAdapter.setEntries(Globals.globalPlaces);
 
         //Grab a handle on ListView
         final ListView listview = (ListView) findViewById(R.id.ListViewTotals);
