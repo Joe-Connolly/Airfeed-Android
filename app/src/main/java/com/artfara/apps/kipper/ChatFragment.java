@@ -2,6 +2,7 @@ package com.artfara.apps.kipper;
 
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.IdRes;
@@ -32,6 +33,7 @@ public class ChatFragment extends Fragment {
     private View mRootView;
     private LinearLayout mPostButtonLayout;
     private RadioGroup mHotNewRadioGroup;
+    private ListView listview;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -40,8 +42,10 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Log.d(TAG, "onCreate");
         mRootView = inflater.inflate(R.layout.fragment_chat, container, false);
+        //TODO delete
+        PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_NEW);
         mHotNewRadioGroup = (RadioGroup) mRootView.findViewById(R.id.hotNewRadioGroup);
         mHotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -90,45 +94,62 @@ public class ChatFragment extends Fragment {
         customBaseAdapter = new ChatListViewAdapter(getActivity(), null);
 
         //Grab a handle on ListView
-        final ListView listview = (ListView) mRootView.findViewById(R.id.ListViewPosts);
+        listview = (ListView) mRootView.findViewById(R.id.ListViewPosts);
         listview.setAdapter(customBaseAdapter);
-        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
-            private int mLastFirstVisibleItem;
-            private long mLastTimeUpdated;
-            private static final long REFRESH_RATE = 400;
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem,
-                                 int visibleItemCount, int totalItemCount) {
-                Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
-                if(mLastFirstVisibleItem < firstVisibleItem)
-                {
-                    Log.i("SCROLLING DOWN","TRUE");
-                    if (isAcceptableToChangeState()) {
-                        hideTabs();
-                    }
-                }
-                if(mLastFirstVisibleItem > firstVisibleItem)
-                {
-                    Log.i("SCROLLING UP","TRUE");
-                    if (isAcceptableToChangeState()) {
-                        showTabs();
-                    }
-                }
-               mLastFirstVisibleItem = firstVisibleItem;
-            }
-            public boolean isAcceptableToChangeState(){
-                long currTime = System.currentTimeMillis();
-                if ((currTime - mLastTimeUpdated) > REFRESH_RATE){
-                    mLastTimeUpdated = currTime;
-                    return true;
-                }
-                return false;
-            }
-        });
+        if (Build.VERSION.SDK_INT > 23) {
+            listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+                private int mLastFirstVisibleItem;
+                private long mLastTimeUpdated;
+                private static final long REFRESH_RATE = 1000;
 
+                @Override
+                public void onScrollStateChanged(AbsListView view, int scrollState) {
+                }
+
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem,
+                                     int visibleItemCount, int totalItemCount) {
+                    if (mLastFirstVisibleItem < firstVisibleItem) {
+                        Log.i("SCROLLING DOWN", "TRUE");
+                        Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
+                        if (isAcceptableToChangeState()) {
+                            hideTabs();
+                        }
+                    }
+                    if (mLastFirstVisibleItem > firstVisibleItem) {
+                        Log.i("SCROLLING UP", "TRUE");
+                        Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
+                        if (isAcceptableToChangeState()) {
+                            showTabs();
+                        }
+                    }
+                    if (isAtTop(firstVisibleItem)) showTabs();
+                    mLastFirstVisibleItem = firstVisibleItem;
+                }
+
+                public boolean isAcceptableToChangeState() {
+                    long currTime = System.currentTimeMillis();
+                    if ((currTime - mLastTimeUpdated) > REFRESH_RATE) {
+                        mLastTimeUpdated = currTime;
+                        return true;
+                    }
+                    return false;
+                }
+
+                public boolean isAtTop(int firstVisibleItem) {
+                    if (firstVisibleItem == 0) {
+                        // check if we reached the top or bottom of the list
+                        View v = listview.getChildAt(0);
+                        int offset = (v == null) ? 0 : v.getTop();
+                        if (offset == 0) {
+                            // reached the top:
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
         return mRootView;
         // Inflate the layout for this fragment
     }
@@ -138,7 +159,7 @@ public class ChatFragment extends Fragment {
         super.onResume();
         Log.d(TAG, "onResume");
 
-        //Set what type of posts to display based on radiobutton value
+       // Set what type of posts to display based on radiobutton value
         if (mHotNewRadioGroup.getCheckedRadioButtonId() == R.id.showhot){
             PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_HOT);
         }

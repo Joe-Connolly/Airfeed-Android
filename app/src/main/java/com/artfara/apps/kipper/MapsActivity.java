@@ -47,8 +47,6 @@ import java.util.concurrent.TimeUnit;
 public class MapsActivity extends AppCompatActivity {
 
     private static final String TAG = "Maps Activity ";
-//    private ScheduledFuture<?> mQueryUsersTask;
-//    private ScheduledFuture<?> mQueryPlacesTask;
     private DatabaseReference mDatabase;
     private TabLayout mTabLayout;
 

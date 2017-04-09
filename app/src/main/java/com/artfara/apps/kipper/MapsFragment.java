@@ -149,6 +149,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if (Globals.globalUsers!=null && Globals.globalUsers.size() > 0) {
             mHeatMapProvider = new HeatmapTileProvider.Builder()
                     .data(Globals.globalUsers)
+                    .radius(30)
                     .build();
         }
         Log.d(TAG, "Globals.globalUsers.size()) = " + Globals.globalUsers.size());
@@ -165,6 +166,5 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .snippet(Utils.getPeopleString(place))));
         }
     }
-
 
 }

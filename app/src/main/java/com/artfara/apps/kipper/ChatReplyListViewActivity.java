@@ -22,28 +22,22 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     private String mPostId;
     private ChatListViewAdapter customBaseAdapter;
     private static final String TAG = " ChatReply Activity";
+    private ListView listview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_replies_list_view);
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
 
-        LinearLayout postLayout = (LinearLayout) findViewById(R.id.wrapper_post);
-        postLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ChatReplyListViewActivity.this, PostActivity.class);
-                intent.putExtra(Constants.POST_ID_KEY, mPostId);
-                startActivity(intent);
-            }
-        });
 
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(this, mPostId);
 
         //Grab a handle on ListView
-        final ListView listview = (ListView) findViewById(R.id.ListViewReplies);
+        listview = (ListView) findViewById(R.id.ListViewReplies);
         listview.setAdapter(customBaseAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -54,6 +48,15 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
             Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
             title.setTypeface(typeFaceBold);
         }
+        LinearLayout postLayout = (LinearLayout) findViewById(R.id.wrapper_post);
+        postLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatReplyListViewActivity.this, PostActivity.class);
+                intent.putExtra(Constants.POST_ID_KEY, mPostId);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -61,5 +64,12 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         super.onResume();
         Log.d(TAG, "onResume");
         customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
+        if (Globals.replyJustMade) {
+            listview.post(new Runnable(){
+                public void run() {
+                    listview.setSelection(listview.getCount() - 1);
+                }});
+            Globals.replyJustMade = false;
+        }
     }
 }
