@@ -29,7 +29,6 @@ public class ChatFragment extends Fragment {
     private Handler mHandler;
     private ChatListViewAdapter customBaseAdapter;
     private static final String TAG = " Chat Fragment ";
-//    private PostDatabaseHelper mPostDatabaseHelper;
     private View mRootView;
     private LinearLayout mPostButtonLayout;
     private RadioGroup mHotNewRadioGroup;

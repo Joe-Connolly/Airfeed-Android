@@ -35,6 +35,7 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
     private DatabaseReference mDatabase;
     private GoogleApiClient mGoogleApiClient;
     private String mID;
+    private boolean mServiceAlreadyStarted;
 
     private static final String TAG = "Intent Service ";
 
@@ -47,6 +48,9 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "onHandleIntent");
+        if (mServiceAlreadyStarted) return;
+        mServiceAlreadyStarted = true;
+
         mIntent = intent;
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mID = Utils.getUserID(getApplicationContext());
@@ -65,8 +69,8 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, " onConnected ");
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setInterval(60000);
+        mLocationRequest.setFastestInterval(20000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         //Only start app if we have the permissions we need to access location
         if (Build.VERSION.SDK_INT <= 22 || ContextCompat.checkSelfPermission(this,
@@ -90,11 +94,15 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
             childUpdates.put(mID, loc.toMap());
             mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
 
-            LocationServices.FusedLocationApi.removeLocationUpdates(
-                    mGoogleApiClient, mLocationListener);
-            mGoogleApiClient.disconnect();
+            try {
+                LocationServices.FusedLocationApi.removeLocationUpdates(
+                        mGoogleApiClient, mLocationListener);
+                mGoogleApiClient.disconnect();
 
-            AlarmReceiver.completeWakefulIntent(mIntent);
+                AlarmReceiver.completeWakefulIntent(mIntent);
+            }
+            catch (Exception e){
+            }
         }
     };
 

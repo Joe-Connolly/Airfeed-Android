@@ -37,7 +37,7 @@ public class Utils {
         PendingIntent recurringAlarm = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Calendar updateTime = Calendar.getInstance();
-        alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), 4000, recurringAlarm); //you can modify the interval of course
+        alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), 70000, recurringAlarm); //you can modify the interval of course
     }
 
     public static String getUserID(Context context){

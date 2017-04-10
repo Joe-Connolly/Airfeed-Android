@@ -124,13 +124,13 @@ public class MapsActivity extends AppCompatActivity {
                     public void run() {
                         mDatabase.child(Constants.USERS_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
                     }
-                }, 100, 15000, TimeUnit.MILLISECONDS);
+                }, 100, 30000, TimeUnit.MILLISECONDS);
         scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
                         mDatabase.child(Constants.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
                     }
-                }, 100, 15000, TimeUnit.MILLISECONDS);
+                }, 100, 30000, TimeUnit.MILLISECONDS);
 
         scheduleLocationTracking();
     }

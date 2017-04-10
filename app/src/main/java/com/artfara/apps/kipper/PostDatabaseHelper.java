@@ -59,10 +59,10 @@ public class PostDatabaseHelper {
     public static ArrayList<Post> getReplies(String postID) {
         ArrayList<Post> replies = new ArrayList<>(mGlobalPosts.get(postID).replies.values());
         Log.d(TAG, "Replies adding entry first");
+        sortAscendingByTime(replies);
         //Add original post to front of entries
         replies.add(0, mGlobalPosts.get(postID));
         formatTime(replies);
-        sortAscendingByTime(replies);
         setUserLetters(replies);
         return replies;
     }

@@ -38,12 +38,14 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
     private static final String TAG = "Job Service ";
     private GoogleApiClient mGoogleApiClient;
     private String mID;
+    private boolean mServiceAlreadyStarted;
     @Override
     public boolean onStartJob(JobParameters params) {
         Log.d(TAG, "onStartJob");
+        if (mServiceAlreadyStarted) return true;
+        mServiceAlreadyStarted = true;
+
         mParams = params;
-
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         mID = Utils.getUserID(getApplicationContext());
@@ -69,8 +71,8 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(3000);
+        mLocationRequest.setInterval(50000);
+        mLocationRequest.setFastestInterval(30000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         //Only start app if we have the permissions we need to access location
         if (Build.VERSION.SDK_INT <= 22 || ContextCompat.checkSelfPermission(this,
@@ -94,11 +96,16 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
             childUpdates.put(mID, loc.toMap());
             mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
 
-            LocationServices.FusedLocationApi.removeLocationUpdates(
-                    mGoogleApiClient, mLocationListener);
-            mGoogleApiClient.disconnect();
+            try {
+                LocationServices.FusedLocationApi.removeLocationUpdates(
+                        mGoogleApiClient, mLocationListener);
+                mGoogleApiClient.disconnect();
 
-            jobFinished(mParams, true);
+                jobFinished(mParams, true);
+            }
+            catch (Exception e){
+
+            }
         }
     };
 

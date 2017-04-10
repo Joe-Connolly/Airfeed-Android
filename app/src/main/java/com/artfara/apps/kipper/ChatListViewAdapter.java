@@ -18,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -148,15 +149,18 @@ public class ChatListViewAdapter extends BaseAdapter {
                 }
             });
         }
-
-        //Set custom typeface for userLetter
-        Typeface typeFaceBold = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Bold.ttf");
-        holder.txtUserLetter.setTypeface(typeFaceBold);
-
-
+        if (!mIsPost) {
+            //Give userLetter 5dp of padding next to postBody
+            float scale = c.getResources().getDisplayMetrics().density;
+            int paddingRightAsPixels = (int) (5 * scale + 0.5f);
+            //Set replies padding
+            holder.txtUserLetter.setPadding(0, 0, paddingRightAsPixels, 0);
+        }
+            //Set custom typeface for userLetter
+            Typeface typeFaceBold = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Bold.ttf");
+            holder.txtUserLetter.setTypeface(typeFaceBold);
 
         return rowView;
-
     }
 
     private boolean alreadyVoted(String id, boolean isUpVoting) {
