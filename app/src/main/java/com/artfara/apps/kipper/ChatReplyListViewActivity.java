@@ -27,7 +27,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_replies_list_view);
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
@@ -62,7 +62,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
         customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
         if (Globals.replyJustMade) {
             listview.post(new Runnable(){

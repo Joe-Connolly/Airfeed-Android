@@ -47,7 +47,7 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "onHandleIntent");
+//        Log.d(TAG, "onHandleIntent");
         if (mServiceAlreadyStarted) return;
         mServiceAlreadyStarted = true;
 
@@ -67,7 +67,7 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG, " onConnected ");
+//        Log.d(TAG, " onConnected ");
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(60000);
         mLocationRequest.setFastestInterval(20000);
@@ -86,7 +86,7 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "location updated, location = " + location + "");
+//            Log.d(TAG, "location updated, location = " + location + "");
 
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "intent " + Utils.getCurrentFormattedTime());
 

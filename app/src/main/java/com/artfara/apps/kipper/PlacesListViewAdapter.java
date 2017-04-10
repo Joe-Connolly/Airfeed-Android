@@ -45,7 +45,6 @@ public class PlacesListViewAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        Log.d(TAG, "" + mActivePlaces);
         return mActivePlaces.size();
     }
 
@@ -73,7 +72,6 @@ public class PlacesListViewAdapter extends BaseAdapter {
         holder.txtPlaceName.setTypeface(typeFaceLight);
         holder.txtPeopleCount.setText(Utils.getPeopleString(currentPlace));
         holder.txtPeopleCount.setTypeface(typeFaceBold);
-        Log.d(TAG, "called ");
 
         return rowView;
     }

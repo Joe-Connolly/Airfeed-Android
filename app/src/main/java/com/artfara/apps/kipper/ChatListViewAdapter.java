@@ -102,7 +102,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.upVoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onUpClick called");
+//                Log.d(TAG, "onUpClick called");
                 if (alreadyVoted(currentPost.ID, true)){
                     return;
                 }
@@ -120,7 +120,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.downVoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onDownClick called");
+//                Log.d(TAG, "onDownClick called");
                 if (alreadyVoted(currentPost.ID, false)){
                     return;
                 }

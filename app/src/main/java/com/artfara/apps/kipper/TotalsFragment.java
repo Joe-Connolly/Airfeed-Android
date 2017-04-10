@@ -28,7 +28,7 @@ public class TotalsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_totals, container, false);
@@ -47,7 +47,7 @@ public class TotalsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart");
+//        Log.d(TAG, "onStart");
         //update place total numbers as soon as they become available
         mHandler = new Handler();
         mHandler.postDelayed(mPopulateListViewRunnable, 200);
@@ -58,7 +58,7 @@ public class TotalsFragment extends Fragment {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (Globals.globalPlaces == null){
-                Log.d(TAG, "places still null");
+//                Log.d(TAG, "places still null");
                 mHandler.postDelayed(this, 200);
             }
             else{

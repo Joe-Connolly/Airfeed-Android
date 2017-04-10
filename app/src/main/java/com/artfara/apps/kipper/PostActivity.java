@@ -53,9 +53,8 @@ public class PostActivity extends AppCompatActivity {
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                Log.d(TAG, "Send action");
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    Log.d(TAG, "Send action");
+//                    Log.d(TAG, "Send action");
                     onPostClicked(v);
                     return true;
                 }
@@ -74,7 +73,6 @@ public class PostActivity extends AppCompatActivity {
     public void onPostClicked(View view) {
 
         mPostBody = ((EditText) findViewById(R.id.postBody)).getText().toString();
-        Log.d(TAG, mPostBody);
         //validate input
         if (mPostBody.length() < 1 || mPostBody.length() >= Constants.POST_MAXLENGTH){
             Toast.makeText(this, "Please write between 1-" + Constants.POST_MAXLENGTH + " characters", Toast.LENGTH_SHORT).show();
@@ -89,7 +87,7 @@ public class PostActivity extends AppCompatActivity {
     private ValueEventListener mIsUserBannedListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            Log.d(TAG, " add reply ");
+//            Log.d(TAG, " add reply ");
             String bannedString = dataSnapshot.getValue(String.class);
             //User is valid
             if (bannedString == null){

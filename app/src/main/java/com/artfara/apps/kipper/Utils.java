@@ -46,7 +46,7 @@ public class Utils {
         if (userID == null){
             userID = Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
-            Log.d(TAG, "android_id = " + userID);
+//            Log.d(TAG, "android_id = " + userID);
             if (userID == null) {
                 userID = FirebaseDatabase.getInstance().getReference().push().getKey();
             }

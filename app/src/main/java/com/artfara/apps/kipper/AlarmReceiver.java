@@ -26,7 +26,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver
 
         Intent myService = new Intent(context, TrackingIntentService.class);
         startWakefulService(context, myService);
-        Log.d(TAG, "called " + intent.getAction());
+//        Log.d(TAG, "called " + intent.getAction());
 
     }
 }

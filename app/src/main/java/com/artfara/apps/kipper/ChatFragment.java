@@ -41,7 +41,7 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         mRootView = inflater.inflate(R.layout.fragment_chat, container, false);
         //TODO delete
         PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_NEW);
@@ -49,7 +49,7 @@ public class ChatFragment extends Fragment {
         mHotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
+//                Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
             }
         });
         mPostButtonLayout = (LinearLayout) mRootView.findViewById(R.id.wrapper_post);
@@ -184,7 +184,7 @@ public class ChatFragment extends Fragment {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (PostDatabaseHelper.mFinishedDownloading == false){
-                Log.d(TAG, "posts still null");
+//                Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, 200);
             }
             else{

@@ -58,7 +58,7 @@ public class PostDatabaseHelper {
 
     public static ArrayList<Post> getReplies(String postID) {
         ArrayList<Post> replies = new ArrayList<>(mGlobalPosts.get(postID).replies.values());
-        Log.d(TAG, "Replies adding entry first");
+//        Log.d(TAG, "Replies adding entry first");
         sortAscendingByTime(replies);
         //Add original post to front of entries
         replies.add(0, mGlobalPosts.get(postID));
@@ -116,25 +116,25 @@ public class PostDatabaseHelper {
 
     public static void incrementPost(Post post) {
         mGlobalPosts.get(post.ID).voteCount++;
-        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).runTransaction(mUpVoteHandler);
     }
 
     public static void decrementPost(Post post) {
         mGlobalPosts.get(post.ID).voteCount--;
-        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).runTransaction(mDownVoteHandler);
     }
 
     public static void incrementReply(Post post, String parentPostID) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount++;
-        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
+//        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
         mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
     }
 
     public static void decrementReply(Post post, String parentPostID) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount--;
-        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
+//        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
         mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
     }
 
@@ -170,7 +170,7 @@ public class PostDatabaseHelper {
     private static ValueEventListener mAddReplySingleEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            Log.d(TAG, " add reply ");
+//            Log.d(TAG, " add reply ");
             Post post = dataSnapshot.getValue(Post.class);
             if (post == null) return;
             Post reply = mAddReplyQueue.poll();
@@ -193,7 +193,7 @@ public class PostDatabaseHelper {
                         return Transaction.success(mutableData);
                     }
                     post.voteCount++;
-                    Log.d(TAG, " voteCount " + post.voteCount);
+//                    Log.d(TAG, " voteCount " + post.voteCount);
                     mutableData.setValue(post);
                     return Transaction.success(mutableData);
                 }
@@ -211,7 +211,7 @@ public class PostDatabaseHelper {
                         return Transaction.success(mutableData);
                     }
                     post.voteCount--;
-                    Log.d(TAG, " voteCount " + post.voteCount);
+//                    Log.d(TAG, " voteCount " + post.voteCount);
                     mutableData.setValue(post);
                     return Transaction.success(mutableData);
                 }

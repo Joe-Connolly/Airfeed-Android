@@ -52,7 +52,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         // inflate the layout
         View v = inflater.inflate(R.layout.fragment_maps, container,
                 false);
@@ -75,7 +75,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
     }
 
     @Override
@@ -87,7 +87,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart");
+//        Log.d(TAG, "onStart");
         //update markers as soon as they become available
         mHandler = new Handler();
         mHandler.postDelayed(mPopulateMapRunnable, 1000);
@@ -133,10 +133,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (Globals.globalPlaces == null || Globals.globalUsers == null || mMap == null) {
-                Log.d(TAG, "places or users or map still null");
+//                Log.d(TAG, "places or users or map still null");
                 mHandler.postDelayed(this, 200);
             } else {
-                Log.d(TAG, "places not null");
+//                Log.d(TAG, "places not null");
                 createHeatMap();
                 createMarkers();
             }
@@ -152,7 +152,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .radius(30)
                     .build();
         }
-        Log.d(TAG, "Globals.globalUsers.size()) = " + Globals.globalUsers.size());
         // Add a tile overlay to the map, using the heat map tile provider.
         mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
     }
