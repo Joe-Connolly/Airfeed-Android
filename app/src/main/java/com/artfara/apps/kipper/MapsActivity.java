@@ -50,12 +50,11 @@ public class MapsActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private TabLayout mTabLayout;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        Log.d(TAG,"onCreate");
+        Log.d(TAG,"onCreate");
 
         Constants.prepare();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -86,6 +85,14 @@ public class MapsActivity extends AppCompatActivity {
         else{
             //No need to ask for permission
             initializeApplication();
+        }
+
+        Intent intent = getIntent();
+        if (intent.getStringExtra(Constants.POST_ID_KEY) != null){
+            PostDatabaseHelper.downloadPosts();
+            Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
+            chatReplyIntent.putExtras(intent);
+            startActivity(chatReplyIntent);
         }
     }
 
@@ -133,6 +140,7 @@ public class MapsActivity extends AppCompatActivity {
                 }, 100, 30000, TimeUnit.MILLISECONDS);
 
         scheduleLocationTracking();
+        Log.d(TAG, "finished onCreate");
     }
 
     private void scheduleLocationTracking() {
@@ -208,7 +216,7 @@ public class MapsActivity extends AppCompatActivity {
 
     public void onStop(){
         super.onStop();
-//        Log.d(TAG, "onStop");
+        Log.d(TAG, "onStop");
     }
 
     public void hideTabs(){

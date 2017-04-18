@@ -1,6 +1,7 @@
 package com.artfara.apps.kipper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -37,13 +38,16 @@ public class PostDatabaseHelper {
         mPostsRef = FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
         mAddReplyQueue = new ArrayBlockingQueue<>(100);
         mGlobalPosts = new HashMap<>();
+        mFinishedDownloading = false;
     }
 
     public static void setPostType(String postType) {
         mPostType = postType;
     }
 
-
+    public static boolean contains(String postID){
+        return mGlobalPosts.get(postID) != null;
+    }
     public static ArrayList<Post> getPosts() {
         if (mGlobalPosts == null) return null;
         ArrayList<Post> posts = new ArrayList<>(mGlobalPosts.values());
@@ -93,6 +97,10 @@ public class PostDatabaseHelper {
         post.ID = mPostsRef.push().getKey();
         mGlobalPosts.put(post.ID, post);
         mPostsRef.child(post.ID).setValue(post);
+
+        Intent intent = new Intent(context, OnReplyNotificationService.class);
+        intent.putExtra(Constants.POST_ID_KEY, post.ID);
+        context.startService(intent);
     }
 
     public static void addReply(String postBody, String parentPostID, Context context) {
@@ -106,11 +114,16 @@ public class PostDatabaseHelper {
 
         String replyId = repliesDatabase.push().getKey();
         post.ID = replyId;
+        post.parentPostID = parentPostID;
         HashMap<String, Post> replies = mGlobalPosts.get(parentPostID).replies;
         if (replies == null) replies = new HashMap<>();
         replies.put(replyId, post);
         mAddReplyQueue.add(post);
         mPostsRef.child(parentPostID).addListenerForSingleValueEvent(mAddReplySingleEventListener);
+
+        Intent intent = new Intent(context, OnReplyNotificationService.class);
+        intent.putExtra(Constants.POST_ID_KEY, parentPostID);
+        context.startService(intent);
     }
 
 
@@ -140,6 +153,7 @@ public class PostDatabaseHelper {
 
 
     public static void downloadPosts() {
+        Log.d(TAG, "About to download posts");
         mFinishedDownloading = false;
         mPostsRef.addListenerForSingleValueEvent(mPostsSingleEventListener);
     }
@@ -160,6 +174,7 @@ public class PostDatabaseHelper {
             }
             mGlobalPosts = posts;
             mFinishedDownloading = true;
+            Log.d(TAG, "Finish downloading posts");
         }
 
         @Override

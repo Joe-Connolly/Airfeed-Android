@@ -4,23 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
-import android.support.annotation.IdRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -145,6 +134,7 @@ public class ChatListViewAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     Intent intent = new Intent(c.getApplicationContext(), ChatReplyListViewActivity.class);
                     intent.putExtra(Constants.POST_ID_KEY, currentPost.ID);
+                    intent.putExtra(Constants.ACTION_START_FROM_TOP_KEY, true);
                     c.startActivity(intent);
                 }
             });

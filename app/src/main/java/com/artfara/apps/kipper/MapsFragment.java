@@ -128,7 +128,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap.setInfoWindowAdapter(new PopUpAdapter(layoutInflater));
     }
 
-
     Runnable mPopulateMapRunnable = new Runnable() {
         public void run() {
             //If data has not yet been downloaded, try again later
@@ -143,13 +142,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
     };
 
-
     private void createHeatMap() {
         mMap.clear();
         if (Globals.globalUsers!=null && Globals.globalUsers.size() > 0) {
             mHeatMapProvider = new HeatmapTileProvider.Builder()
                     .data(Globals.globalUsers)
-                    .radius(30)
+                    .radius(40)
                     .build();
         }
         // Add a tile overlay to the map, using the heat map tile provider.

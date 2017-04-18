@@ -58,8 +58,14 @@
 
         <activity android:name=".PlacesListViewActivity" />
         <activity android:name=".ChatReplyListViewActivity" />
-        <activity android:name=".PostActivity"
-            android:windowSoftInputMode="stateVisible"></activity>
+        <activity
+            android:name=".PostActivity"
+            android:windowSoftInputMode="stateVisible" />
+
+        <service
+            android:name=".OnReplyNotificationService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

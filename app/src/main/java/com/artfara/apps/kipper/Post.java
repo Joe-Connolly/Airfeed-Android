@@ -35,7 +35,13 @@ public class Post {
         map.put("voteCount", voteCount);
         map.put("timeInMilliseconds", timeInMilliseconds);
         map.put("userID", userID);
+        map.put("parentPostID", parentPostID);
         return map;
+    }
+
+    @Override
+    public String toString(){
+        return "Post: " + text + " " + (replies != null ? replies.size() : "null");
     }
 
 }

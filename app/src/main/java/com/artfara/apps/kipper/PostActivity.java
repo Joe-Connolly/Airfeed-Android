@@ -98,7 +98,6 @@ public class PostActivity extends AppCompatActivity {
                 //We are adding a reply
                 else{
                     PostDatabaseHelper.addReply(mPostBody, mParentPostID, PostActivity.this);
-                    Globals.replyJustMade = true;
                 }
                 finish();
             }

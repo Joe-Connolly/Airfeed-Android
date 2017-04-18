@@ -8,14 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ChatReplyListViewActivity extends AppCompatActivity {
 
@@ -23,15 +18,19 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     private ChatListViewAdapter customBaseAdapter;
     private static final String TAG = " ChatReply Activity";
     private ListView listview;
+    private Handler mHandler;
+    private boolean mActionStartFromTop;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_replies_list_view);
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
-
+        mActionStartFromTop = getIntent().getBooleanExtra(
+                Constants.ACTION_START_FROM_TOP_KEY, false);
 
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(this, mPostId);
@@ -62,14 +61,37 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-//        Log.d(TAG, "onResume");
-        customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
-        if (Globals.replyJustMade) {
-            listview.post(new Runnable(){
-                public void run() {
-                    listview.setSelection(listview.getCount() - 1);
-                }});
-            Globals.replyJustMade = false;
-        }
+        Log.d(TAG, "onResume");
+        //Update replies as soon as they become available
+        //update posts as soon as they become available
+        mHandler = new Handler();
+        mHandler.postDelayed(mPopulateListViewRunnable, 100);
     }
+
+    Runnable mPopulateListViewRunnable = new Runnable() {
+        public void run() {
+            //If data has not yet been downloaded, try again later
+            if (PostDatabaseHelper.mFinishedDownloading == false){
+                Log.d(TAG, "posts still null");
+                mHandler.postDelayed(this, 200);
+            }
+            else{
+                Log.d(TAG, "posts NOT null");
+                if (PostDatabaseHelper.contains(mPostId)) {
+                    customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
+                    Log.d(TAG, "setting entries to " + PostDatabaseHelper.getReplies(mPostId).toString());
+                    if (mActionStartFromTop) {
+                        mActionStartFromTop = false;
+                    }
+                    else {
+                        listview.post(new Runnable() {
+                            public void run() {
+                                listview.setSelection(listview.getCount() - 1);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    };
 }
