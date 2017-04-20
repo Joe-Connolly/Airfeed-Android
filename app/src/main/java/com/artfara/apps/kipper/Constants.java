@@ -23,7 +23,11 @@ public class Constants {
     public static final String PLACE_TYPE_KEY = "place type";
     public static final String POST_ID_KEY = "post id";
     public static final String USER_ID_KEY = "username";
-    public static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
+    public static final String[] LETTERS = {"OP","A","B","C","D","E","F","G","H","I","J","K",
+            "L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y","Z","a","b","c",
+            "d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v",
+            "w","x","y","z","1","2","3","4","5","6","7","8","9"};
+    ;
     public static final String POSTS_TYPE_HOT = "HOT";
     public static final String POSTS_TYPE_NEW = "NEW";
     public static final long REFRESH_RATE = 600000;

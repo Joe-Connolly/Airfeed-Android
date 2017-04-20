@@ -80,7 +80,7 @@ public class PostDatabaseHelper {
             if (userLetter == null) {
                 //The post has not already been assigned a letter, so assign the next available letter
                 //Put it in HashMap so that we can account that that letter has been assigned to that user
-                userLetter = String.valueOf(Constants.LETTERS.charAt(lettersAssigned.size()));
+                userLetter = String.valueOf(Constants.LETTERS[lettersAssigned.size()]);
                 lettersAssigned.put(post.userID, userLetter);
             }
             //Assign the post a userLetter (Later we will display the userLetter as a TextView for each row in scrollview
@@ -263,12 +263,6 @@ public class PostDatabaseHelper {
             }
         });
     }
-
-
-    public static void showPosts(String postType) {
-        mPostType = postType;
-    }
-
 
     public static void formatTime(ArrayList<Post> posts) {
         for (Post post : posts) {

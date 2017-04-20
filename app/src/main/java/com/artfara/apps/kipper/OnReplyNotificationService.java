@@ -30,15 +30,15 @@ import java.util.concurrent.TimeUnit;
 
 public class OnReplyNotificationService extends Service {
     private static final String TAG = "NotificationService ";
-    private ArrayList<String> alreadyFollowedPosts;
+    private HashMap<String, Long> alreadyFollowedPosts;
 
     public OnReplyNotificationService() {
     }
 
     @Override
-    public void onCreate(){
+    public void onCreate() {
         Log.d(TAG, "onCreate");
-        alreadyFollowedPosts = new ArrayList<>();
+        alreadyFollowedPosts = new HashMap<>();
         super.onCreate();
     }
 
@@ -48,12 +48,14 @@ public class OnReplyNotificationService extends Service {
         //check whether intent is null
         if (intent != null) {
             String postID = intent.getStringExtra(Constants.POST_ID_KEY);
-            if (!alreadyFollowedPosts.contains(postID)) {
+            if (!alreadyFollowedPosts.values().contains(postID)) {
+                Long currentTime = System.currentTimeMillis();
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 database.child(Constants.POSTS_TABLE_NAME).child(postID)
-                        .child(Constants.REPLIES_TABLE_NAME).limitToLast(1)
+                        .child(Constants.REPLIES_TABLE_NAME)
+                        .limitToLast(1)
                         .addChildEventListener(mOnReplyAddedSingleEventListener);
-                alreadyFollowedPosts.add(postID);
+                alreadyFollowedPosts.put(postID, currentTime);
             }
         }
         return super.onStartCommand(intent, flags, startId);
@@ -65,29 +67,29 @@ public class OnReplyNotificationService extends Service {
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Post newReply = dataSnapshot.getValue(Post.class);
             Log.d(TAG, "text = " + newReply.text);
-//            if (!newReply.userID.equals(Utils.getUserID(getApplicationContext()))){
-            Intent intent = new Intent(getApplicationContext(), MapsActivity.class); // set notification activity
-            intent.putExtra(Constants.POST_ID_KEY, newReply.parentPostID);
-            PendingIntent pIntent = PendingIntent.getActivity(
-                    getApplicationContext(),
-                    0,
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+            if (!newReply.userID.equals(Utils.getUserID(getApplicationContext())) &&
+                    newReply.timeInMilliseconds > alreadyFollowedPosts.get(newReply.parentPostID) ) {
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class); // set notification activity
+                intent.putExtra(Constants.POST_ID_KEY, newReply.parentPostID);
+                PendingIntent pIntent = PendingIntent.getActivity(
+                        getApplicationContext(),
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Notification notif = new Notification.Builder(getApplicationContext())
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText("Someone replied to your post")
-                    .setSmallIcon(R.drawable.notification_icon)
-                    .setContentIntent(pIntent)
-                    .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
-                    .setAutoCancel(true)
-                    .build();
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            //firstParam allows you to update the notification later on.
-            notificationManager.notify(1, notif);
-
-//            }
+                Notification notif = new Notification.Builder(getApplicationContext())
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText("Someone replied to your post")
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setContentIntent(pIntent)
+                        .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
+                        .setAutoCancel(true)
+                        .build();
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                //firstParam allows you to update the notification later on.
+                notificationManager.notify(1, notif);
+            }
 
         }
 

@@ -54,7 +54,7 @@ public class MapsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG,"onCreate");
+        Log.d(TAG, "onCreate");
 
         Constants.prepare();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -81,19 +81,19 @@ public class MapsActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     0);
-        }
-        else{
+        } else {
             //No need to ask for permission
             initializeApplication();
         }
 
         Intent intent = getIntent();
-        if (intent.getStringExtra(Constants.POST_ID_KEY) != null){
+        if (intent.getStringExtra(Constants.POST_ID_KEY) != null) {
             PostDatabaseHelper.downloadPosts();
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
             chatReplyIntent.putExtras(intent);
             startActivity(chatReplyIntent);
         }
+
     }
 
     @Override
