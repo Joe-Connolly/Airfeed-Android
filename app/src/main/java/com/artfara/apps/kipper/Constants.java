@@ -12,7 +12,7 @@ public class Constants {
     public final static String BANNED_USERS_TABLE_NAME = "Banned_Users";
     public final static String USERS_TABLE_NAME = "users";
     public final static String PLACES_TABLE_NAME = "testplaces";
-    public final static String POSTS_TABLE_NAME = "test/Posts";
+    public final static String POSTS_TABLE_NAME = "Posts";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final String ID_KEY = "id";
     public static final double HANOVER_LATITUDE = 43.703272;

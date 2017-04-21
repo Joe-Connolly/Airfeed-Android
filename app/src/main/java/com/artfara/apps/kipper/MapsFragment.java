@@ -3,6 +3,7 @@ package com.artfara.apps.kipper;
 
 import android.*;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -157,10 +159,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private void createMarkers() {
         ArrayList<Place> places = Globals.globalPlaces;
         for (Place place : places) {
-            mMap.addMarker((new MarkerOptions().position(new LatLng(place.latitude, place.longitude))
+            //Plot marker
+            mMap.addMarker((new MarkerOptions()
+                    .position(new LatLng(place.latitude, place.longitude))
                     .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
                     .title(place.location)
                     .snippet(Utils.getPeopleString(place))));
+            //Plot circle
+            mMap.addCircle((new CircleOptions()
+                    .center(new LatLng(place.latitude, place.longitude))
+                    .radius(15)
+                    .strokeColor(Color.argb((int) (255.0 * place.alpha), 244, 66, 92)))
+                    .strokeWidth(0.2f)
+                    .fillColor(Color.argb((int) (255.0 * place.alpha), 244, 66, 92)));
         }
     }
 

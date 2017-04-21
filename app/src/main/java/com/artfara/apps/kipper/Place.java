@@ -18,6 +18,7 @@ public class Place {
     public Integer people;
     public String type;
     public int state;
+    public double alpha;
 
 
     public Place() {

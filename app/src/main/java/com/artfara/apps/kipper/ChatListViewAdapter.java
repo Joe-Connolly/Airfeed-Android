@@ -142,7 +142,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         if (!mIsPost) {
             //Give userLetter 5dp of padding next to postBody
             float scale = c.getResources().getDisplayMetrics().density;
-            int paddingRightAsPixels = (int) (5 * scale + 0.5f);
+            int paddingRightAsPixels = (int) (8 * scale + 0.5f);
             //Set replies padding
             holder.txtUserLetter.setPadding(0, 0, paddingRightAsPixels, 0);
         }
