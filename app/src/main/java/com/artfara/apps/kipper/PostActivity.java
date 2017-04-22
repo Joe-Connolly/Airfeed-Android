@@ -74,41 +74,19 @@ public class PostActivity extends AppCompatActivity {
 
         mPostBody = ((EditText) findViewById(R.id.postBody)).getText().toString();
         //validate input
-        if (mPostBody.length() < 1 || mPostBody.length() >= Constants.POST_MAXLENGTH){
+        if (mPostBody.length() < 1 || mPostBody.length() >= Constants.POST_MAXLENGTH) {
             Toast.makeText(this, "Please write between 1-" + Constants.POST_MAXLENGTH + " characters", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        //Make sure user is valid before posting
-        mDatabase.child(Constants.BANNED_USERS_TABLE_NAME).child(Utils.getUserID(this))
-                .addListenerForSingleValueEvent(mIsUserBannedListener);
+        //We are adding a post
+        if (mParentPostID == null) {
+            PostDatabaseHelper.addPost(mPostBody, PostActivity.this);
+        }
+        //We are adding a reply
+        else {
+            PostDatabaseHelper.addReply(mPostBody, mParentPostID, PostActivity.this);
+        }
+        finish();
     }
-
-    private ValueEventListener mIsUserBannedListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-//            Log.d(TAG, " add reply ");
-            String bannedString = dataSnapshot.getValue(String.class);
-            //User is valid
-            if (bannedString == null){
-                //We are adding a post
-                if (mParentPostID == null) {
-                    PostDatabaseHelper.addPost(mPostBody, PostActivity.this);
-                }
-                //We are adding a reply
-                else{
-                    PostDatabaseHelper.addReply(mPostBody, mParentPostID, PostActivity.this);
-                    Globals.replyJustMade = true;
-                }
-                finish();
-            }
-            //User is banned
-            else{
-                Toast.makeText(PostActivity.this, " Your account is banned", Toast.LENGTH_SHORT).show();
-            }
-        }
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-        }
-    };
 }

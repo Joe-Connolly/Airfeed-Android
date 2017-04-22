@@ -25,7 +25,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_replies_list_view);
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
@@ -61,7 +61,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
         //Update replies as soon as they become available
         //update posts as soon as they become available
         mHandler = new Handler();
@@ -76,10 +76,9 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
                 mHandler.postDelayed(this, 200);
             }
             else{
-                Log.d(TAG, "posts NOT null");
+//                Log.d(TAG, "posts NOT null");
                 if (PostDatabaseHelper.contains(mPostId)) {
                     customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
-                    Log.d(TAG, "setting entries to " + PostDatabaseHelper.getReplies(mPostId).toString());
                     if (mActionStartFromTop) {
                         mActionStartFromTop = false;
                     }

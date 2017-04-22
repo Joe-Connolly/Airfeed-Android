@@ -44,15 +44,9 @@ public class ChatFragment extends Fragment {
         Log.d(TAG, "onCreate");
 
         mRootView = inflater.inflate(R.layout.fragment_chat, container, false);
-        //TODO delete
+        mHandler = new Handler();
         PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_NEW);
         mHotNewRadioGroup = (RadioGroup) mRootView.findViewById(R.id.hotNewRadioGroup);
-        mHotNewRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-//                Log.d(TAG,"checkedId = " + checkedId + " " + R.id.showhot + " " + R.id.shownew);
-            }
-        });
         mPostButtonLayout = (LinearLayout) mRootView.findViewById(R.id.wrapper_post);
         mPostButtonLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,7 +164,6 @@ public class ChatFragment extends Fragment {
             customBaseAdapter.setEntries(new ArrayList<Post>());
             PostDatabaseHelper.downloadPosts();
             //update posts as soon as they become available
-            mHandler = new Handler();
             mHandler.postDelayed(mPopulateListViewRunnable, 100);
         }
         else{

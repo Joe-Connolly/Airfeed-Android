@@ -2,13 +2,10 @@ package com.artfara.apps.kipper;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -21,11 +18,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,9 +28,7 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
     private GoogleApiClient mGoogleApiClient;
     private String mID;
     private boolean mServiceAlreadyStarted;
-
     private static final String TAG = "Intent Service ";
-
     public TrackingIntentService() {
         super("TrackingIntentService");
     }
@@ -86,10 +76,8 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
 
         @Override
         public void onLocationChanged(Location location) {
-//            Log.d(TAG, "location updated, location = " + location + "");
-
+            Log.d(TAG, "location updated, location = " + location + "");
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "intent " + Utils.getCurrentFormattedTime());
-
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(mID, loc.toMap());
             mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
@@ -98,19 +86,12 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
                 LocationServices.FusedLocationApi.removeLocationUpdates(
                         mGoogleApiClient, mLocationListener);
                 mGoogleApiClient.disconnect();
-
                 AlarmReceiver.completeWakefulIntent(mIntent);
             }
             catch (Exception e){
             }
         }
     };
-
-
-
-
-
-
 
     @Override
     public void onConnectionSuspended(int i) {

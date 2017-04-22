@@ -38,7 +38,7 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
     private static final String TAG = "Job Service ";
     private GoogleApiClient mGoogleApiClient;
     private String mID;
-    private boolean mServiceAlreadyStarted;
+    private boolean mServiceAlreadyStarted = false;
     @Override
     public boolean onStartJob(JobParameters params) {
 //        Log.d(TAG, "onStartJob");
@@ -88,7 +88,7 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
 
         @Override
         public void onLocationChanged(Location location) {
-//            Log.d(TAG, "location updated, location = " + location + "");
+            Log.d(TAG, "location updated, location = " + location + "");
 
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "job " + Utils.getCurrentFormattedTime());
 

@@ -7,12 +7,11 @@ import java.util.Map;
  * Created by Van on 9/1/16.
  */
 public class Constants {
-    //Constants to be used throughout the class
-    public final static String TEST_KEY = "testKey";
-    public final static String BANNED_USERS_TABLE_NAME = "Banned_Users";
+    //Constants to be used throughout the application
     public final static String USERS_TABLE_NAME = "users";
     public final static String PLACES_TABLE_NAME = "testplaces";
     public final static String POSTS_TABLE_NAME = "Posts";
+    public final static String VOTE_FIELD_NAME = "voteCount";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final String ID_KEY = "id";
     public static final double HANOVER_LATITUDE = 43.703272;

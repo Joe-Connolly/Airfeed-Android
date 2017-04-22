@@ -27,7 +27,6 @@ public class PostDatabaseHelper {
     private static final String TAG = " DatabaseHelper ";
     private static HashMap<String, Post> mGlobalPosts;
     private static DatabaseReference mPostsRef;
-    private static DatabaseReference mDatabase;
     private static String mPostType;
     private static ArrayBlockingQueue<Post> mAddReplyQueue;
     public static boolean mFinishedDownloading;
@@ -129,26 +128,27 @@ public class PostDatabaseHelper {
 
     public static void incrementPost(Post post) {
         mGlobalPosts.get(post.ID).voteCount++;
-//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
-        mPostsRef.child(post.ID).runTransaction(mUpVoteHandler);
+        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+//        mPostsRef.child(post.ID).runTransaction(mUpVoteHandler);
+        mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 
     public static void decrementPost(Post post) {
         mGlobalPosts.get(post.ID).voteCount--;
 //        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
-        mPostsRef.child(post.ID).runTransaction(mDownVoteHandler);
+        mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
     }
 
     public static void incrementReply(Post post, String parentPostID) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount++;
 //        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mUpVoteHandler);
+        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 
     public static void decrementReply(Post post, String parentPostID) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount--;
 //        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).runTransaction(mDownVoteHandler);
+        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
     }
 
 
@@ -203,34 +203,35 @@ public class PostDatabaseHelper {
             new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
-                    Post post = mutableData.getValue(Post.class);
-                    if (post == null) {
+                    Long vote = mutableData.getValue(Long.class);
+                    if (vote == null) {
                         return Transaction.success(mutableData);
                     }
-                    post.voteCount++;
-//                    Log.d(TAG, " voteCount " + post.voteCount);
-                    mutableData.setValue(post);
+                    vote++;
+                    mutableData.setValue(vote);
                     return Transaction.success(mutableData);
                 }
 
                 @Override
                 public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                }
+                    if (databaseError == null){
+                        Log.d(TAG, "error = null");
+                        return;
+                    }
+                   }
             };
     private static com.google.firebase.database.Transaction.Handler mDownVoteHandler =
             new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
-                    Post post = mutableData.getValue(Post.class);
-                    if (post == null) {
+                    Long vote = mutableData.getValue(Long.class);
+                    if (vote == null) {
                         return Transaction.success(mutableData);
                     }
-                    post.voteCount--;
-//                    Log.d(TAG, " voteCount " + post.voteCount);
-                    mutableData.setValue(post);
+                    vote--;
+                    mutableData.setValue(vote);
                     return Transaction.success(mutableData);
                 }
-
                 @Override
                 public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
                 }

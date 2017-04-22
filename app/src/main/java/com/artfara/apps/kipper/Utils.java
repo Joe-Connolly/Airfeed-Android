@@ -31,7 +31,7 @@ public class Utils {
         return peopleString;
     }
 
-    public static void startAlarmTrackingService(Context context){
+    public static void startAlarmTrackingService(Context context) {
         //Start Alarm Manager Tracking Service
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         PendingIntent recurringAlarm = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -46,7 +46,6 @@ public class Utils {
         if (userID == null){
             userID = Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
-//            Log.d(TAG, "android_id = " + userID);
             if (userID == null) {
                 userID = FirebaseDatabase.getInstance().getReference().push().getKey();
             }

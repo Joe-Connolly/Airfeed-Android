@@ -87,7 +87,7 @@ public class MapsActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        if (intent.getStringExtra(Constants.POST_ID_KEY) != null) {
+        if (intent.getStringExtra(Constants.POST_ID_KEY) != null && savedInstanceState == null) {
             PostDatabaseHelper.downloadPosts();
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
             chatReplyIntent.putExtras(intent);
@@ -169,6 +169,8 @@ public class MapsActivity extends AppCompatActivity {
         //Start Alarm Manager Tracking Service
         Utils.startAlarmTrackingService(this);
 
+        Intent intent = new Intent(this, TrackingService.class);
+        startService(intent);
     }
 
 

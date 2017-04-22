@@ -146,10 +146,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private void createHeatMap() {
         mMap.clear();
-        if (Globals.globalUsers!=null && Globals.globalUsers.size() > 0) {
+        if (Globals.globalUsers != null && Globals.globalUsers.size() > 0) {
             mHeatMapProvider = new HeatmapTileProvider.Builder()
                     .data(Globals.globalUsers)
-                    .radius(40)
+                    .radius(42)
                     .build();
         }
         // Add a tile overlay to the map, using the heat map tile provider.
@@ -168,7 +168,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             //Plot circle
             mMap.addCircle((new CircleOptions()
                     .center(new LatLng(place.latitude, place.longitude))
-                    .radius(15)
+                    .radius(12)
                     .strokeColor(Color.argb((int) (255.0 * place.alpha), 244, 66, 92)))
                     .strokeWidth(0.2f)
                     .fillColor(Color.argb((int) (255.0 * place.alpha), 244, 66, 92)));
