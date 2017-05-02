@@ -37,14 +37,14 @@ public class OnReplyNotificationService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         alreadyFollowedPosts = new HashMap<>();
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStart");
+//        Log.d(TAG, "onStart");
         //check whether intent is null
         if (intent != null) {
             String postID = intent.getStringExtra(Constants.POST_ID_KEY);
@@ -66,7 +66,7 @@ public class OnReplyNotificationService extends Service {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Post newReply = dataSnapshot.getValue(Post.class);
-            Log.d(TAG, "text = " + newReply.text);
+//            Log.d(TAG, "text = " + newReply.text);
             if (!newReply.userID.equals(Utils.getUserID(getApplicationContext())) &&
                     newReply.timeInMilliseconds > alreadyFollowedPosts.get(newReply.parentPostID) ) {
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class); // set notification activity

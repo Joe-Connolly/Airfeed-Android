@@ -72,7 +72,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (PostDatabaseHelper.mFinishedDownloading == false){
-                Log.d(TAG, "posts still null");
+//                Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, 200);
             }
             else{

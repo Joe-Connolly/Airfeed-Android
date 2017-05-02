@@ -10,9 +10,11 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -49,14 +51,17 @@ public class MapsActivity extends AppCompatActivity {
     private static final String TAG = "Maps Activity ";
     private DatabaseReference mDatabase;
     private TabLayout mTabLayout;
+    private SharedPreferences mPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
 
         Constants.prepare();
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -72,6 +77,24 @@ public class MapsActivity extends AppCompatActivity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(viewPager);
+        mTabLayout.setOnTabSelectedListener(
+                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        super.onTabSelected(tab);
+                        int currentTabIndex = tab.getPosition();
+                        mPrefs.edit().putInt(Constants.LAST_TAB_SELECTED_KEY, currentTabIndex).apply();
+                    }
+                });
+        int lastTabSelectedIndex = mPrefs.getInt(Constants.LAST_TAB_SELECTED_KEY, -1);
+        if (lastTabSelectedIndex != -1){
+            TabLayout.Tab selectedTab = mTabLayout.getTabAt(lastTabSelectedIndex);
+            selectedTab.select();
+        }
+        else {
+            TabLayout.Tab feedTab = mTabLayout.getTabAt(1);
+            feedTab.select();
+        }
 
         //Only start app if we have the permissions we need to access location
         if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
@@ -140,7 +163,6 @@ public class MapsActivity extends AppCompatActivity {
                 }, 100, 30000, TimeUnit.MILLISECONDS);
 
         scheduleLocationTracking();
-        Log.d(TAG, "finished onCreate");
     }
 
     private void scheduleLocationTracking() {
@@ -218,7 +240,7 @@ public class MapsActivity extends AppCompatActivity {
 
     public void onStop(){
         super.onStop();
-        Log.d(TAG, "onStop");
+//        Log.d(TAG, "onStop");
     }
 
     public void hideTabs(){

@@ -37,7 +37,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onCreate(){
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
 
         if (mServiceAlreadyStarted) return;
         mServiceAlreadyStarted = true;
@@ -62,7 +62,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "location updated, location = " + location);
+//            Log.d(TAG, "location updated, location = " + location);
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "service " + Utils.getCurrentFormattedTime());
 
             Map<String, Object> childUpdates = new HashMap<>();
@@ -73,7 +73,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     //Remove notifications if activity is shut down
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+//        Log.d(TAG, "onDestroy");
         try {
             LocationServices.FusedLocationApi.removeLocationUpdates(
                     mGoogleApiClient, mLocationListener);

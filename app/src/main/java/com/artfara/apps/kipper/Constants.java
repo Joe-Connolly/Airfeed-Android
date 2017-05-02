@@ -8,15 +8,13 @@ import java.util.Map;
  */
 public class Constants {
     //Constants to be used throughout the application
-    public final static String USERS_TABLE_NAME = "users";
+    public final static String USERS_TABLE_NAME = "test/Users";
     public final static String PLACES_TABLE_NAME = "testplaces";
-    public final static String POSTS_TABLE_NAME = "Posts";
+    public final static String POSTS_TABLE_NAME = "test/Posts";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public final static String REPLIES_TABLE_NAME = "replies";
-    public static final String ID_KEY = "id";
     public static final double HANOVER_LATITUDE = 43.703272;
     public static final double HANOVER_LONGITUDE = -72.288633;
-    public static final String CONSTANTS_TABLE_NAME = "Constants";
     public static final Place[] PLACE_TOTALS_TEMPLATES = new Place[] {new Place("Greek Life", "frat"), new Place("Food Courts", "food"),
             new Place("Libraries", "library"), new Place("Gyms", "gym"), new Place("Events", "event")};
     public static final String PLACE_TYPE_KEY = "place type";
@@ -32,6 +30,7 @@ public class Constants {
     public static final long REFRESH_RATE = 600000;
     public static final int POST_MAXLENGTH = 200;
     public static final String ACTION_START_FROM_TOP_KEY = "start from front key";
+    public static final String LAST_TAB_SELECTED_KEY = "Last tab selected key" ;
 
     public static Map<String, Integer> PLACES = new HashMap<>();
 

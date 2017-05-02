@@ -63,8 +63,6 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
 
     @Override
     public boolean onStopJob(JobParameters params) {
-
-//        Log.d(TAG, "onSTopJob");
         return true;
     }
 
@@ -88,7 +86,7 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "location updated, location = " + location + "");
+//            Log.d(TAG, "location updated, location = " + location + "");
 
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "job " + Utils.getCurrentFormattedTime());
 

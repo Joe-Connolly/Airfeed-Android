@@ -61,7 +61,6 @@ public class PostDatabaseHelper {
 
     public static ArrayList<Post> getReplies(String postID) {
         ArrayList<Post> replies = new ArrayList<>(mGlobalPosts.get(postID).replies.values());
-//        Log.d(TAG, "Replies adding entry first");
         sortAscendingByTime(replies);
         //Add original post to front of entries
         replies.add(0, mGlobalPosts.get(postID));
@@ -153,7 +152,7 @@ public class PostDatabaseHelper {
 
 
     public static void downloadPosts() {
-        Log.d(TAG, "About to download posts");
+//        Log.d(TAG, "About to download posts");
         mFinishedDownloading = false;
         mPostsRef.addListenerForSingleValueEvent(mPostsSingleEventListener);
     }
@@ -174,7 +173,7 @@ public class PostDatabaseHelper {
             }
             mGlobalPosts = posts;
             mFinishedDownloading = true;
-            Log.d(TAG, "Finish downloading posts");
+//            Log.d(TAG, "Finish downloading posts");
         }
 
         @Override
@@ -185,7 +184,6 @@ public class PostDatabaseHelper {
     private static ValueEventListener mAddReplySingleEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-//            Log.d(TAG, " add reply ");
             Post post = dataSnapshot.getValue(Post.class);
             if (post == null) return;
             Post reply = mAddReplyQueue.poll();
@@ -214,10 +212,6 @@ public class PostDatabaseHelper {
 
                 @Override
                 public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                    if (databaseError == null){
-                        Log.d(TAG, "error = null");
-                        return;
-                    }
                    }
             };
     private static com.google.firebase.database.Transaction.Handler mDownVoteHandler =

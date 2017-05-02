@@ -89,7 +89,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
-//        Log.d(TAG, "onStart");
         //update markers as soon as they become available
         mHandler = new Handler();
         mHandler.postDelayed(mPopulateMapRunnable, 1000);
@@ -137,7 +136,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                Log.d(TAG, "places or users or map still null");
                 mHandler.postDelayed(this, 200);
             } else {
-//                Log.d(TAG, "places not null");
                 createHeatMap();
                 createMarkers();
             }
