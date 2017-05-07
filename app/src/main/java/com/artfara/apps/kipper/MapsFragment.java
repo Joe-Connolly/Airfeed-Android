@@ -149,9 +149,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .data(Globals.globalUsers)
                     .radius(42)
                     .build();
+            // Add a tile overlay to the map, using the heat map tile provider.
+            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
         }
-        // Add a tile overlay to the map, using the heat map tile provider.
-        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
     }
 
     private void createMarkers() {
@@ -163,13 +163,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
                     .title(place.location)
                     .snippet(Utils.getPeopleString(place))));
-            //Plot circle
-            mMap.addCircle((new CircleOptions()
-                    .center(new LatLng(place.latitude, place.longitude))
-                    .radius(12)
-                    .strokeColor(Color.argb((int) (255.0 * place.alpha), 244, 66, 92)))
-                    .strokeWidth(0.2f)
-                    .fillColor(Color.argb((int) (255.0 * place.alpha), 244, 66, 92)));
         }
     }
 

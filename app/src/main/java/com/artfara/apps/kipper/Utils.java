@@ -34,10 +34,14 @@ public class Utils {
     public static void startAlarmTrackingService(Context context) {
         //Start Alarm Manager Tracking Service
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-        PendingIntent recurringAlarm = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Calendar updateTime = Calendar.getInstance();
-        alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), 70000, recurringAlarm); //you can modify the interval of course
+        boolean alarmUp = (PendingIntent.getBroadcast(context, Constants.ALARM_ID, alarmIntent, PendingIntent.FLAG_NO_CREATE) != null);
+//        Log.d(TAG, "startAlarmTrackingServiceCalled");
+        if (!alarmUp) {
+            PendingIntent recurringAlarm = PendingIntent.getBroadcast(context, Constants.ALARM_ID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Calendar updateTime = Calendar.getInstance();
+            alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), 1000000, recurringAlarm); //you can modify the interval of course
+        }
     }
 
     public static String getUserID(Context context){

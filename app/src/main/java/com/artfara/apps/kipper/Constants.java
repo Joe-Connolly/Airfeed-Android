@@ -8,9 +8,9 @@ import java.util.Map;
  */
 public class Constants {
     //Constants to be used throughout the application
-    public final static String USERS_TABLE_NAME = "test/Users";
+    public final static String USERS_TABLE_NAME = "Users";
     public final static String PLACES_TABLE_NAME = "testplaces";
-    public final static String POSTS_TABLE_NAME = "test/Posts";
+    public final static String POSTS_TABLE_NAME = "Posts";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final double HANOVER_LATITUDE = 43.703272;
@@ -31,6 +31,7 @@ public class Constants {
     public static final int POST_MAXLENGTH = 200;
     public static final String ACTION_START_FROM_TOP_KEY = "start from front key";
     public static final String LAST_TAB_SELECTED_KEY = "Last tab selected key" ;
+    public static final int ALARM_ID = 0;
 
     public static Map<String, Integer> PLACES = new HashMap<>();
 

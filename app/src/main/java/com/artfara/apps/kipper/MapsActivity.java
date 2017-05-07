@@ -166,33 +166,25 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     private void scheduleLocationTracking() {
+        Intent intent = new Intent(this, TrackingService.class);
+        startService(intent);
 
         //Start JobScheduler Tracking Service
         JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancelAll();
         ComponentName serviceName = new ComponentName(this, TrackingJobService.class);
         int jobId = 1;
         JobInfo.Builder builder;
-        if (Build.VERSION.SDK_INT >= 24) {
-            builder = new JobInfo.Builder(jobId, serviceName)
-                    .setPeriodic(1000000)
-                    .setRequiresDeviceIdle(false) // does not matter if device is idle
-                    .setRequiresCharging(false) // we don't care if the device is charging or not
-                    .setPersisted(true); // start on boot
-        } else {
-            builder = new JobInfo.Builder(jobId, serviceName)
-                    .setPeriodic(60000)
-                    .setRequiresDeviceIdle(false) // does not matter if device is idle
-                    .setRequiresCharging(false) // we don't care if the device is charging or not
-                    .setPersisted(true); // start on boot
-        }
+        builder = new JobInfo.Builder(jobId, serviceName)
+                .setPeriodic(1000000)
+                .setRequiresDeviceIdle(false) // does not matter if device is idle
+                .setRequiresCharging(false) // we don't care if the device is charging or not
+                .setPersisted(true); // start on boot
         int result = jobScheduler.schedule(builder.build());
         if (result == JobScheduler.RESULT_SUCCESS) Log.d(TAG, "Job scheduled successfully!");
 
         //Start Alarm Manager Tracking Service
         Utils.startAlarmTrackingService(this);
-
-        Intent intent = new Intent(this, TrackingService.class);
-        startService(intent);
     }
 
 

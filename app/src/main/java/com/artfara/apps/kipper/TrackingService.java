@@ -86,8 +86,8 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(70000);
-        mLocationRequest.setFastestInterval(20000);
+        mLocationRequest.setInterval(1500000);
+        mLocationRequest.setFastestInterval(200000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (Build.VERSION.SDK_INT <= 22 || ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
