@@ -44,16 +44,28 @@ public class Utils {
         }
     }
 
+    public static String getAndroidID(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        String androidID = prefs.getString(Constants.ANDROID_ID_KEY, null);
+        if (androidID == null){
+            androidID = Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+            if (androidID == null) {
+                androidID = FirebaseDatabase.getInstance().getReference().push().getKey();
+            }
+            prefs.edit().putString(Constants.ANDROID_ID_KEY, androidID).apply();
+        }
+        return androidID;
+    }
+
     public static String getUserID(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         String userID = prefs.getString(Constants.USER_ID_KEY, null);
-        if (userID == null){
-            userID = Settings.Secure.getString(context.getContentResolver(),
-                    Settings.Secure.ANDROID_ID);
-            if (userID == null) {
-                userID = FirebaseDatabase.getInstance().getReference().push().getKey();
-            }
-            prefs.edit().putString(Constants.USER_ID_KEY, userID).apply();
+        if (userID == null) {
+            Log.d(TAG, "user id null");
+            userID = FirebaseDatabase.getInstance().getReference()
+                    .child(Constants.USERS_TABLE_NAME).push().getKey();
+            prefs.edit().putString(Constants.ANDROID_ID_KEY, userID).apply();
         }
         return userID;
     }

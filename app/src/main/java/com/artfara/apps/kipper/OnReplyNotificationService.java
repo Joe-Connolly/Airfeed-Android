@@ -10,23 +10,13 @@ import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class OnReplyNotificationService extends Service {
     private static final String TAG = "NotificationService ";
@@ -67,7 +57,7 @@ public class OnReplyNotificationService extends Service {
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Post newReply = dataSnapshot.getValue(Post.class);
 //            Log.d(TAG, "text = " + newReply.text);
-            if (!newReply.userID.equals(Utils.getUserID(getApplicationContext())) &&
+            if (!newReply.userID.equals(Utils.getAndroidID(getApplicationContext())) &&
                     newReply.timeInMilliseconds > alreadyFollowedPosts.get(newReply.parentPostID) ) {
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class); // set notification activity
                 intent.putExtra(Constants.POST_ID_KEY, newReply.parentPostID);

@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class Constants {
     //Constants to be used throughout the application
-    public final static String USERS_TABLE_NAME = "Users";
+    public final static String USERS_TABLE_NAME = "users";
     public final static String PLACES_TABLE_NAME = "testplaces";
     public final static String POSTS_TABLE_NAME = "Posts";
     public final static String VOTE_FIELD_NAME = "voteCount";
@@ -19,7 +19,7 @@ public class Constants {
             new Place("Libraries", "library"), new Place("Gyms", "gym"), new Place("Events", "event")};
     public static final String PLACE_TYPE_KEY = "place type";
     public static final String POST_ID_KEY = "post id";
-    public static final String USER_ID_KEY = "username";
+    public static final String ANDROID_ID_KEY = "androidID";
     public static final String[] LETTERS = {"OP","A","B","C","D","E","F","G","H","I","J","K",
             "L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y","Z","a","b","c",
             "d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v",
@@ -32,6 +32,7 @@ public class Constants {
     public static final String ACTION_START_FROM_TOP_KEY = "start from front key";
     public static final String LAST_TAB_SELECTED_KEY = "Last tab selected key" ;
     public static final int ALARM_ID = 0;
+    public static final String USER_ID_KEY = "userID";
 
     public static Map<String, Integer> PLACES = new HashMap<>();
 

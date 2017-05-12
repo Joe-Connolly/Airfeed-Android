@@ -3,7 +3,6 @@ package com.artfara.apps.kipper;
 import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -89,7 +88,7 @@ public class PostDatabaseHelper {
     public static void addPost(String postBody, Context context) {
 
         long time = System.currentTimeMillis();
-        String userID = Utils.getUserID(context.getApplicationContext());
+        String userID = Utils.getAndroidID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
 
         post.ID = mPostsRef.push().getKey();
@@ -104,7 +103,7 @@ public class PostDatabaseHelper {
     public static void addReply(String postBody, String parentPostID, Context context) {
 
         long time = System.currentTimeMillis();
-        String userID = Utils.getUserID(context.getApplicationContext());
+        String userID = Utils.getAndroidID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
 
         DatabaseReference repliesDatabase = mPostsRef
@@ -127,8 +126,7 @@ public class PostDatabaseHelper {
 
     public static void incrementPost(Post post) {
         mGlobalPosts.get(post.ID).voteCount++;
-        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
-//        mPostsRef.child(post.ID).runTransaction(mUpVoteHandler);
+//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 

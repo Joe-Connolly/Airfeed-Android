@@ -41,7 +41,7 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
 
         mRootView = inflater.inflate(R.layout.fragment_chat, container, false);
         mHandler = new Handler();
@@ -150,7 +150,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
 
        // Set what type of posts to display based on radiobutton value
         if (mHotNewRadioGroup.getCheckedRadioButtonId() == R.id.showhot){

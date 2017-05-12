@@ -12,5 +12,4 @@ import java.util.HashMap;
 public class Globals {
     public static ArrayList<Place> globalPlaces;
     public static ArrayList<LatLng> globalUsers;
-    public static boolean replyJustMade;
 }
