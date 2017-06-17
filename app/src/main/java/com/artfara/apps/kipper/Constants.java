@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class Constants {
     //Constants to be used throughout the application
-    public final static String USERS_TABLE_NAME = "users";
+    public final static String USERS_TABLE_NAME = "test/Users";
     public final static String PLACES_TABLE_NAME = "testplaces";
     public final static String POSTS_TABLE_NAME = "Posts";
     public final static String VOTE_FIELD_NAME = "voteCount";

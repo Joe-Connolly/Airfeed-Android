@@ -61,11 +61,12 @@ public class Utils {
     public static String getUserID(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         String userID = prefs.getString(Constants.USER_ID_KEY, null);
+        Log.d(TAG, "getting user id");
         if (userID == null) {
             Log.d(TAG, "user id null");
             userID = FirebaseDatabase.getInstance().getReference()
                     .child(Constants.USERS_TABLE_NAME).push().getKey();
-            prefs.edit().putString(Constants.ANDROID_ID_KEY, userID).apply();
+            prefs.edit().putString(Constants.USER_ID_KEY, userID).apply();
         }
         return userID;
     }
