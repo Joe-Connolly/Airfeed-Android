@@ -72,6 +72,15 @@ public class ChatFragment extends Fragment {
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         });
+        Button showYoursButton = (Button) mRootView.findViewById(R.id.showyours);
+        showYoursButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "setting post type to yours");
+                PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_YOURS);
+                customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
+            }
+        });
         ImageButton refreshButton = (ImageButton) mRootView.findViewById(R.id.refresh);
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,25 +162,23 @@ public class ChatFragment extends Fragment {
 //        Log.d(TAG, "onResume");
 
        // Set what type of posts to display based on radiobutton value
-        if (mHotNewRadioGroup.getCheckedRadioButtonId() == R.id.showhot){
+        if (mHotNewRadioGroup.getCheckedRadioButtonId() == R.id.showhot) {
             PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_HOT);
         }
-        else {
+        else if (mHotNewRadioGroup.getCheckedRadioButtonId() == R.id.shownew) {
             PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_NEW);
+        }
+        else {
+            PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_YOURS);
         }
         //Refresh only if necessary
         if (PostDatabaseHelper.isTimeToRefresh()) {
             customBaseAdapter.setEntries(new ArrayList<Post>());
             PostDatabaseHelper.downloadPosts();
-            //update posts as soon as they become available
-            mHandler.postDelayed(mPopulateListViewRunnable, 100);
         }
-        else{
-            //Could slow stuff down
-            customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
-        }
+        //update posts as soon as they become available
+        mHandler.postDelayed(mPopulateListViewRunnable, 100);
     }
-
 
     Runnable mPopulateListViewRunnable = new Runnable() {
         public void run() {

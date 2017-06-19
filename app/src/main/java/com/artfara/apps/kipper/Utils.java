@@ -43,7 +43,7 @@ public class Utils {
             alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), 1000000, recurringAlarm); //you can modify the interval of course
         }
     }
-
+    //phone unique ID for recording each post or reply
     public static String getAndroidID(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         String androidID = prefs.getString(Constants.ANDROID_ID_KEY, null);
@@ -57,11 +57,11 @@ public class Utils {
         }
         return androidID;
     }
-
+    //Non-phone unqique ID for recording user's location
     public static String getUserID(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         String userID = prefs.getString(Constants.USER_ID_KEY, null);
-        Log.d(TAG, "getting user id");
+        Log.d(TAG, "getting user id " + userID);
         if (userID == null) {
             Log.d(TAG, "user id null");
             userID = FirebaseDatabase.getInstance().getReference()

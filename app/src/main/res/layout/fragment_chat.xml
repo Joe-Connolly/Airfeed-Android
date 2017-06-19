@@ -52,6 +52,18 @@
                 android:gravity="center"
                 android:padding="5dp"
                 />
+            <RadioButton
+                android:id="@+id/showyours"
+                android:text="MINE"
+                android:background="@drawable/hot_new_buttons_background_selector"
+                android:textColor="@color/colorPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                />
         </RadioGroup>
     </RelativeLayout>
 

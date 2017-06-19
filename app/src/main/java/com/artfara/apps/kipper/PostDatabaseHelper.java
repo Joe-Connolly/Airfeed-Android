@@ -3,6 +3,7 @@ package com.artfara.apps.kipper;
 import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,13 +31,16 @@ public class PostDatabaseHelper {
     private static ArrayBlockingQueue<Post> mAddReplyQueue;
     public static boolean mFinishedDownloading;
     private static long mTimeLastRefreshed;
+    private static String mUserID;
+    private static String mPostId;
 
 
-    public static void initialize() {
+    public static void initialize(String userId) {
         mPostsRef = FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
         mAddReplyQueue = new ArrayBlockingQueue<>(100);
         mGlobalPosts = new HashMap<>();
         mFinishedDownloading = false;
+        mUserID = userId;
     }
 
     public static void setPostType(String postType) {
@@ -51,11 +55,32 @@ public class PostDatabaseHelper {
         ArrayList<Post> posts = new ArrayList<>(mGlobalPosts.values());
         if (mPostType.equals(Constants.POSTS_TYPE_NEW)) {
             sortDescendingByTime(posts);
-        } else {
+        }
+        else if (mPostType.equals(Constants.POSTS_TYPE_HOT)) {
             sortDescendingByVoteCount(posts);
+        }
+        else {
+            posts = getPostsByUser(posts);
         }
         formatTime(posts);
         return posts;
+    }
+
+    private static ArrayList<Post>  getPostsByUser(ArrayList<Post> posts) {
+        ArrayList<Post> postsByUser = new ArrayList<>();
+        for (Post post:posts) {
+            if (post.userID.equals(mUserID)) {
+                postsByUser.add(post);
+                continue;
+            }
+            for (Post reply:post.replies.values()) {
+                if (reply.userID.equals(mUserID)) {
+                    postsByUser.add(post);
+                    break;
+                }
+            }
+        }
+        return postsByUser;
     }
 
     public static ArrayList<Post> getReplies(String postID) {
@@ -154,6 +179,12 @@ public class PostDatabaseHelper {
         mFinishedDownloading = false;
         mPostsRef.addListenerForSingleValueEvent(mPostsSingleEventListener);
     }
+    public static void downloadReplies(String postId) {
+//        Log.d(TAG, "About to download posts");
+        mPostId = postId;
+        mFinishedDownloading = false;
+        mPostsRef.child(postId).child(Constants.REPLIES_TABLE_NAME).addListenerForSingleValueEvent(mRepliesSingleEventListener);
+    }
 
     private static ValueEventListener mPostsSingleEventListener = new ValueEventListener() {
         @Override
@@ -172,6 +203,24 @@ public class PostDatabaseHelper {
             mGlobalPosts = posts;
             mFinishedDownloading = true;
 //            Log.d(TAG, "Finish downloading posts");
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
+ private static ValueEventListener mRepliesSingleEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            HashMap<String, Post> replies = new HashMap<>();
+            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                Post reply = postSnapshot.getValue(Post.class);
+                reply.ID = postSnapshot.getKey();
+                replies.put(reply.ID, reply);
+            }
+            mGlobalPosts.get(mPostId).replies = replies;
+            mFinishedDownloading = true;
+            Log.d(TAG, "Finish downloading posts");
         }
 
         @Override

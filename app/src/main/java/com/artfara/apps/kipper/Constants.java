@@ -9,8 +9,8 @@ import java.util.Map;
 public class Constants {
     //Constants to be used throughout the application
     public final static String USERS_TABLE_NAME = "test/Users";
-    public final static String PLACES_TABLE_NAME = "testplaces";
-    public final static String POSTS_TABLE_NAME = "Posts";
+    public final static String PLACES_TABLE_NAME = "test/Places";
+    public final static String POSTS_TABLE_NAME = "test/Posts";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final double HANOVER_LATITUDE = 43.703272;
@@ -27,6 +27,7 @@ public class Constants {
     ;
     public static final String POSTS_TYPE_HOT = "HOT";
     public static final String POSTS_TYPE_NEW = "NEW";
+    public static final String POSTS_TYPE_YOURS = "YOURS";
     public static final long REFRESH_RATE = 600000;
     public static final int POST_MAXLENGTH = 200;
     public static final String ACTION_START_FROM_TOP_KEY = "start from front key";

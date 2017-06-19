@@ -147,7 +147,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if (Globals.globalUsers != null && Globals.globalUsers.size() > 0) {
             mHeatMapProvider = new HeatmapTileProvider.Builder()
                     .data(Globals.globalUsers)
-                    .radius(42)
+                    .radius(50)
                     .build();
             // Add a tile overlay to the map, using the heat map tile provider.
             mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));

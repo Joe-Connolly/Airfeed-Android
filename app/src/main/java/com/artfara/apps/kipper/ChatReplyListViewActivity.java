@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class ChatReplyListViewActivity extends AppCompatActivity {
 
     private String mPostId;
@@ -61,9 +63,14 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-//        Log.d(TAG, "onResume");
+        Log.d(TAG, "onResume");
         //Update replies as soon as they become available
         //update posts as soon as they become available
+        customBaseAdapter.setEntries(new ArrayList<Post>());
+        if (mActionStartFromTop) {
+            PostDatabaseHelper.downloadReplies(mPostId);
+        }
+
         mHandler = new Handler();
         mHandler.postDelayed(mPopulateListViewRunnable, 100);
     }

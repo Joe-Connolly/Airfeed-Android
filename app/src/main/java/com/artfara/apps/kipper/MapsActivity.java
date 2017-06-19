@@ -3,12 +3,14 @@ package com.artfara.apps.kipper;
 import android.*;
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -63,7 +65,7 @@ public class MapsActivity extends AppCompatActivity {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        PostDatabaseHelper.initialize();
+        PostDatabaseHelper.initialize(Utils.getAndroidID(this));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle("");
@@ -111,12 +113,11 @@ public class MapsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.getStringExtra(Constants.POST_ID_KEY) != null && savedInstanceState == null) {
-            PostDatabaseHelper.downloadPosts();
+//            PostDatabaseHelper.downloadPosts();
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
             chatReplyIntent.putExtras(intent);
             startActivity(chatReplyIntent);
         }
-
     }
 
     @Override
@@ -137,12 +138,35 @@ public class MapsActivity extends AppCompatActivity {
             // Tell the user that they are a jackass for disabling the permission
             // must request the permission.
             Toast.makeText(this, "Sorry, we need your location", Toast.LENGTH_LONG).show();
+//            showDialog();
+            Log.d(TAG, "permission denied");
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     0);
             //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
         }
         return;
+    }
+
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("For Kipper to work, we need you to anonymously share your location.")
+               .setCancelable(true)
+                .setPositiveButton(
+                    "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     private void initializeApplication() {
@@ -252,16 +276,14 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return new ChatFragment();
                 case 1:
-                    return new TotalsFragment();
-                case 2:
                     return new MapsFragment();
                 default:
-                    return new TotalsFragment();
+                    return new MapsFragment();
             }
         }
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -270,11 +292,9 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return "CHAT";
                 case 1:
-                    return "FEED";
-                case 2:
                     return "MAP";
                 default:
-                    return "FEED";
+                    return "MAP";
             }
         }
     }
