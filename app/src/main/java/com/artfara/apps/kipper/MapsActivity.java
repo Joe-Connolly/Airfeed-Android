@@ -54,6 +54,7 @@ public class MapsActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private TabLayout mTabLayout;
     private SharedPreferences mPrefs;
+    private boolean mLocationDialogVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +75,75 @@ public class MapsActivity extends AppCompatActivity {
             Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
             title.setTypeface(typeFaceBold);
         }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            //permission was granted, yay!
+            //Start tracking users location
+            initializeApplication();
+
+        } else {
+            // permission denied, boo!
+            // Tell the user that they are a jackass for disabling the permission
+            // must request the permission.
+            showDialog();
+            Log.d(TAG, "permission denied");
+            //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
+        }
+        return;
+    }
+
+    private void showDialog() {
+        mLocationDialogVisible = true;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Location Data is PRIVATE & ANONYMOUS. Allows for accurate data & feed.")
+               .setCancelable(false)
+                .setPositiveButton(
+                    "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mLocationDialogVisible = false;
+                            dialog.dismiss();
+                            requestLocationAndStartApp();
+                        }
+                    })
+                .create()
+                .show();
+    }
+
+    public void requestLocationAndStartApp() {
+        //Only start app if we have the permissions we need to access location
+        if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            //We need to request permission
+            if (!mLocationDialogVisible) {
+                Log.d(TAG, "requesting permission");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        0);
+            }
+        } else {
+            //No need to ask for permission
+            initializeApplication();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        requestLocationAndStartApp();
+    }
+
+    private void initializeApplication() {
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
@@ -98,78 +167,14 @@ public class MapsActivity extends AppCompatActivity {
             feedTab.select();
         }
 
-        //Only start app if we have the permissions we need to access location
-        if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            //We need to request permission
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    0);
-        } else {
-            //No need to ask for permission
-            initializeApplication();
-        }
-
         Intent intent = getIntent();
-        if (intent.getStringExtra(Constants.POST_ID_KEY) != null && savedInstanceState == null) {
+        // savedInstanceState == null
+        if (intent.getStringExtra(Constants.POST_ID_KEY) != null) {
 //            PostDatabaseHelper.downloadPosts();
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
             chatReplyIntent.putExtras(intent);
             startActivity(chatReplyIntent);
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-
-        // If request is cancelled, the result arrays are empty.
-        if (grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            //permission was granted, yay!
-            //Start tracking users location
-            initializeApplication();
-
-        } else {
-
-            // permission denied, boo!
-            // Tell the user that they are a jackass for disabling the permission
-            // must request the permission.
-            Toast.makeText(this, "Sorry, we need your location", Toast.LENGTH_LONG).show();
-//            showDialog();
-            Log.d(TAG, "permission denied");
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    0);
-            //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
-        }
-        return;
-    }
-
-    private void showDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("For Kipper to work, we need you to anonymously share your location.")
-               .setCancelable(true)
-                .setPositiveButton(
-                    "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    })
-                .create()
-                .show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    private void initializeApplication() {
 
         ScheduledExecutorService scheduler =
                 Executors.newSingleThreadScheduledExecutor();
@@ -254,9 +259,13 @@ public class MapsActivity extends AppCompatActivity {
     };
 
 
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
     public void onStop(){
         super.onStop();
-//        Log.d(TAG, "onStop");
+        Log.d(TAG, "onStop");
     }
 
     public void hideTabs(){
