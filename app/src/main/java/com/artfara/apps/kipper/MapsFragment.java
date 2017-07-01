@@ -2,6 +2,7 @@ package com.artfara.apps.kipper;
 
 
 import android.*;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -49,6 +50,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private Handler mHandler;
     private TileOverlay mOverlay;
     private HeatmapTileProvider mHeatMapProvider;
+    private ProgressDialog mProgressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -131,6 +133,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     Runnable mPopulateMapRunnable = new Runnable() {
         public void run() {
+            if (mProgressDialog == null && getContext() != null) {
+                //Display loading spinner
+                mProgressDialog = new ProgressDialog(getContext());
+                mProgressDialog.setMessage(getString(R.string.loading_message));
+                mProgressDialog.show();
+            }
             //If data has not yet been downloaded, try again later
             if (Globals.globalPlaces == null || Globals.globalUsers == null || mMap == null) {
 //                Log.d(TAG, "places or users or map still null");
@@ -138,6 +146,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             } else {
                 createHeatMap();
                 createMarkers();
+                if (mProgressDialog != null) mProgressDialog.dismiss();
+                mProgressDialog = null;
             }
         }
     };

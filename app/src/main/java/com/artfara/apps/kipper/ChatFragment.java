@@ -1,11 +1,11 @@
 package com.artfara.apps.kipper;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +33,7 @@ public class ChatFragment extends Fragment {
     private LinearLayout mPostButtonLayout;
     private RadioGroup mHotNewRadioGroup;
     private ListView listview;
+    private ProgressDialog mProgressDialog;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -176,18 +177,27 @@ public class ChatFragment extends Fragment {
             customBaseAdapter.setEntries(new ArrayList<Post>());
             PostDatabaseHelper.downloadPosts();
         }
+
         //update posts as soon as they become available
         mHandler.postDelayed(mPopulateListViewRunnable, 100);
     }
 
     Runnable mPopulateListViewRunnable = new Runnable() {
         public void run() {
+            if (mProgressDialog == null && getContext() != null) {
+                //Display loading spinner
+                mProgressDialog = new ProgressDialog(getContext());
+                mProgressDialog.setMessage(getString(R.string.loading_message));
+                mProgressDialog.show();
+            }
             //If data has not yet been downloaded, try again later
             if (PostDatabaseHelper.mFinishedDownloading == false){
 //                Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, 200);
             }
             else{
+                if (mProgressDialog != null) mProgressDialog.dismiss();
+                mProgressDialog = null;
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         }

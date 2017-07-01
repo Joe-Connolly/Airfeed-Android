@@ -55,11 +55,13 @@ public class MapsActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private SharedPreferences mPrefs;
     private boolean mLocationDialogVisible;
+    private Bundle mSavedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSavedInstanceState = savedInstanceState;
 //        Log.d(TAG, "onCreate");
 
         Constants.prepare();
@@ -103,7 +105,7 @@ public class MapsActivity extends AppCompatActivity {
     private void showDialog() {
         mLocationDialogVisible = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Location Data is PRIVATE & ANONYMOUS. Allows for accurate data & feed.")
+        builder.setMessage(R.string.location_explanation_message)
                .setCancelable(false)
                 .setPositiveButton(
                     "OK",
@@ -168,9 +170,7 @@ public class MapsActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        // savedInstanceState == null
-        if (intent.getStringExtra(Constants.POST_ID_KEY) != null) {
-//            PostDatabaseHelper.downloadPosts();
+        if (intent.getStringExtra(Constants.POST_ID_KEY) != null && mSavedInstanceState == null) {
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
             chatReplyIntent.putExtras(intent);
             startActivity(chatReplyIntent);
@@ -268,11 +268,12 @@ public class MapsActivity extends AppCompatActivity {
         Log.d(TAG, "onStop");
     }
 
-    public void hideTabs(){
-        mTabLayout.setVisibility(TabLayout.GONE);
+    public void hideTabs() {
+        if (mTabLayout != null) mTabLayout.setVisibility(TabLayout.GONE);
     }
-    public void showTabs(){
-        mTabLayout.setVisibility(TabLayout.VISIBLE);
+
+    public void showTabs() {
+        if (mTabLayout != null) mTabLayout.setVisibility(TabLayout.VISIBLE);
     }
 
     private class CustomFragmentPageAdapter extends FragmentPagerAdapter {

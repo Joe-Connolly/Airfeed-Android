@@ -1,5 +1,6 @@
 package com.artfara.apps.kipper;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     private ListView listview;
     private Handler mHandler;
     private boolean mActionStartFromTop;
+    private ProgressDialog mProgressDialog;
 
 
     @Override
@@ -78,11 +80,19 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     Runnable mPopulateListViewRunnable = new Runnable() {
         public void run() {
             //If data has not yet been downloaded, try again later
-            if (PostDatabaseHelper.mFinishedDownloading == false){
+            if (PostDatabaseHelper.mFinishedDownloading == false) {
 //                Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, 200);
+                if (mProgressDialog == null) {
+                    //Display loading spinner
+                    mProgressDialog = new ProgressDialog(ChatReplyListViewActivity.this);
+                    mProgressDialog.setMessage(getString(R.string.loading_message));
+                    mProgressDialog.show();
+                }
             }
             else{
+                if (mProgressDialog != null) mProgressDialog.dismiss();
+                mProgressDialog = null;
 //                Log.d(TAG, "posts NOT null");
                 if (PostDatabaseHelper.contains(mPostId)) {
                     customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
