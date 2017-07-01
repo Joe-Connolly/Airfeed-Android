@@ -61,6 +61,7 @@ public class PostDatabaseHelper {
         }
         else {
             posts = getPostsByUser(posts);
+            sortDescendingByTime(posts);
         }
         formatTime(posts);
         return posts;

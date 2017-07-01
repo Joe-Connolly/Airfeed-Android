@@ -23,6 +23,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     private ListView listview;
     private Handler mHandler;
     private boolean mActionStartFromTop;
+    private boolean mActionReloadReplies;
     private ProgressDialog mProgressDialog;
 
 
@@ -35,6 +36,8 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
         mActionStartFromTop = getIntent().getBooleanExtra(
                 Constants.ACTION_START_FROM_TOP_KEY, false);
+        mActionReloadReplies = getIntent().getBooleanExtra(
+                Constants.ACTION_RELOAD_REPLIES_KEY, false);
 
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(this, mPostId);
@@ -69,20 +72,19 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         //Update replies as soon as they become available
         //update posts as soon as they become available
         customBaseAdapter.setEntries(new ArrayList<Post>());
-        if (mActionStartFromTop) {
+        if (mActionReloadReplies) {
             PostDatabaseHelper.downloadReplies(mPostId);
         }
-
         mHandler = new Handler();
-        mHandler.postDelayed(mPopulateListViewRunnable, 100);
+        mHandler.postDelayed(mPopulateListViewRunnable, Constants.MILLISECONDS_BEFORE_POLLING);
     }
 
     Runnable mPopulateListViewRunnable = new Runnable() {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (PostDatabaseHelper.mFinishedDownloading == false) {
-//                Log.d(TAG, "posts still null");
-                mHandler.postDelayed(this, 200);
+                Log.d(TAG, "posts still null");
+                mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
                 if (mProgressDialog == null) {
                     //Display loading spinner
                     mProgressDialog = new ProgressDialog(ChatReplyListViewActivity.this);
@@ -91,9 +93,12 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
                 }
             }
             else{
-                if (mProgressDialog != null) mProgressDialog.dismiss();
-                mProgressDialog = null;
-//                Log.d(TAG, "posts NOT null");
+                if (ChatReplyListViewActivity.this != null && mProgressDialog != null
+                        && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+                Log.d(TAG, "posts NOT null");
                 if (PostDatabaseHelper.contains(mPostId)) {
                     customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
                     if (mActionStartFromTop) {

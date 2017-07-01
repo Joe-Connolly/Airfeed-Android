@@ -77,6 +77,7 @@ public class MapsActivity extends AppCompatActivity {
             Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
             title.setTypeface(typeFaceBold);
         }
+        if (Build.VERSION.SDK_INT < 22) requestLocationAndStartApp();
     }
 
     @Override
@@ -142,7 +143,7 @@ public class MapsActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        requestLocationAndStartApp();
+        if (Build.VERSION.SDK_INT >= 22) requestLocationAndStartApp();
     }
 
     private void initializeApplication() {
@@ -173,6 +174,7 @@ public class MapsActivity extends AppCompatActivity {
         if (intent.getStringExtra(Constants.POST_ID_KEY) != null && mSavedInstanceState == null) {
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
             chatReplyIntent.putExtras(intent);
+            chatReplyIntent.putExtra(Constants.ACTION_RELOAD_REPLIES_KEY, true);
             startActivity(chatReplyIntent);
         }
 
@@ -286,14 +288,17 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return new ChatFragment();
                 case 1:
+                    return new TotalsFragment();
+                case 2:
                     return new MapsFragment();
                 default:
-                    return new MapsFragment();
+                    return new TotalsFragment();
             }
         }
+
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -302,9 +307,11 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return "CHAT";
                 case 1:
+                    return "FEED";
+                case 2:
                     return "MAP";
                 default:
-                    return "MAP";
+                    return "FEED";
             }
         }
     }

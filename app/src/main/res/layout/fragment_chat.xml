@@ -37,7 +37,7 @@
                 android:layout_margin="0dp"
                 android:button="@null"
                 android:gravity="center"
-                android:padding="5dp"/>
+                android:padding="7dp"/>
 
             <RadioButton
                 android:id="@+id/shownew"
@@ -50,7 +50,7 @@
                 android:button="@null"
                 android:checked="true"
                 android:gravity="center"
-                android:padding="5dp"
+                android:padding="7dp"
                 />
             <RadioButton
                 android:id="@+id/showyours"
@@ -62,7 +62,7 @@
                 android:layout_margin="0dp"
                 android:button="@null"
                 android:gravity="center"
-                android:padding="5dp"
+                android:padding="7dp"
                 />
         </RadioGroup>
     </RelativeLayout>

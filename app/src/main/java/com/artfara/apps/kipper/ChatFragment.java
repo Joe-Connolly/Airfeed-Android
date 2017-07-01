@@ -179,25 +179,27 @@ public class ChatFragment extends Fragment {
         }
 
         //update posts as soon as they become available
-        mHandler.postDelayed(mPopulateListViewRunnable, 100);
+        mHandler.postDelayed(mPopulateListViewRunnable, Constants.MILLISECONDS_BEFORE_POLLING);
     }
 
     Runnable mPopulateListViewRunnable = new Runnable() {
         public void run() {
-            if (mProgressDialog == null && getContext() != null) {
-                //Display loading spinner
-                mProgressDialog = new ProgressDialog(getContext());
-                mProgressDialog.setMessage(getString(R.string.loading_message));
-                mProgressDialog.show();
-            }
             //If data has not yet been downloaded, try again later
             if (PostDatabaseHelper.mFinishedDownloading == false){
-//                Log.d(TAG, "posts still null");
-                mHandler.postDelayed(this, 200);
+                if (mProgressDialog == null && getContext() != null) {
+                    //Display loading spinner
+                    mProgressDialog = new ProgressDialog(getContext());
+                    mProgressDialog.setMessage(getString(R.string.loading_message));
+                    mProgressDialog.show();
+                }
+                Log.d(TAG, "posts still null");
+                mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             }
             else{
-                if (mProgressDialog != null) mProgressDialog.dismiss();
-                mProgressDialog = null;
+                if (getActivity() != null && mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
         }

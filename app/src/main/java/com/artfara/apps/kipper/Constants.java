@@ -31,9 +31,12 @@ public class Constants {
     public static final long REFRESH_RATE = 600000;
     public static final int POST_MAXLENGTH = 200;
     public static final String ACTION_START_FROM_TOP_KEY = "start from front key";
+    public static final String ACTION_RELOAD_REPLIES_KEY = "reload replies";
     public static final String LAST_TAB_SELECTED_KEY = "Last tab selected key" ;
     public static final int ALARM_ID = 0;
     public static final String USER_ID_KEY = "userID";
+    public static final int MILLISECONDS_BEFORE_POLLING = 1;
+    public static final int MILLISECONDS_BETWEEN_POLLING = 500;
 
     public static Map<String, Integer> PLACES = new HashMap<>();
 

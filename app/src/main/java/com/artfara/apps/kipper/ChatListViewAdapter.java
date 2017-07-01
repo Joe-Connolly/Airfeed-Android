@@ -135,6 +135,7 @@ public class ChatListViewAdapter extends BaseAdapter {
                     Intent intent = new Intent(c.getApplicationContext(), ChatReplyListViewActivity.class);
                     intent.putExtra(Constants.POST_ID_KEY, currentPost.ID);
                     intent.putExtra(Constants.ACTION_START_FROM_TOP_KEY, true);
+                    intent.putExtra(Constants.ACTION_RELOAD_REPLIES_KEY, true);
                     c.startActivity(intent);
                 }
             });

@@ -1,17 +1,13 @@
 package com.artfara.apps.kipper;
 
 
-import android.*;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,21 +19,13 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.firebase.database.DataSnapshot;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * Maps Fragment -- that is, THE Maps Fragment
@@ -93,8 +81,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         super.onStart();
         //update markers as soon as they become available
         mHandler = new Handler();
-        mHandler.postDelayed(mPopulateMapRunnable, 1000);
-
+        mHandler.postDelayed(mPopulateMapRunnable, Constants.MILLISECONDS_BEFORE_POLLING);
     }
 
     @Override
@@ -133,21 +120,23 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     Runnable mPopulateMapRunnable = new Runnable() {
         public void run() {
-            if (mProgressDialog == null && getContext() != null) {
-                //Display loading spinner
-                mProgressDialog = new ProgressDialog(getContext());
-                mProgressDialog.setMessage(getString(R.string.loading_message));
-                mProgressDialog.show();
-            }
             //If data has not yet been downloaded, try again later
             if (Globals.globalPlaces == null || Globals.globalUsers == null || mMap == null) {
+                if (mProgressDialog == null && getContext() != null) {
+                    //Display loading spinner
+                    mProgressDialog = new ProgressDialog(getContext());
+                    mProgressDialog.setMessage(getString(R.string.loading_message));
+                    mProgressDialog.show();
+                }
 //                Log.d(TAG, "places or users or map still null");
-                mHandler.postDelayed(this, 200);
+                mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             } else {
                 createHeatMap();
                 createMarkers();
-                if (mProgressDialog != null) mProgressDialog.dismiss();
-                mProgressDialog = null;
+                if (getActivity() != null && mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
             }
         }
     };

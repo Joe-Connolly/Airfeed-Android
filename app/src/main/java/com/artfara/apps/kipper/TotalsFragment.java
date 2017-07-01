@@ -1,7 +1,7 @@
 package com.artfara.apps.kipper;
 
 
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -19,6 +19,7 @@ public class TotalsFragment extends Fragment {
     private Handler mHandler;
     public static TotalsListViewAdapter customBaseAdapter;
     private static final String TAG = "Totals Fragment";
+    private ProgressDialog mProgressDialog;
 
     public TotalsFragment() {
         // Required empty public constructor
@@ -50,7 +51,7 @@ public class TotalsFragment extends Fragment {
 //        Log.d(TAG, "onStart");
         //update place total numbers as soon as they become available
         mHandler = new Handler();
-        mHandler.postDelayed(mPopulateListViewRunnable, 200);
+        mHandler.postDelayed(mPopulateListViewRunnable, Constants.MILLISECONDS_BEFORE_POLLING);
 
     }
 
@@ -58,11 +59,21 @@ public class TotalsFragment extends Fragment {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (Globals.globalPlaces == null){
-//                Log.d(TAG, "places still null");
-                mHandler.postDelayed(this, 200);
+                if (mProgressDialog == null && getContext() != null) {
+                    //Display loading spinner
+                    mProgressDialog = new ProgressDialog(getContext());
+                    mProgressDialog.setMessage(getString(R.string.loading_message));
+                    mProgressDialog.show();
+                }
+                Log.d(TAG, "places still null");
+                mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             }
             else{
                 customBaseAdapter.setEntries(Globals.globalPlaces);
+                if (getActivity() != null && mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
             }
         }
     };
