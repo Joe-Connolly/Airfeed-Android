@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
@@ -65,7 +64,7 @@ public class Utils {
         if (userID == null) {
             Log.d(TAG, "user id null");
             userID = FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.USERS_TABLE_NAME).push().getKey();
+                    .child(Constants.USERS_WRITE_TABLE_NAME).push().getKey();
             prefs.edit().putString(Constants.USER_ID_KEY, userID).apply();
         }
         return userID;

@@ -86,7 +86,7 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
 
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(mID, loc.toMap());
-            mDatabase.child(Constants.USERS_TABLE_NAME).updateChildren(childUpdates);
+            mDatabase.child(Constants.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
 
             try {
                 LocationServices.FusedLocationApi.removeLocationUpdates(

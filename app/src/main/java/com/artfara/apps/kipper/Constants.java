@@ -8,9 +8,10 @@ import java.util.Map;
  */
 public class Constants {
     //Constants to be used throughout the application
-    public final static String USERS_TABLE_NAME = "test/Users";
-    public final static String PLACES_TABLE_NAME = "test/Places";
-    public final static String POSTS_TABLE_NAME = "test/Posts";
+    public final static String USERS_WRITE_TABLE_NAME = "production/users_write";
+    public final static String USERS_READ_TABLE_NAME = "production/users_read";
+    public final static String PLACES_TABLE_NAME = "production/places";
+    public final static String POSTS_TABLE_NAME = "production/posts";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final double HANOVER_LATITUDE = 43.703272;

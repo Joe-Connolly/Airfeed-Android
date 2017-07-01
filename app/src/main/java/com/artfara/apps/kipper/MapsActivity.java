@@ -1,13 +1,9 @@
 package com.artfara.apps.kipper;
 
-import android.*;
 import android.Manifest;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,14 +20,12 @@ import android.support.design.widget.*;
 
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
@@ -41,11 +35,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends AppCompatActivity {
@@ -183,7 +174,7 @@ public class MapsActivity extends AppCompatActivity {
         scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
-                        mDatabase.child(Constants.USERS_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
+                        mDatabase.child(Constants.USERS_READ_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
                     }
                 }, 100, 30000, TimeUnit.MILLISECONDS);
         scheduler.scheduleAtFixedRate
