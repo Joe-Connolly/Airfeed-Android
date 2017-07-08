@@ -33,6 +33,7 @@ public class Constants {
     public static final int POST_MAXLENGTH = 200;
     public static final String ACTION_START_FROM_TOP_KEY = "start from front key";
     public static final String ACTION_RELOAD_REPLIES_KEY = "reload replies";
+    public static final String ACTION_LAUNCH_REPLIES = "launch replies";
     public static final String LAST_TAB_SELECTED_KEY = "Last tab selected key" ;
     public static final int ALARM_ID = 0;
     public static final String USER_ID_KEY = "userID";

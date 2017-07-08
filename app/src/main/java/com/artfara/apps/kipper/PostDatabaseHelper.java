@@ -219,6 +219,7 @@ public class PostDatabaseHelper {
                 reply.ID = postSnapshot.getKey();
                 replies.put(reply.ID, reply);
             }
+            Log.d(TAG, "posts size" + mGlobalPosts.size());
             mGlobalPosts.get(mPostId).replies = replies;
             mFinishedDownloading = true;
             Log.d(TAG, "Finish downloading posts");

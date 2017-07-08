@@ -26,7 +26,7 @@ public class Utils {
         //Inflate the number of people based on how many users have their location provided
         int people = ((Double) (place.people.doubleValue())).intValue();
         String peopleString = "";
-        peopleString = (people == 1) ? people + " person" : people + " people";
+        peopleString = "~" + ((people == 1) ? people + " person" : people + " people");
         return peopleString;
     }
 

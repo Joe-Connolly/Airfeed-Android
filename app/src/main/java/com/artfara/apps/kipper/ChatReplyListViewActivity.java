@@ -23,21 +23,16 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     private ListView listview;
     private Handler mHandler;
     private boolean mActionStartFromTop;
-    private boolean mActionReloadReplies;
     private ProgressDialog mProgressDialog;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_replies_list_view);
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
-        mActionStartFromTop = getIntent().getBooleanExtra(
-                Constants.ACTION_START_FROM_TOP_KEY, false);
-        mActionReloadReplies = getIntent().getBooleanExtra(
-                Constants.ACTION_RELOAD_REPLIES_KEY, false);
 
         //Create Custom Adapter
         customBaseAdapter = new ChatListViewAdapter(this, mPostId);
@@ -69,10 +64,13 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
+        mActionStartFromTop = getIntent().getBooleanExtra(
+                Constants.ACTION_START_FROM_TOP_KEY, false);
         //Update replies as soon as they become available
         //update posts as soon as they become available
         customBaseAdapter.setEntries(new ArrayList<Post>());
-        if (mActionReloadReplies) {
+        Log.d(TAG, "startAtTop " + mActionStartFromTop);
+        if (mActionStartFromTop) {
             PostDatabaseHelper.downloadReplies(mPostId);
         }
         mHandler = new Handler();
@@ -92,7 +90,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
                     mProgressDialog.show();
                 }
             }
-            else{
+            else {
                 if (ChatReplyListViewActivity.this != null && mProgressDialog != null
                         && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
@@ -101,8 +99,9 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
                 Log.d(TAG, "posts NOT null");
                 if (PostDatabaseHelper.contains(mPostId)) {
                     customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
+                    Log.d(TAG, "startAtTop in runnable " + mActionStartFromTop);
                     if (mActionStartFromTop) {
-                        mActionStartFromTop = false;
+                        getIntent().putExtra(Constants.ACTION_START_FROM_TOP_KEY, false);
                     }
                     else {
                         listview.post(new Runnable() {

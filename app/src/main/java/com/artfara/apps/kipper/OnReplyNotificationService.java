@@ -61,6 +61,7 @@ public class OnReplyNotificationService extends Service {
                     newReply.timeInMilliseconds > alreadyFollowedPosts.get(newReply.parentPostID) ) {
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class); // set notification activity
                 intent.putExtra(Constants.POST_ID_KEY, newReply.parentPostID);
+                intent.putExtra(Constants.ACTION_LAUNCH_REPLIES, true);
                 PendingIntent pIntent = PendingIntent.getActivity(
                         getApplicationContext(),
                         0,

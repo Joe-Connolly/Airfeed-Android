@@ -53,7 +53,7 @@ public class MapsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSavedInstanceState = savedInstanceState;
-//        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
 
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -162,10 +162,12 @@ public class MapsActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        if (intent.getStringExtra(Constants.POST_ID_KEY) != null && mSavedInstanceState == null) {
+//        && mSavedInstanceState == null
+        if (intent.getBooleanExtra(Constants.ACTION_LAUNCH_REPLIES, false)) {
+            PostDatabaseHelper.downloadPosts();
+            intent.putExtra(Constants.ACTION_LAUNCH_REPLIES, false);
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
             chatReplyIntent.putExtras(intent);
-            chatReplyIntent.putExtra(Constants.ACTION_RELOAD_REPLIES_KEY, true);
             startActivity(chatReplyIntent);
         }
 
