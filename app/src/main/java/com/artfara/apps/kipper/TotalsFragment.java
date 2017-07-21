@@ -65,7 +65,7 @@ public class TotalsFragment extends Fragment {
                     mProgressDialog.setMessage(getString(R.string.loading_message));
                     mProgressDialog.show();
                 }
-                Log.d(TAG, "places still null");
+//                Log.d(TAG, "places still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             }
             else{

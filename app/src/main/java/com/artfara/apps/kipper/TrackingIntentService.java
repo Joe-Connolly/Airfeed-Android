@@ -76,7 +76,7 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "location updated, location = " + location + "");
+//            Log.d(TAG, "location updated, location = " + location + "");
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "intent " + Utils.getCurrentFormattedTime());
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(mID, loc.toMap());

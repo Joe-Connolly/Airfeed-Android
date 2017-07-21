@@ -53,7 +53,7 @@ public class MapsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSavedInstanceState = savedInstanceState;
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
 
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -88,7 +88,7 @@ public class MapsActivity extends AppCompatActivity {
             // Tell the user that they are a jackass for disabling the permission
             // must request the permission.
             showDialog();
-            Log.d(TAG, "permission denied");
+//            Log.d(TAG, "permission denied");
             //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
         }
         return;
@@ -119,7 +119,7 @@ public class MapsActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             //We need to request permission
             if (!mLocationDialogVisible) {
-                Log.d(TAG, "requesting permission");
+//                Log.d(TAG, "requesting permission");
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         0);
@@ -133,7 +133,7 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
         if (Build.VERSION.SDK_INT >= 22) requestLocationAndStartApp();
     }
 
@@ -256,11 +256,11 @@ public class MapsActivity extends AppCompatActivity {
 
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+//        Log.d(TAG, "onPause");
     }
     public void onStop(){
         super.onStop();
-        Log.d(TAG, "onStop");
+//        Log.d(TAG, "onStop");
     }
 
     public void hideTabs() {

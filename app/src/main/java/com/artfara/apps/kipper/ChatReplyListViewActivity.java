@@ -29,7 +29,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_replies_list_view);
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
@@ -63,13 +63,13 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
         mActionStartFromTop = getIntent().getBooleanExtra(
                 Constants.ACTION_START_FROM_TOP_KEY, false);
         //Update replies as soon as they become available
         //update posts as soon as they become available
         customBaseAdapter.setEntries(new ArrayList<Post>());
-        Log.d(TAG, "startAtTop " + mActionStartFromTop);
+//        Log.d(TAG, "startAtTop " + mActionStartFromTop);
         if (mActionStartFromTop) {
             PostDatabaseHelper.downloadReplies(mPostId);
         }
@@ -81,7 +81,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (PostDatabaseHelper.mFinishedDownloading == false) {
-                Log.d(TAG, "posts still null");
+//                Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
                 if (mProgressDialog == null) {
                     //Display loading spinner
@@ -96,10 +96,10 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
                 }
-                Log.d(TAG, "posts NOT null");
+//                Log.d(TAG, "posts NOT null");
                 if (PostDatabaseHelper.contains(mPostId)) {
                     customBaseAdapter.setEntries(PostDatabaseHelper.getReplies(mPostId));
-                    Log.d(TAG, "startAtTop in runnable " + mActionStartFromTop);
+//                    Log.d(TAG, "startAtTop in runnable " + mActionStartFromTop);
                     if (mActionStartFromTop) {
                         getIntent().putExtra(Constants.ACTION_START_FROM_TOP_KEY, false);
                     }

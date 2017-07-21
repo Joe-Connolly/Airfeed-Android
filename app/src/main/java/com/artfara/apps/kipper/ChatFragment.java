@@ -77,7 +77,7 @@ public class ChatFragment extends Fragment {
         showYoursButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "setting post type to yours");
+//                Log.d(TAG, "setting post type to yours");
                 PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_YOURS);
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
             }
@@ -113,15 +113,15 @@ public class ChatFragment extends Fragment {
                 public void onScroll(AbsListView view, int firstVisibleItem,
                                      int visibleItemCount, int totalItemCount) {
                     if (mLastFirstVisibleItem < firstVisibleItem) {
-                        Log.i("SCROLLING DOWN", "TRUE");
-                        Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
+//                        Log.i("SCROLLING DOWN", "TRUE");
+//                        Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
                         if (isAcceptableToChangeState()) {
                             hideTabs();
                         }
                     }
                     if (mLastFirstVisibleItem > firstVisibleItem) {
-                        Log.i("SCROLLING UP", "TRUE");
-                        Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
+//                        Log.i("SCROLLING UP", "TRUE");
+//                        Log.d(TAG, "lastitem = " + mLastFirstVisibleItem + " curritem = " + firstVisibleItem);
                         if (isAcceptableToChangeState()) {
                             showTabs();
                         }
@@ -192,7 +192,7 @@ public class ChatFragment extends Fragment {
                     mProgressDialog.setMessage(getString(R.string.loading_message));
                     mProgressDialog.show();
                 }
-                Log.d(TAG, "posts still null");
+//                Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             }
             else{
