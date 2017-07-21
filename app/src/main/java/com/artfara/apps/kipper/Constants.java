@@ -39,6 +39,9 @@ public class Constants {
     public static final String USER_ID_KEY = "userID";
     public static final int MILLISECONDS_BEFORE_POLLING = 1;
     public static final int MILLISECONDS_BETWEEN_POLLING = 500;
+    public static final int USERS_CIRCLE_RADIUS = 11;
+    public static final float USERS_CIRCLE_STROKE_WIDTH = 7.0f;
+
 
     public static Map<String, Integer> PLACES = new HashMap<>();
 

@@ -3,6 +3,7 @@ package com.artfara.apps.kipper;
 
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
@@ -131,8 +133,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                Log.d(TAG, "places or users or map still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             } else {
-                createHeatMap();
+                mMap.clear();
                 createMarkers();
+                createHeatMap();
                 if (getActivity() != null && mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
@@ -142,14 +145,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     };
 
     private void createHeatMap() {
-        mMap.clear();
         if (Globals.globalUsers != null && Globals.globalUsers.size() > 0) {
-            mHeatMapProvider = new HeatmapTileProvider.Builder()
-                    .data(Globals.globalUsers)
-                    .radius(50)
-                    .build();
-            // Add a tile overlay to the map, using the heat map tile provider.
-            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
+            for (LatLng user: Globals.globalUsers) {
+                mMap.addCircle(new CircleOptions()
+                        .center(new LatLng(user.latitude, user.longitude))
+                        .strokeWidth(Constants.USERS_CIRCLE_STROKE_WIDTH)
+                        .radius(Constants.USERS_CIRCLE_RADIUS)
+                        .strokeColor(Color.argb(61, 255, 128, 0))
+                        .fillColor(Color.argb(74, 255, 0, 0)));
+            }
+//            mHeatMapProvider = new HeatmapTileProvider.Builder()
+//                    .data(Globals.globalUsers)
+//                    .radius(50)
+//                    .build();
+//            // Add a tile overlay to the map, using the heat map tile provider.
+//            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
         }
     }
 
@@ -163,6 +173,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .title(place.location)
                     .snippet(Utils.getPeopleString(place))));
         }
+    }
+
+
+    public int adjustAlpha(int color, float factor) {
+        int alpha = Math.round(Color.alpha(color) * factor);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return Color.argb(alpha, red, green, blue);
     }
 
 }
