@@ -238,6 +238,9 @@ public class PostDatabaseHelper {
             Post reply = mAddReplyQueue.poll();
             mPostsRef.child(post.ID).child(Constants.REPLIES_TABLE_NAME).child(reply.ID)
                     .updateChildren(reply.toMap());
+
+            mPostsRef.getRoot().child(Constants.POSTS_REPLIED_TABLE_NAME)
+                    .child(post.ID).setValue(post.ID);
         }
 
         @Override

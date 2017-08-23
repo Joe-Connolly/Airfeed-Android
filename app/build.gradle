@@ -8,7 +8,7 @@ android {
         applicationId "com.artfara.apps.kipper"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 7
+        versionCode 8
         versionName "1.2"
 //        // Enabling multidex support.
 //        multiDexEnabled true
@@ -28,12 +28,12 @@ dependencies {
     compile 'com.android.support:design:23.4.0'
 
     compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.google.android.gms:play-services-maps:9.6.1'
-    compile 'com.google.android.gms:play-services-location:9.6.1'
-    compile 'com.google.firebase:firebase-core:9.6.1'
-    compile 'com.google.firebase:firebase-database:9.6.1'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
+    compile 'com.google.firebase:firebase-core:11.0.4'
+    compile 'com.google.firebase:firebase-database:11.0.4'
     compile 'com.google.maps.android:android-maps-utils:0.4.+'
-    compile 'com.google.firebase:firebase-messaging:9.6.1'
+    compile 'com.google.firebase:firebase-messaging:11.0.4'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.android.support:design:23.4.0'
     testCompile 'junit:junit:4.12'
