@@ -121,9 +121,9 @@ public class PostDatabaseHelper {
         mGlobalPosts.put(post.ID, post);
         mPostsRef.child(post.ID).setValue(post);
 
-        Intent intent = new Intent(context, OnReplyNotificationService.class);
-        intent.putExtra(Constants.POST_ID_KEY, post.ID);
-        context.startService(intent);
+//        Intent intent = new Intent(context, OnReplyNotificationService.class);
+//        intent.putExtra(Constants.POST_ID_KEY, post.ID);
+//        context.startService(intent);
     }
 
     public static void addReply(String postBody, String parentPostID, Context context) {
@@ -144,9 +144,9 @@ public class PostDatabaseHelper {
         mAddReplyQueue.add(post);
         mPostsRef.child(parentPostID).addListenerForSingleValueEvent(mAddReplySingleEventListener);
 
-        Intent intent = new Intent(context, OnReplyNotificationService.class);
-        intent.putExtra(Constants.POST_ID_KEY, parentPostID);
-        context.startService(intent);
+//        Intent intent = new Intent(context, OnReplyNotificationService.class);
+//        intent.putExtra(Constants.POST_ID_KEY, parentPostID);
+//        context.startService(intent);
     }
 
 
@@ -241,6 +241,7 @@ public class PostDatabaseHelper {
 
             mPostsRef.getRoot().child(Constants.POSTS_REPLIED_TABLE_NAME)
                     .child(post.ID).setValue(post.ID);
+            Log.d(TAG, "writing to posts replies");
         }
 
         @Override

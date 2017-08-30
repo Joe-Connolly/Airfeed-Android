@@ -33,8 +33,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -187,6 +190,22 @@ public class MapsActivity extends AppCompatActivity {
                 }, 100, 30000, TimeUnit.MILLISECONDS);
 
         scheduleLocationTracking();
+        sendFCMTokenToServer();
+    }
+
+    private void sendFCMTokenToServer() {
+        String token = "";
+        try {
+            token = FirebaseInstanceId.getInstance().getToken();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!token.equals("")) {
+            Map<String, Object> childUpdates = new HashMap<>();
+            childUpdates.put(Utils.getAndroidID(getApplicationContext()), token);
+            FirebaseDatabase.getInstance().getReference()
+                    .child(Constants.ACCOUNTS_TABLE_NAME).updateChildren(childUpdates);
+        }
     }
 
     private void scheduleLocationTracking() {

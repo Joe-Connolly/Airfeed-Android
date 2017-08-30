@@ -192,7 +192,7 @@ public class ChatFragment extends Fragment {
                     mProgressDialog.setMessage(getString(R.string.loading_message));
                     mProgressDialog.show();
                 }
-//                Log.d(TAG, "posts still null");
+                Log.d(TAG, "posts still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             }
             else{
