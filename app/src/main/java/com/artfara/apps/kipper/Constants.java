@@ -22,7 +22,7 @@ public class Constants {
     public static final Place[] PLACE_TOTALS_TEMPLATES = new Place[] {new Place("Greek Life", "frat"), new Place("Food Courts", "food"),
             new Place("Libraries", "library"), new Place("Gyms", "gym"), new Place("Events", "event")};
     public static final String PLACE_TYPE_KEY = "place type";
-    public static final String POST_ID_KEY = "post id";
+    public static final String POST_ID_KEY = "postID";
     public static final String ANDROID_ID_KEY = "androidID";
     public static final String[] LETTERS = {"OP","A","B","C","D","E","F","G","H","I","J","K",
             "L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y","Z","a","b","c",
@@ -36,7 +36,7 @@ public class Constants {
     public static final int POST_MAXLENGTH = 200;
     public static final String ACTION_START_FROM_TOP_KEY = "start from front key";
     public static final String ACTION_RELOAD_REPLIES_KEY = "reload replies";
-    public static final String ACTION_LAUNCH_REPLIES = "launch replies";
+    public static final String ACTION_LAUNCH_REPLIES = "launchReplies";
     public static final String LAST_TAB_SELECTED_KEY = "Last tab selected key" ;
     public static final int ALARM_ID = 0;
     public static final String USER_ID_KEY = "userID";

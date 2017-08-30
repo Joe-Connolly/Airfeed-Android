@@ -166,11 +166,12 @@ public class MapsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 //        && mSavedInstanceState == null
-        if (intent.getBooleanExtra(Constants.ACTION_LAUNCH_REPLIES, false)) {
+        String postIDIntentExtra = intent.getStringExtra(Constants.POST_ID_KEY);
+        if (postIDIntentExtra != null) {
             PostDatabaseHelper.downloadPosts();
-            intent.putExtra(Constants.ACTION_LAUNCH_REPLIES, false);
             Intent chatReplyIntent = new Intent(this, ChatReplyListViewActivity.class);
-            chatReplyIntent.putExtras(intent);
+            chatReplyIntent.putExtra(Constants.POST_ID_KEY, postIDIntentExtra);
+            intent.removeExtra(Constants.POST_ID_KEY);
             startActivity(chatReplyIntent);
         }
 

@@ -51,7 +51,6 @@ public class NotificationFirebaseMessagingService extends FirebaseMessagingServi
         // and data payloads are treated as notification messages. The Firebase console always sends notification
         // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
@@ -66,45 +65,30 @@ public class NotificationFirebaseMessagingService extends FirebaseMessagingServi
      * @param remoteMessage FCM message body received.
      */
     private void sendNotification(RemoteMessage remoteMessage) {
-//        Intent intent = new Intent(getApplicationContext(), MapsActivity.class); // set notification activity
-//        intent.putExtra(Constants.POST_ID_KEY, newReply.parentPostID);
-//        intent.putExtra(Constants.ACTION_LAUNCH_REPLIES, true);
-//        PendingIntent pIntent = PendingIntent.getActivity(
-//                getApplicationContext(),
-//                0,
-//                intent,
-//                PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        Notification notif = new Notification.Builder(getApplicationContext())
-//                .setContentTitle(getString(R.string.app_name))
-//                .setContentText("Someone replied to your post")
-//                .setSmallIcon(R.drawable.notification_icon)
-//                .setContentIntent(pIntent)
-//                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
-//                .setAutoCancel(true)
-//                .build();
-//        NotificationManager notificationManager =
-//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        //firstParam allows you to update the notification later on.
-//        notificationManager.notify(1, notif);
-//
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-//                PendingIntent.FLAG_ONE_SHOT);
-//
-//        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-//                .setSmallIcon(R.drawable.ic_stat_ic_notification)
-//                .setContentTitle("FCM Message")
-//                .setContentText(messageBody)
-//                .setAutoCancel(true)
-//                .setSound(defaultSoundUri)
-//                .setContentIntent(pendingIntent);
-//
-//        NotificationManager notificationManager =
-//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        String postID = remoteMessage.getData().get("postID");
+        String title = remoteMessage.getNotification().getTitle();
+        String messageBody = remoteMessage.getNotification().getBody();
+
+        Intent intent = new Intent(getApplicationContext(), MapsActivity.class); // set notification activity
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(Constants.POST_ID_KEY, postID);
+        PendingIntent pIntent = PendingIntent.getActivity(
+                getApplicationContext(),
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notif = new Notification.Builder(getApplicationContext())
+                .setContentTitle(title)
+                .setContentText(messageBody)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentIntent(pIntent)
+                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
+                .setAutoCancel(true)
+                .build();
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        //firstParam allows you to update the notification later on.
+        notificationManager.notify(1, notif);
     }
 }
