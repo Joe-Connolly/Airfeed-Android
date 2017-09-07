@@ -7,14 +7,19 @@ import java.util.Map;
  * Created by Van on 9/1/16.
  */
 public class Constants {
+    public static final String DATABASE_ROOT_NAME_KEY = "database root3";
     //Constants to be used throughout the application
-    public final static String DATABASE_ROOT_NAME = "test/";
+    public static String DATABASE_ROOT_NAME = "production/dartmouth/";
     public final static String POSTS_REPLIED_TABLE_NAME = DATABASE_ROOT_NAME + "posts_replied";
     public final static String USERS_WRITE_TABLE_NAME = DATABASE_ROOT_NAME + "users_write";
     public final static String USERS_READ_TABLE_NAME = DATABASE_ROOT_NAME + "users_read";
+    public final static String USERS_ACCOUNTS_TABLE_NAME = DATABASE_ROOT_NAME + "users_accounts";
     public final static String PLACES_TABLE_NAME = DATABASE_ROOT_NAME + "places";
     public final static String POSTS_TABLE_NAME = DATABASE_ROOT_NAME + "posts";
     public static final String ACCOUNTS_TABLE_NAME = DATABASE_ROOT_NAME + "users_accounts";
+    public static final String ACCOUNTS_INITIALIZED_TABLE_NAME = DATABASE_ROOT_NAME + "accounts_initialized";
+    public static final String POSTS_VOTED_TABLE_NAME = DATABASE_ROOT_NAME + "posts_voted";
+    public static final String COLLEGES_TABLE_NAME = "colleges";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public final static String REPLIES_TABLE_NAME = "replies";
     public static final double HANOVER_LATITUDE = 43.703272;
@@ -44,6 +49,8 @@ public class Constants {
     public static final int MILLISECONDS_BETWEEN_POLLING = 500;
     public static final int USERS_CIRCLE_RADIUS = 11;
     public static final float USERS_CIRCLE_STROKE_WIDTH = 7.0f;
+    public static final String ACCOUNT_FCM_TOKEN_KEY = "fcmToken";
+    public static final String ACCOUNT_INIATILIZED_KEY = "account initialized1";
 
 
     public static Map<String, Integer> PLACES = new HashMap<>();

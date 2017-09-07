@@ -2,6 +2,8 @@ package com.artfara.apps.kipper;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -33,10 +36,12 @@ public class PostDatabaseHelper {
     private static long mTimeLastRefreshed;
     private static String mUserID;
     private static String mPostId;
+    private static DatabaseReference mDatabase;
 
 
     public static void initialize(String userId) {
-        mPostsRef = FirebaseDatabase.getInstance().getReference().child(Constants.POSTS_TABLE_NAME);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mPostsRef = mDatabase.child(Constants.POSTS_TABLE_NAME);
         mAddReplyQueue = new ArrayBlockingQueue<>(100);
         mGlobalPosts = new HashMap<>();
         mFinishedDownloading = false;
@@ -120,10 +125,6 @@ public class PostDatabaseHelper {
         post.ID = mPostsRef.push().getKey();
         mGlobalPosts.put(post.ID, post);
         mPostsRef.child(post.ID).setValue(post);
-
-//        Intent intent = new Intent(context, OnReplyNotificationService.class);
-//        intent.putExtra(Constants.POST_ID_KEY, post.ID);
-//        context.startService(intent);
     }
 
     public static void addReply(String postBody, String parentPostID, Context context) {
@@ -143,40 +144,75 @@ public class PostDatabaseHelper {
         replies.put(replyId, post);
         mAddReplyQueue.add(post);
         mPostsRef.child(parentPostID).addListenerForSingleValueEvent(mAddReplySingleEventListener);
-
-//        Intent intent = new Intent(context, OnReplyNotificationService.class);
-//        intent.putExtra(Constants.POST_ID_KEY, parentPostID);
-//        context.startService(intent);
     }
 
 
-    public static void incrementPost(Post post) {
+    public static void incrementPost(Post post, Context context) {
         mGlobalPosts.get(post.ID).voteCount++;
-//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+        if (!alreadyVoted(post.ID, context)) {
+            triggerServerOnVote(post.ID, null, true, context);
+        }
+        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 
-    public static void decrementPost(Post post) {
+    public static void decrementPost(Post post, Context context) {
         mGlobalPosts.get(post.ID).voteCount--;
-//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+        if (!alreadyVoted(post.ID, context)) {
+            triggerServerOnVote(post.ID, null, false, context);
+        }
+        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
     }
 
-    public static void incrementReply(Post post, String parentPostID) {
+    public static void incrementReply(Post post, String parentPostID, Context context) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount++;
-//        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
+        if (!alreadyVoted(post.ID, context)) {
+            triggerServerOnVote(parentPostID, post.ID, true, context);
+        }
+        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
         mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 
-    public static void decrementReply(Post post, String parentPostID) {
+    public static void decrementReply(Post post, String parentPostID, Context context) {
         mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount--;
+        if (!alreadyVoted(post.ID, context)) {
+            triggerServerOnVote(parentPostID, post.ID, false, context);
+        }
 //        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
         mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
     }
 
+    private static boolean alreadyVoted(String postID, Context context) {
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
+        boolean alreadyVoted = preferences.getBoolean(postID + "2", false);
+        if (!alreadyVoted) preferences.edit().putBoolean(postID + "2", true).apply();
+//        return alreadyVoted;
+        return false;
+    }
+
+    private static void triggerServerOnVote(String postID, String replyID, boolean isUpVote,
+                                            Context context) {
+        String uniqueKey = mDatabase.push().getKey();
+        Post post;
+        if (replyID == null) {
+            post = mGlobalPosts.get(postID);
+        }
+        else {
+            post = mGlobalPosts.get(postID).replies.get(replyID);
+        }
+        Map<String, Object> voteData = new HashMap<>();
+        voteData.put("userVotedID", Utils.getAndroidID(context));
+        voteData.put("userPostedID", post.userID);
+        voteData.put("postID", postID);
+        voteData.put("replyID", replyID);
+        voteData.put("isUpVote", isUpVote);
+        mDatabase.child(Constants.POSTS_VOTED_TABLE_NAME).child(uniqueKey).setValue(voteData);
+    }
 
     public static void downloadPosts() {
-//        Log.d(TAG, "About to download posts");
+        Log.d(TAG, "About to download posts");
         mFinishedDownloading = false;
         mPostsRef.addListenerForSingleValueEvent(mPostsSingleEventListener);
     }
@@ -190,6 +226,7 @@ public class PostDatabaseHelper {
     private static ValueEventListener mPostsSingleEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.d(TAG, "posts finished downloading, setting posts");
             HashMap<String, Post> posts = new HashMap<>();
             for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                 Post post = postSnapshot.getValue(Post.class);
@@ -203,7 +240,7 @@ public class PostDatabaseHelper {
             }
             mGlobalPosts = posts;
             mFinishedDownloading = true;
-//            Log.d(TAG, "Finish downloading posts");
+            Log.d(TAG, "Finish downloading posts");
         }
 
         @Override

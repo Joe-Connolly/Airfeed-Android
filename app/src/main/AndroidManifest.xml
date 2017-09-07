@@ -57,7 +57,6 @@
 
         <service android:name=".TrackingIntentService" />
 
-        <activity android:name=".PlacesListViewActivity" />
         <activity android:name=".ChatReplyListViewActivity" />
         <activity
             android:name=".PostActivity"
@@ -76,16 +75,17 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".NotificationFirebaseMessagingService">
+        <service android:name=".NotificationFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/notification_icon" />
+
+        <activity android:name=".SelectCollegeActivity"></activity>
     </application>
 
 </manifest>

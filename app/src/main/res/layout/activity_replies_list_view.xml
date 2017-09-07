@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:background="#ffffff"
     android:orientation="vertical"
-    tools:context="com.artfara.apps.kipper.PlacesListViewActivity">
+    tools:context="com.artfara.apps.kipper.ChatReplyListViewActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

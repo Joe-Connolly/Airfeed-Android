@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -33,7 +34,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,10 +56,15 @@ public class MapsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSavedInstanceState = savedInstanceState;
-//        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
 
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Constants.DATABASE_ROOT_NAME = getDatabaseRootName();
+        if (Constants.DATABASE_ROOT_NAME == null) {
+            Intent intent = new Intent(this, SelectCollegeActivity.class);
+            startActivity(intent);
+        }
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize(Utils.getAndroidID(this));
@@ -186,26 +191,24 @@ public class MapsActivity extends AppCompatActivity {
         scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
-                        mDatabase.child(Constants.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
+            mDatabase.child(Constants.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
                     }
                 }, 100, 30000, TimeUnit.MILLISECONDS);
 
         scheduleLocationTracking();
-        sendFCMTokenToServer();
+        Utils.sendFCMTokenToServer(getApplicationContext()); //Did these two commands cause the
+        //not loading problem?
+        initializeAccountIfNessicary();
     }
 
-    private void sendFCMTokenToServer() {
-        String token = "";
-        try {
-            token = FirebaseInstanceId.getInstance().getToken();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (!token.equals("")) {
+    private void initializeAccountIfNessicary() {
+        //If account has not been initialized
+        if (!mPrefs.getBoolean(Constants.ACCOUNT_INIATILIZED_KEY, false)) {
+            mPrefs.edit().putBoolean(Constants.ACCOUNT_INIATILIZED_KEY, true).apply();
+            String androidID =  Utils.getAndroidID(this);
             Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put(Utils.getAndroidID(getApplicationContext()), token);
-            FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.ACCOUNTS_TABLE_NAME).updateChildren(childUpdates);
+            childUpdates.put(androidID, androidID);
+            mDatabase.child(Constants.ACCOUNTS_INITIALIZED_TABLE_NAME).updateChildren(childUpdates);
         }
     }
 
@@ -291,6 +294,10 @@ public class MapsActivity extends AppCompatActivity {
         if (mTabLayout != null) mTabLayout.setVisibility(TabLayout.VISIBLE);
     }
 
+    public String getDatabaseRootName() {
+        return mPrefs.getString(Constants.DATABASE_ROOT_NAME_KEY, null);
+    }
+
     private class CustomFragmentPageAdapter extends FragmentPagerAdapter {
         public CustomFragmentPageAdapter(FragmentManager supportFragmentManager) {
             super(supportFragmentManager);
@@ -301,11 +308,11 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return new ChatFragment();
                 case 1:
-                    return new TotalsFragment();
+                    return new RankFragment();
                 case 2:
                     return new MapsFragment();
                 default:
-                    return new TotalsFragment();
+                    return new RankFragment();
             }
         }
 
@@ -320,7 +327,7 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return "CHAT";
                 case 1:
-                    return "FEED";
+                    return "RANK";
                 case 2:
                     return "MAP";
                 default:

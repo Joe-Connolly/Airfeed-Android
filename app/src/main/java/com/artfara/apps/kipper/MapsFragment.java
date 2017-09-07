@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import java.util.ArrayList;
@@ -130,7 +130,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     mProgressDialog.setMessage(getString(R.string.loading_message));
                     mProgressDialog.show();
                 }
-//                Log.d(TAG, "places or users or map still null");
+                Log.d(TAG, "places or users or map still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             } else {
                 mMap.clear();
@@ -171,7 +171,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .position(new LatLng(place.latitude, place.longitude))
                     .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
                     .title(place.location)
-                    .snippet(Utils.getPeopleString(place))));
+                    .snippet(place.string)));
         }
     }
 

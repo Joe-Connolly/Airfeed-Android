@@ -10,11 +10,14 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Van on 10/6/16.
@@ -22,13 +25,6 @@ import java.util.Date;
 
 public class Utils {
     private static final String TAG = " Utils";
-    public static String getPeopleString(Place place){
-        //Inflate the number of people based on how many users have their location provided
-        int people = ((Double) (place.people.doubleValue())).intValue();
-        String peopleString = "";
-        peopleString = "~" + ((people == 1) ? people + " person" : people + " people");
-        return peopleString;
-    }
 
     public static void startAlarmTrackingService(Context context) {
         //Start Alarm Manager Tracking Service
@@ -76,5 +72,21 @@ public class Utils {
         final DateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd hhmmss");
         dateFormatter.setLenient(false);
         return dateFormatter.format(today);
+    }
+
+    public static void sendFCMTokenToServer(Context context) {
+        String token = "";
+        try {
+            token = FirebaseInstanceId.getInstance().getToken();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!token.equals("")) {
+            Map<String, Object> childUpdates = new HashMap<>();
+            childUpdates.put(Constants.ACCOUNT_FCM_TOKEN_KEY, token);
+            FirebaseDatabase.getInstance().getReference()
+                    .child(Constants.ACCOUNTS_TABLE_NAME).child(getAndroidID(context))
+                    .updateChildren(childUpdates);
+        }
     }
 }

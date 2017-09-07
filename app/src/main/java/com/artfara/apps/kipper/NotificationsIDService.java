@@ -40,28 +40,28 @@ public class NotificationsIDService extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Refreshed token: " + refreshedToken);
+//        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+//        Log.d(TAG, "Refreshed token: " + refreshedToken);
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        sendRegistrationToServer(refreshedToken);
+        Utils.sendFCMTokenToServer(getApplicationContext());
     }
     // [END refresh_token]
 
-    /**
-     * Persist token to third-party servers.
-     *
-     * Modify this method to associate the user's FCM InstanceID token with any server-side account
-     * maintained by your application.
-     *
-     * @param token The new token.
-     */
-    private void sendRegistrationToServer(String token) {
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(Utils.getAndroidID(getApplicationContext()), token);
-        FirebaseDatabase.getInstance().getReference()
-                .child(Constants.ACCOUNTS_TABLE_NAME).updateChildren(childUpdates);
-    }
+//    /**
+//     * Persist token to third-party servers.
+//     *
+//     * Modify this method to associate the user's FCM InstanceID token with any server-side account
+//     * maintained by your application.
+//     *
+//     * @param token The new token.
+//     */
+//    private void sendRegistrationToServer(String token) {
+//        Map<String, Object> childUpdates = new HashMap<>();
+//        childUpdates.put(Utils.getAndroidID(getApplicationContext()), token);
+//        FirebaseDatabase.getInstance().getReference()
+//                .child(Constants.ACCOUNTS_TABLE_NAME).updateChildren(childUpdates);
+//    }
 }

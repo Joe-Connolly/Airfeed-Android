@@ -78,6 +78,7 @@ public class NotificationFirebaseMessagingService extends FirebaseMessagingServi
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Notification notif = new Notification.Builder(getApplicationContext())
                 .setContentTitle(title)
                 .setContentText(messageBody)
@@ -85,6 +86,7 @@ public class NotificationFirebaseMessagingService extends FirebaseMessagingServi
                 .setContentIntent(pIntent)
                 .setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary))
                 .setAutoCancel(true)
+                .setSound(defaultSoundUri)
                 .build();
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

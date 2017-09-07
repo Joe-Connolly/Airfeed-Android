@@ -15,22 +15,21 @@ public class Place {
     public Double longitude;
     public Double radius;
     public String location;
-    public Integer people;
+    public String string;
     public String type;
     public int state;
-    public Double alpha;
 
 
     public Place() {
         // Default constructor required for calls to DataSnapshot.getValue(Latlng.class)
     }
 
-    public Place(double latitude, double longitude, double radius, String location, int userCount, String type, int state) {
+    public Place(double latitude, double longitude, double radius, String location, String userCount, String type, int state) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
         this.location = location;
-        this.people = userCount;
+        this.string = userCount;
         this.type = type;
         this.state = state;
     }
@@ -39,11 +38,11 @@ public class Place {
     public Place(String location, String type) {
         this.location = location;
         this.type = type;
-        this.people = 0;
+        this.string = "0";
     }
 
     public String toString(){
-        return location + " rad = " + radius + " people = " + people;
+        return location + " rad = " + radius + " string = " + string;
     }
 
 }

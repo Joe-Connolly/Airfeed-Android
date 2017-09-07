@@ -55,7 +55,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         return position;
     }
 
-    //Displays Name of Place, and #of people for each row in listView.
+    //Displays Name of Place, and #of string for each row in listView.
     public View getView(int position, View convertView, ViewGroup parent) {
         final boolean isPost = (position == 0 ? true : mIsPost);
 
@@ -97,10 +97,10 @@ public class ChatListViewAdapter extends BaseAdapter {
                 }
 
                 if (isPost){
-                    PostDatabaseHelper.incrementPost(currentPost);
+                    PostDatabaseHelper.incrementPost(currentPost, c);
                 }
                 else{
-                    PostDatabaseHelper.incrementReply(currentPost, mParentPostId);
+                    PostDatabaseHelper.incrementReply(currentPost, mParentPostId, c);
                 }
                 notifyDataSetChanged();
             }
@@ -114,10 +114,10 @@ public class ChatListViewAdapter extends BaseAdapter {
                     return;
                 }
                 if (isPost){
-                    PostDatabaseHelper.decrementPost(currentPost);
+                    PostDatabaseHelper.decrementPost(currentPost, c);
                 }
                 else{
-                    PostDatabaseHelper.decrementReply(currentPost, mParentPostId);
+                    PostDatabaseHelper.decrementReply(currentPost, mParentPostId, c);
                 }
                 notifyDataSetChanged();
             }
