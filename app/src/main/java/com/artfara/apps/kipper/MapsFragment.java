@@ -133,7 +133,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     mProgressDialog.setMessage(getString(R.string.loading_message));
                     mProgressDialog.show();
                 }
-                Log.d(TAG, "places or users or map still null");
+//                Log.d(TAG, "places or users or map still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             } else {
                 mMap.clear();

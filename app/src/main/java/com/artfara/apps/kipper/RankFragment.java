@@ -42,7 +42,7 @@ public class RankFragment extends Fragment {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             mAccount = dataSnapshot.getValue(Account.class);
-            Log.d(TAG, "account " + dataSnapshot.getKey());
+//            Log.d(TAG, "account " + dataSnapshot.getKey());
         }
 
         @Override

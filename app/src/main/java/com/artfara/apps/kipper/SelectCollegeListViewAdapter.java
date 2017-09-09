@@ -68,7 +68,7 @@ public final class SelectCollegeListViewAdapter extends BaseAdapter {
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "tapped on " + currentCollege.name + " " + currentCollege.databaseRoot);
+//                Log.d(TAG, "tapped on " + currentCollege.name + " " + currentCollege.databaseRoot);
                 currentCollege.databaseRoot = currentCollege.databaseRoot + "/";
                 Gson gson = new Gson();
                 mPrefs.edit().putString(Constants.COLLEGE_KEY,

@@ -59,21 +59,21 @@ public class MapsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSavedInstanceState = savedInstanceState;
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
 
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         boolean databaseSet = Utils.setDatabaseIfPossible(this);
-        Log.d(TAG, "databaseSet " + databaseSet);
+//        Log.d(TAG, "databaseSet " + databaseSet);
         if (!databaseSet) {
-            Log.d(TAG, "launching select College ");
+//            Log.d(TAG, "launching select College ");
             Intent intent = new Intent(this, SelectCollegeActivity.class);
             startActivity(intent);
             finish();
             return;
         }
-        Log.d(TAG, "database " + Globals.DATABASE_ROOT_NAME + " " + Globals.ACCOUNTS_TABLE_NAME);
+//        Log.d(TAG, "database " + Globals.DATABASE_ROOT_NAME + " " + Globals.ACCOUNTS_TABLE_NAME);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize(Utils.getAndroidID(this));

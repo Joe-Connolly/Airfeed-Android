@@ -33,12 +33,12 @@ public class Utils {
                 PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         Gson gson = new Gson();
         String collegeJSON = prefs.getString(Constants.COLLEGE_KEY, null);
-        Log.d(TAG, "collegeJSON " + collegeJSON);
+//        Log.d(TAG, "collegeJSON " + collegeJSON);
         if (collegeJSON == null) {
             return false;
         }
         Globals.COLLEGE = gson.fromJson(collegeJSON, College.class);
-        Log.d(TAG, "collegeName" + Globals.COLLEGE.name);
+//        Log.d(TAG, "collegeName" + Globals.COLLEGE.name);
         Globals.initialize();
         return true;
     }

@@ -63,10 +63,6 @@
             android:windowSoftInputMode="stateVisible" />
 
         <service
-            android:name=".OnReplyNotificationService"
-            android:enabled="true"
-            android:exported="true" />
-        <service
             android:name=".TrackingService"
             android:enabled="true"
             android:exported="true" />

@@ -29,7 +29,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_college);
-        Log.d(TAG, "onCreate");
+//        Log.d(TAG, "onCreate");
         //Create Custom Adapter
         mCustomBaseAdapter = new SelectCollegeListViewAdapter(this);
 
@@ -49,7 +49,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
             for (DataSnapshot collegeSnapshot : dataSnapshot.getChildren()) {
                 College college = collegeSnapshot.getValue(College.class);
                 mColleges.add(college);
-                Log.d(TAG, "college " + college.name);
+//                Log.d(TAG, "college " + college.name);
             }
         }
 
@@ -62,7 +62,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+//        Log.d(TAG, "onResume");
         //Update colleges as soon as they become available
         mHandler = new Handler();
         mHandler.postDelayed(mPopulateListViewRunnable, Constants.MILLISECONDS_BEFORE_POLLING);
@@ -72,7 +72,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
         public void run() {
             //If data has not yet been downloaded, try again later
             if (mColleges == null || mColleges.size() == 0) {
-                Log.d(TAG, "colleges still null");
+//                Log.d(TAG, "colleges still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
                 if (mProgressDialog == null) {
                     //Display loading spinner

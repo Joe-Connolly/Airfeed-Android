@@ -161,7 +161,7 @@ public class PostDatabaseHelper {
         if (!alreadyVoted(post.ID, context)) {
             triggerServerOnVote(post.ID, null, false, context);
         }
-        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
+//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
         mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
     }
 
@@ -170,7 +170,7 @@ public class PostDatabaseHelper {
         if (!alreadyVoted(post.ID, context)) {
             triggerServerOnVote(parentPostID, post.ID, true, context);
         }
-        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
+//        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
         mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 
