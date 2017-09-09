@@ -64,7 +64,7 @@ public class MapsActivity extends AppCompatActivity {
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        boolean databaseSet = setDatabaseIfPossible();
+        boolean databaseSet = Utils.setDatabaseIfPossible(this);
         Log.d(TAG, "databaseSet " + databaseSet);
         if (!databaseSet) {
             Log.d(TAG, "launching select College ");
@@ -303,19 +303,6 @@ public class MapsActivity extends AppCompatActivity {
         if (mTabLayout != null) mTabLayout.setVisibility(TabLayout.VISIBLE);
     }
 
-    public boolean setDatabaseIfPossible() {
-        Gson gson = new Gson();
-        String collegeJSON = mPrefs.getString(Constants.COLLEGE_KEY, null);
-        Log.d(TAG, "collegeJSON " + collegeJSON);
-        if (collegeJSON == null) {
-            return false;
-        }
-        Globals.COLLEGE = gson.fromJson(collegeJSON, College.class);
-        Log.d(TAG, "collegeName" + Globals.COLLEGE.name);
-        Globals.initialize();
-        return true;
-    }
-
     private class CustomFragmentPageAdapter extends FragmentPagerAdapter {
         public CustomFragmentPageAdapter(FragmentManager supportFragmentManager) {
             super(supportFragmentManager);
@@ -326,17 +313,15 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return new ChatFragment();
                 case 1:
-                    return new RankFragment();
-                case 2:
                     return new MapsFragment();
                 default:
-                    return new RankFragment();
+                    return new MapsFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -345,11 +330,9 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return "CHAT";
                 case 1:
-                    return "RANK";
-                case 2:
                     return "MAP";
                 default:
-                    return "FEED";
+                    return "MAP";
             }
         }
     }

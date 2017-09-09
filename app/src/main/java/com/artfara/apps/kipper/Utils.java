@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 
+import com.artfara.apps.kipper.models.College;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,6 +28,20 @@ import java.util.Map;
 public class Utils {
     private static final String TAG = " Utils";
 
+    public static boolean setDatabaseIfPossible(Context context) {
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        Gson gson = new Gson();
+        String collegeJSON = prefs.getString(Constants.COLLEGE_KEY, null);
+        Log.d(TAG, "collegeJSON " + collegeJSON);
+        if (collegeJSON == null) {
+            return false;
+        }
+        Globals.COLLEGE = gson.fromJson(collegeJSON, College.class);
+        Log.d(TAG, "collegeName" + Globals.COLLEGE.name);
+        Globals.initialize();
+        return true;
+    }
     public static void startAlarmTrackingService(Context context) {
         //Start Alarm Manager Tracking Service
         Intent alarmIntent = new Intent(context, AlarmReceiver.class);

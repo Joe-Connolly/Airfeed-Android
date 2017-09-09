@@ -82,12 +82,13 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "location updated, location = " + location + "");
-
-            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "job " + Utils.getCurrentFormattedTime());
-
-            Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put(mID, loc.toMap());
-            mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
+            if (Utils.setDatabaseIfPossible(getApplicationContext())) {
+                Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true,
+                        "job " + Utils.getCurrentFormattedTime());
+                Map<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put(mID, loc.toMap());
+                mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
+            }
 
             try {
                 LocationServices.FusedLocationApi.removeLocationUpdates(

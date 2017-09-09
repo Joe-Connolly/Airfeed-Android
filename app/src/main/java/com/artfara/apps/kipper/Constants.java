@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by Van on 9/1/16.
  */
 public class Constants {
-    public static final String COLLEGE_KEY = "database root10";
+    public static final String COLLEGE_KEY = "database root14";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public static final double HANOVER_LATITUDE = 43.703272;
     public static final double HANOVER_LONGITUDE = -72.288633;

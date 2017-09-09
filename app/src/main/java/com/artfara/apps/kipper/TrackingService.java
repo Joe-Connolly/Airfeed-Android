@@ -62,11 +62,13 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "location updated, location = " + location);
-            Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "service " + Utils.getCurrentFormattedTime());
-
-            Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put(mID, loc.toMap());
-            mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
+            if (Utils.setDatabaseIfPossible(getApplicationContext())) {
+                Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(),
+                        true, "service " + Utils.getCurrentFormattedTime());
+                Map<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put(mID, loc.toMap());
+                mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
+            }
         }
     };
     @Override
