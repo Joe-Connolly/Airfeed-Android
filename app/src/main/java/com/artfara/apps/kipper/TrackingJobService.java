@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.artfara.apps.kipper.models.Latlng;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -80,13 +81,13 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
 
         @Override
         public void onLocationChanged(Location location) {
-//            Log.d(TAG, "location updated, location = " + location + "");
+            Log.d(TAG, "location updated, location = " + location + "");
 
             Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "job " + Utils.getCurrentFormattedTime());
 
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(mID, loc.toMap());
-            mDatabase.child(Constants.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
+            mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
 
             try {
                 LocationServices.FusedLocationApi.removeLocationUpdates(

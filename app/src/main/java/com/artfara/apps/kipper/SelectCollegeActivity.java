@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.artfara.apps.kipper.models.College;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +38,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
         mListView.setAdapter(mCustomBaseAdapter);
 
         FirebaseDatabase.getInstance().getReference()
-                .child(Constants.COLLEGES_TABLE_NAME)
+                .child(Globals.COLLEGES_TABLE_NAME)
                 .addListenerForSingleValueEvent(mCollegesSingleEventListener);
     }
 

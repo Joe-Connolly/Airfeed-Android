@@ -1,12 +1,12 @@
 package com.artfara.apps.kipper;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.artfara.apps.kipper.models.Post;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,7 +41,7 @@ public class PostDatabaseHelper {
 
     public static void initialize(String userId) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mPostsRef = mDatabase.child(Constants.POSTS_TABLE_NAME);
+        mPostsRef = mDatabase.child(Globals.POSTS_TABLE_NAME);
         mAddReplyQueue = new ArrayBlockingQueue<>(100);
         mGlobalPosts = new HashMap<>();
         mFinishedDownloading = false;
@@ -134,7 +134,7 @@ public class PostDatabaseHelper {
         Post post = new Post(userID, postBody, time);
 
         DatabaseReference repliesDatabase = mPostsRef
-                .child(parentPostID).child(Constants.REPLIES_TABLE_NAME);
+                .child(parentPostID).child(Globals.REPLIES_TABLE_NAME);
 
         String replyId = repliesDatabase.push().getKey();
         post.ID = replyId;
@@ -171,7 +171,7 @@ public class PostDatabaseHelper {
             triggerServerOnVote(parentPostID, post.ID, true, context);
         }
         Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
+        mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 
     public static void decrementReply(Post post, String parentPostID, Context context) {
@@ -180,7 +180,7 @@ public class PostDatabaseHelper {
             triggerServerOnVote(parentPostID, post.ID, false, context);
         }
 //        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child(Constants.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
+        mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
     }
 
     private static boolean alreadyVoted(String postID, Context context) {
@@ -208,7 +208,7 @@ public class PostDatabaseHelper {
         voteData.put("postID", postID);
         voteData.put("replyID", replyID);
         voteData.put("isUpVote", isUpVote);
-        mDatabase.child(Constants.POSTS_VOTED_TABLE_NAME).child(uniqueKey).setValue(voteData);
+        mDatabase.child(Globals.POSTS_VOTED_TABLE_NAME).child(uniqueKey).setValue(voteData);
     }
 
     public static void downloadPosts() {
@@ -220,7 +220,7 @@ public class PostDatabaseHelper {
 //        Log.d(TAG, "About to download posts");
         mPostId = postId;
         mFinishedDownloading = false;
-        mPostsRef.child(postId).child(Constants.REPLIES_TABLE_NAME).addListenerForSingleValueEvent(mRepliesSingleEventListener);
+        mPostsRef.child(postId).child(Globals.REPLIES_TABLE_NAME).addListenerForSingleValueEvent(mRepliesSingleEventListener);
     }
 
     private static ValueEventListener mPostsSingleEventListener = new ValueEventListener() {
@@ -273,10 +273,10 @@ public class PostDatabaseHelper {
             Post post = dataSnapshot.getValue(Post.class);
             if (post == null) return;
             Post reply = mAddReplyQueue.poll();
-            mPostsRef.child(post.ID).child(Constants.REPLIES_TABLE_NAME).child(reply.ID)
+            mPostsRef.child(post.ID).child(Globals.REPLIES_TABLE_NAME).child(reply.ID)
                     .updateChildren(reply.toMap());
 
-            mPostsRef.getRoot().child(Constants.POSTS_REPLIED_TABLE_NAME)
+            mPostsRef.getRoot().child(Globals.POSTS_REPLIED_TABLE_NAME)
                     .child(post.ID).setValue(post.ID);
             Log.d(TAG, "writing to posts replies");
         }

@@ -19,6 +19,8 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import com.artfara.apps.kipper.models.Post;
+
 import java.util.ArrayList;
 
 

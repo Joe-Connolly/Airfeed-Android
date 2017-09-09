@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.Log;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -60,7 +59,7 @@ public class Utils {
         if (userID == null) {
 //            Log.d(TAG, "user id null");
             userID = FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.USERS_WRITE_TABLE_NAME).push().getKey();
+                    .child(Globals.USERS_WRITE_TABLE_NAME).push().getKey();
             prefs.edit().putString(Constants.USER_ID_KEY, userID).apply();
         }
         return userID;
@@ -85,7 +84,7 @@ public class Utils {
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(Constants.ACCOUNT_FCM_TOKEN_KEY, token);
             FirebaseDatabase.getInstance().getReference()
-                    .child(Constants.ACCOUNTS_TABLE_NAME).child(getAndroidID(context))
+                    .child(Globals.ACCOUNTS_TABLE_NAME).child(getAndroidID(context))
                     .updateChildren(childUpdates);
         }
     }

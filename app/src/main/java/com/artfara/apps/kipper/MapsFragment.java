@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.artfara.apps.kipper.models.Place;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -113,7 +115,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
         }
         //Center map at Hanover
-        LatLng location = new LatLng(Constants.HANOVER_LATITUDE, Constants.HANOVER_LONGITUDE);
+        LatLng location = new LatLng(Globals.COLLEGE.latitude,
+                Globals.COLLEGE.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16.0f));
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());

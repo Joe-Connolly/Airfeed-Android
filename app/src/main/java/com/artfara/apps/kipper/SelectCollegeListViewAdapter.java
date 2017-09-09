@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.artfara.apps.kipper.models.College;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 /**
@@ -65,9 +68,11 @@ public final class SelectCollegeListViewAdapter extends BaseAdapter {
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, currentCollege.databaseRoot);
-                mPrefs.edit().putString(Constants.DATABASE_ROOT_NAME_KEY,
-                        currentCollege.databaseRoot).apply();
+                Log.d(TAG, "tapped on " + currentCollege.name + " " + currentCollege.databaseRoot);
+                currentCollege.databaseRoot = currentCollege.databaseRoot + "/";
+                Gson gson = new Gson();
+                mPrefs.edit().putString(Constants.COLLEGE_KEY,
+                        gson.toJson(currentCollege)).apply();
                 Intent intent = new Intent(mContext.getApplicationContext(), MapsActivity.class);
                 mContext.startActivity(intent);
             }

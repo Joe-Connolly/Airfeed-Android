@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.artfara.apps.kipper.models.Post;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,8 +42,8 @@ public class OnReplyNotificationService extends Service {
             if (!alreadyFollowedPosts.values().contains(postID)) {
                 Long currentTime = System.currentTimeMillis();
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                database.child(Constants.POSTS_TABLE_NAME).child(postID)
-                        .child(Constants.REPLIES_TABLE_NAME)
+                database.child(Globals.POSTS_TABLE_NAME).child(postID)
+                        .child(Globals.REPLIES_TABLE_NAME)
                         .limitToLast(1)
                         .addChildEventListener(mOnReplyAddedSingleEventListener);
                 alreadyFollowedPosts.put(postID, currentTime);

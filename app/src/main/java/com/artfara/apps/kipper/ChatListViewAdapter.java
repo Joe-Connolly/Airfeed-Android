@@ -12,6 +12,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.artfara.apps.kipper.models.Post;
+
 import java.util.ArrayList;
 
 /**

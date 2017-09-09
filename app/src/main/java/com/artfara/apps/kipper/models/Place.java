@@ -1,4 +1,4 @@
-package com.artfara.apps.kipper;
+package com.artfara.apps.kipper.models;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 /**

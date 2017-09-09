@@ -8,12 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.artfara.apps.kipper.models.Account;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 
 
 /**
@@ -32,7 +31,7 @@ public class RankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         FirebaseDatabase.getInstance().getReference()
-                .child(Constants.USERS_ACCOUNTS_TABLE_NAME).child(Utils.getAndroidID(getContext()))
+                .child(Globals.USERS_ACCOUNTS_TABLE_NAME).child(Utils.getAndroidID(getContext()))
                 .addListenerForSingleValueEvent(mAccountsSingleEventListener);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_rank, container, false);

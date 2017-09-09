@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -28,12 +27,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.artfara.apps.kipper.models.College;
+import com.artfara.apps.kipper.models.Latlng;
+import com.artfara.apps.kipper.models.Place;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,11 +63,17 @@ public class MapsActivity extends AppCompatActivity {
 
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Constants.DATABASE_ROOT_NAME = getDatabaseRootName();
-        if (Constants.DATABASE_ROOT_NAME == null) {
+
+        boolean databaseSet = setDatabaseIfPossible();
+        Log.d(TAG, "databaseSet " + databaseSet);
+        if (!databaseSet) {
+            Log.d(TAG, "launching select College ");
             Intent intent = new Intent(this, SelectCollegeActivity.class);
             startActivity(intent);
+            finish();
+            return;
         }
+        Log.d(TAG, "database " + Globals.DATABASE_ROOT_NAME + " " + Globals.ACCOUNTS_TABLE_NAME);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize(Utils.getAndroidID(this));
@@ -185,13 +194,13 @@ public class MapsActivity extends AppCompatActivity {
         scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
-                        mDatabase.child(Constants.USERS_READ_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
+                        mDatabase.child(Globals.USERS_READ_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
                     }
                 }, 100, 30000, TimeUnit.MILLISECONDS);
         scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
-            mDatabase.child(Constants.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
+            mDatabase.child(Globals.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
                     }
                 }, 100, 30000, TimeUnit.MILLISECONDS);
 
@@ -208,7 +217,7 @@ public class MapsActivity extends AppCompatActivity {
             String androidID =  Utils.getAndroidID(this);
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(androidID, androidID);
-            mDatabase.child(Constants.ACCOUNTS_INITIALIZED_TABLE_NAME).updateChildren(childUpdates);
+            mDatabase.child(Globals.ACCOUNTS_INITIALIZED_TABLE_NAME).updateChildren(childUpdates);
         }
     }
 
@@ -294,8 +303,17 @@ public class MapsActivity extends AppCompatActivity {
         if (mTabLayout != null) mTabLayout.setVisibility(TabLayout.VISIBLE);
     }
 
-    public String getDatabaseRootName() {
-        return mPrefs.getString(Constants.DATABASE_ROOT_NAME_KEY, null);
+    public boolean setDatabaseIfPossible() {
+        Gson gson = new Gson();
+        String collegeJSON = mPrefs.getString(Constants.COLLEGE_KEY, null);
+        Log.d(TAG, "collegeJSON " + collegeJSON);
+        if (collegeJSON == null) {
+            return false;
+        }
+        Globals.COLLEGE = gson.fromJson(collegeJSON, College.class);
+        Log.d(TAG, "collegeName" + Globals.COLLEGE.name);
+        Globals.initialize();
+        return true;
     }
 
     private class CustomFragmentPageAdapter extends FragmentPagerAdapter {

@@ -1,4 +1,4 @@
-package com.artfara.apps.kipper;
+package com.artfara.apps.kipper.models;
 
 /**
  * Created by joeconnolly on 9/6/17.
