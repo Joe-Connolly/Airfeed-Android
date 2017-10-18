@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -214,6 +215,7 @@ public class MapsActivity extends AppCompatActivity {
         //If account has not been initialized
         if (!mPrefs.getBoolean(Constants.ACCOUNT_INIATILIZED_KEY, false)) {
             mPrefs.edit().putBoolean(Constants.ACCOUNT_INIATILIZED_KEY, true).apply();
+            Log.d(TAG, "initializing account " + Globals.ACCOUNTS_INITIALIZED_TABLE_NAME);
             String androidID =  Utils.getAndroidID(this);
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(androidID, androidID);
@@ -313,15 +315,17 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return new ChatFragment();
                 case 1:
+                    return new RankFragment();
+                case 2:
                     return new MapsFragment();
                 default:
-                    return new MapsFragment();
+                    return new RankFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -330,9 +334,11 @@ public class MapsActivity extends AppCompatActivity {
                 case 0:
                     return "CHAT";
                 case 1:
+                    return "RANK";
+                case 2:
                     return "MAP";
                 default:
-                    return "MAP";
+                    return "FEED";
             }
         }
     }

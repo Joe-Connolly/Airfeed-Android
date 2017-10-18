@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by Van on 9/1/16.
  */
 public class Constants {
-    public static final String COLLEGE_KEY = "database root15";
+    public static final String COLLEGE_KEY = "database root21";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public static final double HANOVER_LATITUDE = 43.703272;
     public static final double HANOVER_LONGITUDE = -72.288633;
@@ -39,7 +39,7 @@ public class Constants {
     public static final int USERS_CIRCLE_RADIUS = 11;
     public static final float USERS_CIRCLE_STROKE_WIDTH = 7.0f;
     public static final String ACCOUNT_FCM_TOKEN_KEY = "fcmToken";
-    public static final String ACCOUNT_INIATILIZED_KEY = "account initialized1";
+    public static final String ACCOUNT_INIATILIZED_KEY = "account initialized3";
 
 
     public static Map<String, Integer> PLACES = new HashMap<>();

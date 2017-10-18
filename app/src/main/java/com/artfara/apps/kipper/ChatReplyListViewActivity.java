@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -30,7 +31,7 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_replies_list_view);
 
         mPostId = getIntent().getStringExtra(Constants.POST_ID_KEY);
