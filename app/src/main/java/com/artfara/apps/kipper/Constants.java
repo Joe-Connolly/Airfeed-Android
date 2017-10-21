@@ -51,7 +51,19 @@ public class Constants {
         PLACES.put("library", R.drawable.library_marker);
         PLACES.put("food", R.drawable.food_marker);
         PLACES.put("building", R.drawable.building_marker);
-        PLACES.put("event", R.drawable.event_marker);
+        PLACES.put("event", R.drawable.event_marker);PLACES.put("frat", R.drawable.frat_marker);
+//        PLACES.put("0", R.drawable.marker0);
+//        PLACES.put("1", R.drawable.marker1);
+//        PLACES.put("2", R.drawable.marker2);
+//        PLACES.put("3", R.drawable.marker3);
+//        PLACES.put("4", R.drawable.marker4);
+//        PLACES.put("5", R.drawable.marker5);
+//        PLACES.put("6", R.drawable.marker6);
+//        PLACES.put("7", R.drawable.marker7);
+//        PLACES.put("8", R.drawable.marker8);
+//        PLACES.put("9", R.drawable.marker9);
+//        PLACES.put("10", R.drawable.marker10);
+//        PLACES.put("11", R.drawable.marker11);
     }
 
 }

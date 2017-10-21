@@ -15,6 +15,9 @@ public class Post {
     public String userLetter;
     public String displayedTime;
     public String parentPostID;
+    public String image;
+    public int pointsNotified;
+
 
     public Post() {
         // Default constructor required for calls to DataSnapshot.getValue()

@@ -7,4 +7,6 @@ package com.artfara.apps.kipper.models;
 public class CustomPlace extends Place {
     public String customText;
     public String time;
+    public String UDID;
+    public long timestamp;
 }

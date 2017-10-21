@@ -9,6 +9,8 @@ public class Account {
     public int points;
     public String rankString;
     public String relativeRankString;
+    public String userID;
+    public String fcmToken;
 
 
     public Account() {

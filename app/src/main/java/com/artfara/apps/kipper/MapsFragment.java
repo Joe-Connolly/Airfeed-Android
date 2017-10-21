@@ -186,12 +186,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         .strokeColor(Color.argb(61, 255, 128, 0))
                         .fillColor(Color.argb(74, 255, 0, 0)));
             }
-//            mHeatMapProvider = new HeatmapTileProvider.Builder()
-//                    .data(Globals.globalUsers)
-//                    .radius(50)
-//                    .build();
-//            // Add a tile overlay to the map, using the heat map tile provider.
-//            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mHeatMapProvider));
         }
     }
 
@@ -214,8 +208,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mMap.addMarker((new MarkerOptions()
                     .position(new LatLng(place.latitude, place.longitude))
                     .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
-                    .title(place.location)
-                    .snippet(place.string)));
+                    .title(place.time)
+                    .snippet(place.customText)));
         }
     }
 
