@@ -2,20 +2,22 @@ package com.artfara.apps.kipper;
 
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 
+import com.artfara.apps.kipper.models.CustomPlace;
 import com.artfara.apps.kipper.models.Place;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,6 +45,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private TileOverlay mOverlay;
     private HeatmapTileProvider mHeatMapProvider;
     private ProgressDialog mProgressDialog;
+    private SharedPreferences mPrefs;
+    private boolean mShowMarkers;
+    private ImageView mShowMarkersImg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +69,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
 
         mMapView.getMapAsync(this);
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mShowMarkers = mPrefs.getBoolean(Constants.SHOW_MARKERS_KEY, true);
+
+        mShowMarkersImg = (ImageView) v.findViewById(R.id.showMarkersBtn);
+        mShowMarkersImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mShowMarkers = !mShowMarkers;
+                mPrefs.edit().putBoolean(Constants.SHOW_MARKERS_KEY, mShowMarkers).apply();
+                renderMap();
+            }
+        });
         return v;
     }
 
@@ -126,7 +144,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     Runnable mPopulateMapRunnable = new Runnable() {
         public void run() {
             //If data has not yet been downloaded, try again later
-            if (Globals.globalPlaces == null || Globals.globalUsers == null || mMap == null) {
+            if (Globals.globalPlaces == null || Globals.globalUsers == null ||
+                    Globals.globalCustomPlaces == null || mMap == null) {
                 if (mProgressDialog == null && getContext() != null) {
                     //Display loading spinner
                     mProgressDialog = new ProgressDialog(getContext());
@@ -136,9 +155,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                Log.d(TAG, "places or users or map still null");
                 mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
             } else {
-                mMap.clear();
-                createMarkers();
-                createHeatMap();
+                renderMap();
                 if (getActivity() != null && mProgressDialog != null && mProgressDialog.isShowing()) {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
@@ -147,7 +164,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
     };
 
-    private void createHeatMap() {
+    private void renderMap() {
+        mMap.clear();
+        if (mShowMarkers) {
+            renderMarkers();
+        }
+//        renderCustomMarkers();
+        renderHeatMap();
+        int showMarkersImgID = (mShowMarkers ? R.drawable.hide_markers : R.drawable.show_markers);
+        mShowMarkersImg.setImageDrawable(getResources()
+                .getDrawable(showMarkersImgID, getContext().getTheme()));
+    }
+
+    private void renderHeatMap() {
         if (Globals.globalUsers != null && Globals.globalUsers.size() > 0) {
             for (LatLng user: Globals.globalUsers) {
                 mMap.addCircle(new CircleOptions()
@@ -166,9 +195,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void createMarkers() {
+    private void renderMarkers() {
         ArrayList<Place> places = Globals.globalPlaces;
         for (Place place : places) {
+            //Plot marker
+            mMap.addMarker((new MarkerOptions()
+                    .position(new LatLng(place.latitude, place.longitude))
+                    .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
+                    .title(place.location)
+                    .snippet(place.string)));
+        }
+    }
+
+    private void renderCustomMarkers() {
+        ArrayList<CustomPlace> customPlaces = Globals.globalCustomPlaces;
+        for (CustomPlace place : customPlaces) {
             //Plot marker
             mMap.addMarker((new MarkerOptions()
                     .position(new LatLng(place.latitude, place.longitude))

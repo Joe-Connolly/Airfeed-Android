@@ -97,7 +97,7 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (!token.equals("")) {
+        if (token != null && !token.equals("")) {
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(Constants.ACCOUNT_FCM_TOKEN_KEY, token);
             FirebaseDatabase.getInstance().getReference()

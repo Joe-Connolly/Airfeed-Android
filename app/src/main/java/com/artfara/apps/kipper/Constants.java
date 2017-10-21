@@ -40,6 +40,7 @@ public class Constants {
     public static final float USERS_CIRCLE_STROKE_WIDTH = 7.0f;
     public static final String ACCOUNT_FCM_TOKEN_KEY = "fcmToken";
     public static final String ACCOUNT_INIATILIZED_KEY = "account initialized3";
+    public static final String SHOW_MARKERS_KEY = "show markers";
 
 
     public static Map<String, Integer> PLACES = new HashMap<>();
