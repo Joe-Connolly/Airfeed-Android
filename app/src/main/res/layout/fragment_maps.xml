@@ -20,5 +20,18 @@
         android:maxHeight="50dp"
         android:maxWidth="50dp"
         android:scaleType="fitCenter" />
+    <ImageView
+        android:id="@+id/addMarkerBtn"
+        android:src="@drawable/plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/mapView"
+        android:layout_alignLeft="@id/mapView"
+        android:layout_margin="10dp"
+        android:adjustViewBounds="true"
+        android:alpha=".80"
+        android:maxHeight="50dp"
+        android:maxWidth="50dp"
+        android:scaleType="fitCenter" />
 
 </RelativeLayout>

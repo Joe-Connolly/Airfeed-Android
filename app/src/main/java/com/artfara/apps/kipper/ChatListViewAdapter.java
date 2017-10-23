@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,12 +74,17 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.txtNumReplies = (TextView) rowView.findViewById(R.id.repliesNumber);
         holder.upVoteButton = (ImageView) rowView.findViewById(R.id.upVoteButton);
         holder.downVoteButton = (ImageView) rowView.findViewById(R.id.downVoteButton);
+        holder.markerImage = (ImageView) rowView.findViewById(R.id.markerImage);
 
 
         holder.postBody.setText(currentPost.text);
         holder.txtUserLetter.setText((mIsPost ? "" : currentPost.userLetter));
         holder.txtVoteCount.setText("" + currentPost.voteCount);
         holder.txtTime.setText(currentPost.displayedTime + " ");
+        if (currentPost.image != null) {
+            holder.markerImage.setImageDrawable(c.getResources()
+                    .getDrawable(Constants.PLACES.get(currentPost.image), c.getTheme()));
+        }
 
         int amountVoted =  mPrefs.getInt(currentPost.ID, 0);
         switch (amountVoted){
@@ -178,5 +184,6 @@ public class ChatListViewAdapter extends BaseAdapter {
         TextView txtNumReplies;
         ImageView upVoteButton;
         ImageView downVoteButton;
+        ImageView markerImage;
     }
 }

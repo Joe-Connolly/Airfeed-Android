@@ -115,6 +115,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mMap != null) {
+            mMap.clear();
+            mMap = null;
+        }
+    }
+
+    @Override
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
@@ -169,7 +178,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if (mShowMarkers) {
             renderMarkers();
         }
-//        renderCustomMarkers();
+        renderCustomMarkers();
         renderHeatMap();
         int showMarkersImgID = (mShowMarkers ? R.drawable.hide_markers : R.drawable.show_markers);
         mShowMarkersImg.setImageDrawable(getResources()
