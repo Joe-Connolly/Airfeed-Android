@@ -116,13 +116,15 @@ public class PostDatabaseHelper {
         }
     }
 
-    public static void addPost(String postBody, Context context) {
-
+    public static void addPost(String postBody, Context context, String markerType) {
         long time = System.currentTimeMillis();
         String userID = Utils.getAndroidID(context.getApplicationContext());
         Post post = new Post(userID, postBody, time);
 
         post.ID = mPostsRef.push().getKey();
+        if (markerType != null) {
+            post.image = markerType;
+        }
         mGlobalPosts.put(post.ID, post);
         mPostsRef.child(post.ID).setValue(post);
     }

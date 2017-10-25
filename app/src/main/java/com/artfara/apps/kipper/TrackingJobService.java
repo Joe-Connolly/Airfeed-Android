@@ -85,6 +85,7 @@ public class TrackingJobService extends JobService implements GoogleApiClient.Co
             if (Utils.setDatabaseIfPossible(getApplicationContext())) {
                 Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true,
                         "job " + Utils.getCurrentFormattedTime());
+                Globals.location = loc.toMap();
                 Map<String, Object> childUpdates = new HashMap<>();
                 childUpdates.put(mID, loc.toMap());
                 mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);

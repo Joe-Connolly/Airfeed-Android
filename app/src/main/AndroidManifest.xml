@@ -82,6 +82,7 @@
             android:resource="@drawable/notification_icon" />
 
         <activity android:name=".SelectCollegeActivity"></activity>
+        <activity android:name=".SelectMarkerActivity" />
     </application>
 
 </manifest>

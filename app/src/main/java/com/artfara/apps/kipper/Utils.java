@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -89,6 +90,7 @@ public class Utils {
         dateFormatter.setLenient(false);
         return dateFormatter.format(today);
     }
+    public static void setCurrentLocation() {}
 
     public static void sendFCMTokenToServer(Context context) {
         String token = "";
@@ -104,5 +106,10 @@ public class Utils {
                     .child(Globals.ACCOUNTS_TABLE_NAME).child(getAndroidID(context))
                     .updateChildren(childUpdates);
         }
+    }
+
+    public static String getFormattedTime() {
+        DateFormat outputFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+        return outputFormat.format(new Date());
     }
 }

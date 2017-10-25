@@ -81,6 +81,7 @@ public class TrackingIntentService extends IntentService implements GoogleApiCli
             if (Utils.setDatabaseIfPossible(getApplicationContext())) {
                 Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(), true, "intent " + Utils.getCurrentFormattedTime());
                 Map<String, Object> childUpdates = new HashMap<>();
+                Globals.location = loc.toMap();
                 childUpdates.put(mID, loc.toMap());
                 mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
             }

@@ -83,7 +83,7 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.txtTime.setText(currentPost.displayedTime + " ");
         if (currentPost.image != null) {
             holder.markerImage.setImageDrawable(c.getResources()
-                    .getDrawable(Constants.PLACES.get(currentPost.image), c.getTheme()));
+                    .getDrawable(Constants.CUSTOM_PLACES.get(currentPost.image), c.getTheme()));
         }
 
         int amountVoted =  mPrefs.getInt(currentPost.ID, 0);

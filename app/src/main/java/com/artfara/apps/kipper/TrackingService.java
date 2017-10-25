@@ -66,6 +66,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 Latlng loc = new Latlng(location.getLatitude(), location.getLongitude(),
                         true, "service " + Utils.getCurrentFormattedTime());
                 Map<String, Object> childUpdates = new HashMap<>();
+                Globals.location = loc.toMap();
                 childUpdates.put(mID, loc.toMap());
                 mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
             }

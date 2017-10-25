@@ -2,6 +2,7 @@ package com.artfara.apps.kipper;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -48,6 +49,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private SharedPreferences mPrefs;
     private boolean mShowMarkers;
     private ImageView mShowMarkersImg;
+    private ImageView mAddMarkersImg;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +84,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 renderMap();
             }
         });
+        mAddMarkersImg = (ImageView) v.findViewById(R.id.addMarkerBtn);
+        mAddMarkersImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), SelectMarkerActivity.class));
+            }
+        });
+
         return v;
     }
 
@@ -216,19 +226,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             //Plot marker
             mMap.addMarker((new MarkerOptions()
                     .position(new LatLng(place.latitude, place.longitude))
-                    .icon(BitmapDescriptorFactory.fromResource(Constants.PLACES.get(place.type)))
+                    .icon(BitmapDescriptorFactory.fromResource(Constants.CUSTOM_PLACES.get(place.type)))
                     .title(place.time)
                     .snippet(place.customText)));
         }
-    }
-
-
-    public int adjustAlpha(int color, float factor) {
-        int alpha = Math.round(Color.alpha(color) * factor);
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-        return Color.argb(alpha, red, green, blue);
     }
 
 }

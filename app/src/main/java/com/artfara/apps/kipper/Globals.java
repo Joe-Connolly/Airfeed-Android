@@ -6,6 +6,8 @@ import com.artfara.apps.kipper.models.Place;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Joe Connolly on 10/20/16.
@@ -16,6 +18,7 @@ public class Globals {
     public final static String REPLIES_TABLE_NAME = "replies";
     public static ArrayList<Place> globalPlaces;
     public static ArrayList<LatLng> globalUsers;
+    public static Map<String, Object> location = new HashMap<>();
 
     //Constants to be used throughout the application
     public static String DATABASE_ROOT_NAME = null;

@@ -61,7 +61,7 @@ public class MapsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSavedInstanceState = savedInstanceState;
-//        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
 
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
