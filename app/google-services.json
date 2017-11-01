@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "945895276344",
-    "firebase_url": "https://kipper-4a47c.firebaseio.com",
-    "project_id": "kipper-4a47c",
-    "storage_bucket": "kipper-4a47c.appspot.com"
+    "project_number": "393979692722",
+    "firebase_url": "https://kipper-test.firebaseio.com",
+    "project_id": "kipper-test",
+    "storage_bucket": "kipper-test.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:945895276344:android:3a1e9e93b85e800d",
+        "mobilesdk_app_id": "1:393979692722:android:3a1e9e93b85e800d",
         "android_client_info": {
           "package_name": "com.artfara.apps.kipper"
         }
       },
       "oauth_client": [
         {
-          "client_id": "945895276344-om5omlqgnfemea6bblb2528oagdsio18.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.artfara.apps.kipper",
-            "certificate_hash": "F25285F767CD6761DC8AFCEAD280F6E261334B66"
-          }
-        },
-        {
-          "client_id": "945895276344-n3vt5fb9kcmd70nmr85iq5c4ccdlrdak.apps.googleusercontent.com",
+          "client_id": "393979692722-e8nf30m8bk764tgu9320bkksadn2p4au.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAxTw1U7362Nxokh_dGfcBJXfjELtz3gS0"
+          "current_key": "AIzaSyAflJ7D6yRigQZH1tY6JxuGpnN6VrN8GQ8"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "945895276344-n3vt5fb9kcmd70nmr85iq5c4ccdlrdak.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2
