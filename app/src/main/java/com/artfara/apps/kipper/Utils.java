@@ -43,18 +43,18 @@ public class Utils {
         Globals.initialize();
         return true;
     }
-    public static void startAlarmTrackingService(Context context) {
-        //Start Alarm Manager Tracking Service
-        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(context, Constants.ALARM_ID, alarmIntent, PendingIntent.FLAG_NO_CREATE) != null);
-//        Log.d(TAG, "startAlarmTrackingServiceCalled");
-        if (!alarmUp) {
-            PendingIntent recurringAlarm = PendingIntent.getBroadcast(context, Constants.ALARM_ID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Calendar updateTime = Calendar.getInstance();
-            alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), 1000000, recurringAlarm); //you can modify the interval of course
-        }
-    }
+//    public static void startAlarmTrackingService(Context context) {
+//        //Start Alarm Manager Tracking Service
+//        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+//        boolean alarmUp = (PendingIntent.getBroadcast(context, Constants.ALARM_ID, alarmIntent, PendingIntent.FLAG_NO_CREATE) != null);
+////        Log.d(TAG, "startAlarmTrackingServiceCalled");
+//        if (!alarmUp) {
+//            PendingIntent recurringAlarm = PendingIntent.getBroadcast(context, Constants.ALARM_ID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//            AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//            Calendar updateTime = Calendar.getInstance();
+//            alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), 1000000, recurringAlarm); //you can modify the interval of course
+//        }
+//    }
     //phone unique ID for recording each post or reply
     public static String getAndroidID(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());

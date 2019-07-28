@@ -59,39 +59,38 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         // inflate the layout
         View v = inflater.inflate(R.layout.fragment_maps, container,
                 false);
-        mMapView = (MapView) v.findViewById(R.id.mapView);
-        mMapView.onCreate(savedInstanceState);
-
-        mMapView.onResume();// needed to get the map to display immediately
-
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        mMapView.getMapAsync(this);
-
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mShowMarkers = mPrefs.getBoolean(Constants.SHOW_MARKERS_KEY, true);
-
-        mShowMarkersImg = (ImageView) v.findViewById(R.id.showMarkersBtn);
-        mShowMarkersImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mShowMarkers = !mShowMarkers;
-                mPrefs.edit().putBoolean(Constants.SHOW_MARKERS_KEY, mShowMarkers).apply();
-                renderMap();
-            }
-        });
-        mAddMarkersImg = (ImageView) v.findViewById(R.id.addMarkerBtn);
-        mAddMarkersImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getContext(), SelectMarkerActivity.class));
-            }
-        });
-
+//        mMapView = (MapView) v.findViewById(R.id.mapView);
+//        mMapView.onCreate(savedInstanceState);
+//
+//        mMapView.onResume();// needed to get the map to display immediately
+//
+//        try {
+//            MapsInitializer.initialize(getActivity().getApplicationContext());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        mMapView.getMapAsync(this);
+//
+//        mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        mShowMarkers = mPrefs.getBoolean(Constants.SHOW_MARKERS_KEY, true);
+//
+//        mShowMarkersImg = (ImageView) v.findViewById(R.id.showMarkersBtn);
+//        mShowMarkersImg.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mShowMarkers = !mShowMarkers;
+//                mPrefs.edit().putBoolean(Constants.SHOW_MARKERS_KEY, mShowMarkers).apply();
+//                renderMap();
+//            }
+//        });
+//        mAddMarkersImg = (ImageView) v.findViewById(R.id.addMarkerBtn);
+//        mAddMarkersImg.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(getContext(), SelectMarkerActivity.class));
+//            }
+//        });
         return v;
     }
 

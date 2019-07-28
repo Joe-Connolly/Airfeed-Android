@@ -87,98 +87,37 @@ public class MapsActivity extends AppCompatActivity {
             Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
             title.setTypeface(typeFaceBold);
         }
-        if (Build.VERSION.SDK_INT < 22) requestLocationAndStartApp();
+        initializeApplication();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-
-        // If request is cancelled, the result arrays are empty.
-        if (grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            //permission was granted, yay!
-            //Start tracking users location
-            initializeApplication();
-
-        } else {
-            // permission denied, boo!
-            // Tell the user that they are a jackass for disabling the permission
-            // must request the permission.
-            showDialog();
-//            Log.d(TAG, "permission denied");
-            //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
-        }
-        return;
-    }
-
-    private void showDialog() {
-        mLocationDialogVisible = true;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.location_explanation_message)
-               .setCancelable(false)
-                .setPositiveButton(
-                    "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            mLocationDialogVisible = false;
-                            dialog.dismiss();
-                            requestLocationAndStartApp();
-                        }
-                    })
-                .create()
-                .show();
-    }
-
-    public void requestLocationAndStartApp() {
-        //Only start app if we have the permissions we need to access location
-        if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            //We need to request permission
-            if (!mLocationDialogVisible) {
-//                Log.d(TAG, "requesting permission");
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        0);
-            }
-        } else {
-            //No need to ask for permission
-            initializeApplication();
-        }
-    }
 
     @Override
     public void onResume() {
         super.onResume();
-//        Log.d(TAG, "onResume");
-        if (Build.VERSION.SDK_INT >= 22) requestLocationAndStartApp();
     }
 
     private void initializeApplication() {
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
-        mTabLayout.setupWithViewPager(viewPager);
-        mTabLayout.setOnTabSelectedListener(
-                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-                        super.onTabSelected(tab);
-                        int currentTabIndex = tab.getPosition();
-                        mPrefs.edit().putInt(Constants.LAST_TAB_SELECTED_KEY, currentTabIndex).apply();
-                    }
-                });
-        int lastTabSelectedIndex = mPrefs.getInt(Constants.LAST_TAB_SELECTED_KEY, -1);
-        if (lastTabSelectedIndex != -1){
-            TabLayout.Tab selectedTab = mTabLayout.getTabAt(lastTabSelectedIndex);
-            selectedTab.select();
-        }
-        else {
-            TabLayout.Tab feedTab = mTabLayout.getTabAt(1);
-            feedTab.select();
-        }
+//        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+//        viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
+//        mTabLayout.setupWithViewPager(viewPager);
+//        mTabLayout.setOnTabSelectedListener(
+//                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
+//                    @Override
+//                    public void onTabSelected(TabLayout.Tab tab) {
+//                        super.onTabSelected(tab);
+//                        int currentTabIndex = tab.getPosition();
+//                        mPrefs.edit().putInt(Constants.LAST_TAB_SELECTED_KEY, currentTabIndex).apply();
+//                    }
+//                });
+//        int lastTabSelectedIndex = mPrefs.getInt(Constants.LAST_TAB_SELECTED_KEY, -1);
+//        if (lastTabSelectedIndex != -1){
+//            TabLayout.Tab selectedTab = mTabLayout.getTabAt(lastTabSelectedIndex);
+//            selectedTab.select();
+//        }
+//        else {
+//            TabLayout.Tab feedTab = mTabLayout.getTabAt(1);
+//            feedTab.select();
+//        }
 
         Intent intent = getIntent();
 //        && mSavedInstanceState == null
@@ -191,30 +130,9 @@ public class MapsActivity extends AppCompatActivity {
             startActivity(chatReplyIntent);
         }
 
-        ScheduledExecutorService scheduler =
-                Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        mDatabase.child(Globals.USERS_READ_TABLE_NAME).addListenerForSingleValueEvent(mUsersSingleEventListener);
-                    }
-                }, 100, 30000, TimeUnit.MILLISECONDS);
-        scheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-            mDatabase.child(Globals.PLACES_TABLE_NAME).addListenerForSingleValueEvent(mPlacesSingleEventListener);
-                    }
-                }, 100, 30000, TimeUnit.MILLISECONDS);
-        scheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        mDatabase.child(Globals.CUSTOM_PLACES_TABLE_NAME).addListenerForSingleValueEvent(mCustomPlacesSingleEventListener);
-                    }
-                }, 100, 30000, TimeUnit.MILLISECONDS);
-
-        scheduleLocationTracking();
+//        scheduleLocationTracking();
         Utils.sendFCMTokenToServer(getApplicationContext()); //Did these two commands cause the
-        //not loading problem?
+        // not loading problem?
         initializeAccountIfNessicary();
     }
 
@@ -229,90 +147,6 @@ public class MapsActivity extends AppCompatActivity {
             mDatabase.child(Globals.ACCOUNTS_INITIALIZED_TABLE_NAME).updateChildren(childUpdates);
         }
     }
-
-    private void scheduleLocationTracking() {
-        Intent intent = new Intent(this, TrackingService.class);
-        startService(intent);
-
-        //Start JobScheduler Tracking Service
-        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.cancelAll();
-        ComponentName serviceName = new ComponentName(this, TrackingJobService.class);
-        int jobId = 1;
-        JobInfo.Builder builder;
-        builder = new JobInfo.Builder(jobId, serviceName)
-                .setPeriodic(1000000)
-                .setRequiresDeviceIdle(false) // does not matter if device is idle
-                .setRequiresCharging(false) // we don't care if the device is charging or not
-                .setPersisted(true); // start on boot
-        int result = jobScheduler.schedule(builder.build());
-        if (result == JobScheduler.RESULT_SUCCESS) Log.d(TAG, "Job scheduled successfully!");
-
-        //Start Alarm Manager Tracking Service
-        Utils.startAlarmTrackingService(this);
-    }
-
-
-    private ValueEventListener mUsersSingleEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            ArrayList<LatLng> users = new ArrayList<>();
-            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                //GMAPS heatmap API can only take 1000 locations
-                if (users.size() > 997) break;
-                Latlng location = userSnapshot.getValue(Latlng.class);
-                users.add(new LatLng(location.latitude, location.longitude));
-            }
-            Globals.globalUsers = users;
-        }
-
-        @Override //autogenerated
-        public void onCancelled(DatabaseError databaseError) {
-            // Getting Post failed, log a message
-            Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            // ...
-        }
-    };
-
-
-    private ValueEventListener mPlacesSingleEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-
-            ArrayList<Place> places = new ArrayList<>();
-            for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
-                Place place = placeSnapshot.getValue(Place.class);
-                places.add(place);
-            }
-            Globals.globalPlaces = places;
-        }
-        @Override //autogenerated
-        public void onCancelled(DatabaseError databaseError) {
-            // Getting Post failed, log a message
-            Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            // ...
-        }
-    };
-
-    private ValueEventListener mCustomPlacesSingleEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-
-            ArrayList<CustomPlace> places = new ArrayList<>();
-            for (DataSnapshot placeSnapshot : dataSnapshot.getChildren()) {
-                CustomPlace place = placeSnapshot.getValue(CustomPlace.class);
-                places.add(place);
-            }
-            Globals.globalCustomPlaces = places;
-        }
-        @Override //autogenerated
-        public void onCancelled(DatabaseError databaseError) {
-            // Getting Post failed, log a message
-            Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            // ...
-        }
-    };
-
 
     public void onPause() {
         super.onPause();
