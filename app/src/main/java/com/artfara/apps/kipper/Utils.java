@@ -76,9 +76,9 @@ public class Utils {
 //        Log.d(TAG, "getting user id " + userID);
         if (userID == null) {
 //            Log.d(TAG, "user id null");
-            userID = FirebaseDatabase.getInstance().getReference()
-                    .child(Globals.USERS_WRITE_TABLE_NAME).push().getKey();
-            prefs.edit().putString(Constants.USER_ID_KEY, userID).apply();
+//            userID = FirebaseDatabase.getInstance().getReference()
+//                    .child(Globals.USERS_WRITE_TABLE_NAME).push().getKey();
+            prefs.edit().putString(Constants.USER_ID_KEY, "fake user id").apply();
         }
         return userID;
     }

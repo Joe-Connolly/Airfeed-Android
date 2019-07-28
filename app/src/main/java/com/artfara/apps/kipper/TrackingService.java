@@ -68,7 +68,7 @@ public class TrackingService extends Service implements GoogleApiClient.Connecti
                 Map<String, Object> childUpdates = new HashMap<>();
                 Globals.location = loc.toMap();
                 childUpdates.put(mID, loc.toMap());
-                mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
+//                mDatabase.child(Globals.USERS_WRITE_TABLE_NAME).updateChildren(childUpdates);
             }
         }
     };
