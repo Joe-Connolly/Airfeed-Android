@@ -20,7 +20,6 @@
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/userLetter"
         android:orientation="horizontal">
-
         <TextView
             android:id="@+id/postBody"
             android:layout_width="0dp"
@@ -29,43 +28,48 @@
             android:paddingBottom="10dp"
             android:textColor="@color/black"
             android:textSize="15sp" />
+    </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/wrapper"
-            android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/postVoteCountWrapper"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/upVoteButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.15"
-            android:orientation="horizontal">
+            android:src="@drawable/thumbs_up"
+            android:layout_marginRight="2dp"/>
 
-            <ImageView
-                android:id="@+id/upVoteButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/thumbs_up" />
+        <TextView
+            android:id="@+id/upvoteCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/upvoteCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/downVoteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/thumbs_down"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="2dp"/>
 
-            <ImageView
-                android:id="@+id/downVoteButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/thumbs_down" />
+        <TextView
+            android:id="@+id/downvoteCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/downvoteCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-            <!--android:layout_gravity="center_horizontal"-->
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -95,14 +99,6 @@
             android:textSize="14sp"
             android:textStyle="bold"
             android:paddingEnd="4dp"
-            android:layout_gravity="center_vertical"/>
-        <ImageView
-            android:id="@+id/markerImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxHeight="33dp"
-            android:maxWidth="33dp"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
 </RelativeLayout>

@@ -12,13 +12,7 @@ import java.util.Map;
  */
 public class Constants {
     public static final String COLLEGE_KEY = "database root21";
-    public static final String MARKER_GLOBALS_TABLE_NAME = "production/production_globals/Notice";
     public final static String VOTE_FIELD_NAME = "voteCount";
-    public static final double HANOVER_LATITUDE = 43.703272;
-    public static final double HANOVER_LONGITUDE = -72.288633;
-    public static final Place[] PLACE_TOTALS_TEMPLATES = new Place[] {new Place("Greek Life", "frat"), new Place("Food Courts", "food"),
-            new Place("Libraries", "library"), new Place("Gyms", "gym"), new Place("Events", "event")};
-    public static final String PLACE_TYPE_KEY = "place type";
     public static final String POST_ID_KEY = "postID";
     public static final String ANDROID_ID_KEY = "androidID";
     public static final String[] LETTERS = {"OP","A","B","C","D","E","F","G","H","I","J","K",

@@ -74,26 +74,23 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.txtNumReplies = (TextView) rowView.findViewById(R.id.repliesNumber);
         holder.upVoteButton = (ImageView) rowView.findViewById(R.id.upVoteButton);
         holder.downVoteButton = (ImageView) rowView.findViewById(R.id.downVoteButton);
-        holder.markerImage = (ImageView) rowView.findViewById(R.id.markerImage);
 
 
         holder.postBody.setText(currentPost.text);
         holder.txtUserLetter.setText((mIsPost ? "" : currentPost.userLetter));
         holder.txtUpvoteCount.setText("" + currentPost.voteCount);
-        holder.txtDownvoteCount.setText("h");
+        holder.txtDownvoteCount.setText("4");
         holder.txtTime.setText(currentPost.displayedTime + " ");
-        if (currentPost.image != null) {
-            holder.markerImage.setImageDrawable(c.getResources()
-                    .getDrawable(Constants.CUSTOM_PLACES.get(currentPost.image), c.getTheme()));
-        }
 
         int amountVoted =  mPrefs.getInt(currentPost.ID, 0);
         switch (amountVoted){
             case 1:
-                holder.upVoteButton.setImageResource(R.drawable.up_vote_button_pressed);
+                holder.upVoteButton.setImageResource(R.drawable.thumbs_up_pressed);
+                holder.txtUpvoteCount.setTextColor(c.getResources().getColor(R.color.colorPrimary));
                 break;
             case -1:
-                holder.downVoteButton.setImageResource(R.drawable.down_vote_button_pressed);
+                holder.downVoteButton.setImageResource(R.drawable.thumbs_down_pressed);
+                holder.txtDownvoteCount.setTextColor(c.getResources().getColor(R.color.colorPrimary));
                 break;
         }
 
@@ -186,6 +183,5 @@ public class ChatListViewAdapter extends BaseAdapter {
         TextView txtNumReplies;
         ImageView upVoteButton;
         ImageView downVoteButton;
-        ImageView markerImage;
     }
 }
