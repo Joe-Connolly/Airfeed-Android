@@ -171,16 +171,7 @@ public class MapsActivity extends AppCompatActivity {
         }
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return new ChatFragment();
-                case 1:
-                    return new RankFragment();
-                case 2:
-                    return new MapsFragment();
-                default:
-                    return new RankFragment();
-            }
+            return new ChatFragment();
         }
 
         @Override

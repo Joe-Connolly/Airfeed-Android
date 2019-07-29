@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +68,8 @@ public class ChatListViewAdapter extends BaseAdapter {
 
         holder.postBody = (TextView) rowView.findViewById(R.id.postBody);
         holder.txtUserLetter = (TextView) rowView.findViewById(R.id.userLetter);
-        holder.txtVoteCount = (TextView) rowView.findViewById(R.id.voteCount);
+        holder.txtUpvoteCount = (TextView) rowView.findViewById(R.id.upvoteCount);
+        holder.txtDownvoteCount = (TextView) rowView.findViewById(R.id.downvoteCount);
         holder.txtTime = (TextView) rowView.findViewById(R.id.time);
         holder.txtNumReplies = (TextView) rowView.findViewById(R.id.repliesNumber);
         holder.upVoteButton = (ImageView) rowView.findViewById(R.id.upVoteButton);
@@ -79,7 +79,8 @@ public class ChatListViewAdapter extends BaseAdapter {
 
         holder.postBody.setText(currentPost.text);
         holder.txtUserLetter.setText((mIsPost ? "" : currentPost.userLetter));
-        holder.txtVoteCount.setText("" + currentPost.voteCount);
+        holder.txtUpvoteCount.setText("" + currentPost.voteCount);
+        holder.txtDownvoteCount.setText("h");
         holder.txtTime.setText(currentPost.displayedTime + " ");
         if (currentPost.image != null) {
             holder.markerImage.setImageDrawable(c.getResources()
@@ -179,7 +180,8 @@ public class ChatListViewAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView postBody;
         TextView txtTime;
-        TextView txtVoteCount;
+        TextView txtUpvoteCount;
+        TextView txtDownvoteCount;
         TextView txtUserLetter;
         TextView txtNumReplies;
         ImageView upVoteButton;
