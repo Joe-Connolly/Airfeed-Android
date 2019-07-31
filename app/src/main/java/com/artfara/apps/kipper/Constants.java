@@ -13,6 +13,8 @@ import java.util.Map;
 public class Constants {
     public static final String COLLEGE_KEY = "database root21";
     public final static String VOTE_FIELD_NAME = "voteCount";
+    public final static String UPVOTE_FIELD_NAME = "upvotes";
+    public final static String DOWNVOTE_FIELD_NAME = "downvotes";
     public static final String POST_ID_KEY = "postID";
     public static final String ANDROID_ID_KEY = "androidID";
     public static final String[] LETTERS = {"OP","A","B","C","D","E","F","G","H","I","J","K",

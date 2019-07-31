@@ -10,6 +10,8 @@ public class Post {
     public String text;
     public HashMap<String, Post> replies;
     public int voteCount;
+    public int upvotes;
+    public int downvotes;
     public long timeInMilliseconds;
     public String userID;
     public String userLetter;
@@ -36,6 +38,8 @@ public class Post {
         map.put("text", text);
         map.put("replies", replies);
         map.put("voteCount", voteCount);
+        map.put("upvotes", upvotes);
+        map.put("downvotes", downvotes);
         map.put("timeInMilliseconds", timeInMilliseconds);
         map.put("userID", userID);
         map.put("parentPostID", parentPostID);

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,8 +79,8 @@ public class ChatListViewAdapter extends BaseAdapter {
 
         holder.postBody.setText(currentPost.text);
         holder.txtUserLetter.setText((mIsPost ? "" : currentPost.userLetter));
-        holder.txtUpvoteCount.setText("" + currentPost.voteCount);
-        holder.txtDownvoteCount.setText("4");
+        holder.txtUpvoteCount.setText("" + currentPost.upvotes);
+        holder.txtDownvoteCount.setText( "" + currentPost.downvotes);
         holder.txtTime.setText(currentPost.displayedTime + " ");
 
         int amountVoted =  mPrefs.getInt(currentPost.ID, 0);
@@ -162,14 +163,16 @@ public class ChatListViewAdapter extends BaseAdapter {
 
     private boolean alreadyVoted(String id, boolean isUpVoting) {
         int amountVoted =  mPrefs.getInt(id, 0);
+        Log.d(TAG, "already voted " + id + " " + amountVoted);
         amountVoted = (isUpVoting ? amountVoted + 1 : amountVoted - 1);
         if (amountVoted > 1 || amountVoted < -1){
             return true;
         }
-        else{
-            mPrefs.edit().putInt(id, amountVoted).apply();
-            return false;
-        }
+        return false;
+//        else{
+//            mPrefs.edit().putInt(id, amountVoted).apply();
+//            return false;
+//        }
     }
 
 

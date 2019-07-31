@@ -75,7 +75,7 @@ public class MapsActivity extends AppCompatActivity {
             finish();
             return;
         }
-//        Log.d(TAG, "database " + Globals.DATABASE_ROOT_NAME + " " + Globals.ACCOUNTS_TABLE_NAME);
+        Log.d(TAG, "database " + Globals.DATABASE_ROOT_NAME + " " + Globals.ACCOUNTS_TABLE_NAME);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize(Utils.getAndroidID(this));

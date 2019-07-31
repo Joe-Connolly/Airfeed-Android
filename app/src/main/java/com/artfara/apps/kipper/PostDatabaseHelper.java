@@ -42,6 +42,9 @@ public class PostDatabaseHelper {
     public static void initialize(String userId) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mPostsRef = mDatabase.child(Globals.POSTS_TABLE_NAME);
+        Log.d(TAG, mPostsRef.toString());
+        Log.d(TAG, "initialize post");
+
         mAddReplyQueue = new ArrayBlockingQueue<>(100);
         mGlobalPosts = new HashMap<>();
         mFinishedDownloading = false;
@@ -150,39 +153,78 @@ public class PostDatabaseHelper {
 
 
     public static void incrementPost(Post post, Context context) {
-        mGlobalPosts.get(post.ID).voteCount++;
-        if (!alreadyVoted(post.ID, context)) {
-            triggerServerOnVote(post.ID, null, true, context);
+        Log.d(TAG, mPostsRef.toString() + "xx");
+        int currVote = getCurrVote(post.ID, context);
+        if (currVote == -1) {
+            mGlobalPosts.get(post.ID).downvotes--;
+            mPostsRef.child(post.ID).child(Constants.DOWNVOTE_FIELD_NAME).runTransaction(mDecrementHandler);
         }
+        else if (currVote == 0) {
+            mGlobalPosts.get(post.ID).upvotes++;
+            mPostsRef.child(post.ID).child(Constants.UPVOTE_FIELD_NAME).runTransaction(mIncrementHandler);
+        }
+        currVote++;
+        saveCurrVote(post.ID, context, currVote);
+
+//        if (!alreadyVoted(post.ID, context)) {
+//            triggerServerOnVote(post.ID, null, true, context);
+//        }
         Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
-        mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
     }
 
     public static void decrementPost(Post post, Context context) {
-        mGlobalPosts.get(post.ID).voteCount--;
-        if (!alreadyVoted(post.ID, context)) {
-            triggerServerOnVote(post.ID, null, false, context);
+        Log.d(TAG, mPostsRef.toString() + "xx");
+        int currVote = getCurrVote(post.ID, context);
+        if (currVote == 1) {
+            mGlobalPosts.get(post.ID).upvotes--;
+            mPostsRef.child(post.ID).child(Constants.UPVOTE_FIELD_NAME).runTransaction(mDecrementHandler);
         }
-//        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
-        mPostsRef.child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
+        else if (currVote == 0) {
+            mGlobalPosts.get(post.ID).downvotes++;
+            mPostsRef.child(post.ID).child(Constants.DOWNVOTE_FIELD_NAME).runTransaction(mIncrementHandler);
+        }
+        currVote--;
+        saveCurrVote(post.ID, context, currVote);
+
+//        if (!alreadyVoted(post.ID, context)) {
+//            triggerServerOnVote(post.ID, null, true, context);
+//        }
+        Log.d(TAG, " vote " + mGlobalPosts.get(post.ID).voteCount);
     }
 
     public static void incrementReply(Post post, String parentPostID, Context context) {
-        mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount++;
-        if (!alreadyVoted(post.ID, context)) {
-            triggerServerOnVote(parentPostID, post.ID, true, context);
+        Log.d(TAG, mPostsRef.toString() + "xx");
+        int currVote = getCurrVote(post.ID, context);
+        if (currVote == -1) {
+            mGlobalPosts.get(parentPostID).replies.get(post.ID).downvotes--;
+            mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.DOWNVOTE_FIELD_NAME).runTransaction(mDecrementHandler);
         }
-//        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mUpVoteHandler);
+        else if (currVote == 0) {
+            mGlobalPosts.get(parentPostID).replies.get(post.ID).upvotes++;
+            mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.UPVOTE_FIELD_NAME).runTransaction(mIncrementHandler);
+        }
+        currVote++;
+        saveCurrVote(post.ID, context, currVote);
+
+//        if (!alreadyVoted(post.ID, context)) {
+//            triggerServerOnVote(post.ID, null, true, context);
+//        }
     }
 
     public static void decrementReply(Post post, String parentPostID, Context context) {
-        mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount--;
-        if (!alreadyVoted(post.ID, context)) {
-            triggerServerOnVote(parentPostID, post.ID, false, context);
+
+        Log.d(TAG, mPostsRef.toString() + "xx");
+        int currVote = getCurrVote(post.ID, context);
+        if (currVote == 1) {
+            mGlobalPosts.get(parentPostID).replies.get(post.ID).upvotes--;
+            mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.UPVOTE_FIELD_NAME).runTransaction(mDecrementHandler);
         }
-//        Log.d(TAG, " vote " + mGlobalPosts.get(parentPostID).replies.get(post.ID).voteCount);
-        mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.VOTE_FIELD_NAME).runTransaction(mDownVoteHandler);
+        else if (currVote == 0) {
+            mGlobalPosts.get(parentPostID).replies.get(post.ID).downvotes++;
+            mPostsRef.child(parentPostID).child(Globals.REPLIES_TABLE_NAME).child(post.ID).child(Constants.DOWNVOTE_FIELD_NAME).runTransaction(mIncrementHandler);
+        }
+        currVote--;
+        saveCurrVote(post.ID, context, currVote);
     }
 
     private static boolean alreadyVoted(String postID, Context context) {
@@ -192,6 +234,19 @@ public class PostDatabaseHelper {
         if (!alreadyVoted) preferences.edit().putBoolean(postID + "2", true).apply();
 //        return alreadyVoted;
         return false;
+    }
+
+    private static int getCurrVote(String postID, Context context) {
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
+        return preferences.getInt(postID, 0);
+    }
+
+    private static void saveCurrVote(String postID, Context context, int vote) {
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
+        preferences.edit().putInt(postID, vote).apply();
+        Log.d(TAG, "saving vote " + postID + " " + vote);
     }
 
     private static void triggerServerOnVote(String postID, String replyID, boolean isUpVote,
@@ -289,7 +344,7 @@ public class PostDatabaseHelper {
     };
 
 
-    private static com.google.firebase.database.Transaction.Handler mUpVoteHandler =
+    private static com.google.firebase.database.Transaction.Handler mIncrementHandler =
             new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
@@ -306,7 +361,7 @@ public class PostDatabaseHelper {
                 public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
                    }
             };
-    private static com.google.firebase.database.Transaction.Handler mDownVoteHandler =
+    private static com.google.firebase.database.Transaction.Handler mDecrementHandler =
             new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
