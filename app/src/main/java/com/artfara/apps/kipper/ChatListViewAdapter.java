@@ -76,6 +76,8 @@ public class ChatListViewAdapter extends BaseAdapter {
         holder.upVoteButton = (ImageView) rowView.findViewById(R.id.upVoteButton);
         holder.downVoteButton = (ImageView) rowView.findViewById(R.id.downVoteButton);
 
+//        Typeface postTypeFace = Typeface.createFromAsset(c.getAssets(), "open_sans_regular.ttf");
+//        holder.postBody.setTypeface(postTypeFace);
 
         holder.postBody.setText(currentPost.text);
         holder.txtUserLetter.setText((mIsPost ? "" : currentPost.userLetter));
@@ -153,6 +155,8 @@ public class ChatListViewAdapter extends BaseAdapter {
             int paddingRightAsPixels = (int) (8 * scale + 0.5f);
             //Set replies padding
             holder.txtUserLetter.setPadding(0, 0, paddingRightAsPixels, 0);
+            //Bold OPs posts
+            if (currentPost.userLetter.equals("OP")) holder.postBody.setTextColor(c.getResources().getColor(R.color.colorPrimary));
         }
             //Set custom typeface for userLetter
             Typeface typeFaceBold = Typeface.createFromAsset(c.getAssets(), "Comfortaa-Bold.ttf");

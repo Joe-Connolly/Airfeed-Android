@@ -11,7 +11,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimaryDark">@color/gray</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="textColorError">@color/design_textinput_error_color_light</item>
     </style>
 

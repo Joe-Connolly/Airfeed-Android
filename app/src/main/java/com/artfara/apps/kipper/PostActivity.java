@@ -36,16 +36,6 @@ public class PostActivity extends AppCompatActivity {
         mParentPostID = getIntent().getStringExtra(Constants.POST_ID_KEY);
         mMarkerType = getIntent().getStringExtra(Constants.MARKER_ID_KEY);
 
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setTitle("");
-            setSupportActionBar(toolbar);
-            TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
-            Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
-            title.setTypeface(typeFaceBold);
-        }
-
         mEditText = (EditText) findViewById(R.id.postBody);
         mEditText.setHorizontallyScrolling(false);
         mEditText.setMaxLines(Integer.MAX_VALUE);
