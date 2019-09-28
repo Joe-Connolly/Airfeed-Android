@@ -79,14 +79,6 @@ public class MapsActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize(Utils.getAndroidID(this));
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setTitle("");
-            setSupportActionBar(toolbar);
-            TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
-            Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
-            title.setTypeface(typeFaceBold);
-        }
         initializeApplication();
     }
 

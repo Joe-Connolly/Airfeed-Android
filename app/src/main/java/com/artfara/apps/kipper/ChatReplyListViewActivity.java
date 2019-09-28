@@ -43,14 +43,14 @@ public class ChatReplyListViewActivity extends AppCompatActivity {
         listview = (ListView) findViewById(R.id.ListViewReplies);
         listview.setAdapter(customBaseAdapter);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setTitle("");
-            setSupportActionBar(toolbar);
-            TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
-            Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
-            title.setTypeface(typeFaceBold);
-        }
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        if (toolbar != null) {
+//            toolbar.setTitle("");
+//            setSupportActionBar(toolbar);
+//            TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
+//            Typeface typeFaceBold = Typeface.createFromAsset(getAssets(), "Comfortaa-Bold.ttf");
+//            title.setTypeface(typeFaceBold);
+//        }
         LinearLayout postLayout = (LinearLayout) findViewById(R.id.wrapper_post);
         postLayout.setOnClickListener(new View.OnClickListener() {
             @Override
