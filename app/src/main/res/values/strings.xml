@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kipper</string>
+    <string name="app_name">Airfeed</string>
     <string name="title_activity_maps">Map</string>
     <string name="loading_message">Loading. . .</string>
     <!-- TODO: Remove or change this placeholder text -->

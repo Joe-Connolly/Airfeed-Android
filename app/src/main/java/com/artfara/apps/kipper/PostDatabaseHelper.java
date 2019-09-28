@@ -401,7 +401,7 @@ public class PostDatabaseHelper {
         Collections.sort(posts, new Comparator<Post>() {
             @Override
             public int compare(Post post1, Post post2) {
-                return (new Integer(post2.voteCount)).compareTo(post1.voteCount);
+                return (new Integer(post2.upvotes - post2.downvotes)).compareTo(post1.upvotes - post1.downvotes);
             }
         });
     }
