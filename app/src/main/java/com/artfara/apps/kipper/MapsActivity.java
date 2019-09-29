@@ -86,6 +86,9 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        Intent intent = new Intent(this, RulesActivity.class);
+        startActivity(intent);
     }
 
     private void initializeApplication() {
