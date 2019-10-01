@@ -80,15 +80,20 @@ public class MapsActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize(Utils.getAndroidID(this));
         initializeApplication();
+
+
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
-
-        Intent intent = new Intent(this, RulesActivity.class);
-        startActivity(intent);
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (prefs.getString(Constants.ACCEPT_RULES_KEY, null) == null) {
+            Intent intent = new Intent(this, RulesActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void initializeApplication() {
@@ -136,7 +141,7 @@ public class MapsActivity extends AppCompatActivity {
         if (!mPrefs.getBoolean(Constants.ACCOUNT_INIATILIZED_KEY, false)) {
             mPrefs.edit().putBoolean(Constants.ACCOUNT_INIATILIZED_KEY, true).apply();
             Log.d(TAG, "initializing account " + Globals.ACCOUNTS_INITIALIZED_TABLE_NAME);
-            String androidID =  Utils.getAndroidID(this);
+            String androidID = Utils.getAndroidID(this);
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put(androidID, androidID);
             mDatabase.child(Globals.ACCOUNTS_INITIALIZED_TABLE_NAME).updateChildren(childUpdates);
@@ -147,7 +152,8 @@ public class MapsActivity extends AppCompatActivity {
         super.onPause();
 //        Log.d(TAG, "onPause");
     }
-    public void onStop(){
+
+    public void onStop() {
         super.onStop();
 //        Log.d(TAG, "onStop");
     }
@@ -164,6 +170,7 @@ public class MapsActivity extends AppCompatActivity {
         public CustomFragmentPageAdapter(FragmentManager supportFragmentManager) {
             super(supportFragmentManager);
         }
+
         @Override
         public Fragment getItem(int position) {
             return new ChatFragment();

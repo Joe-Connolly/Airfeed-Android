@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public class Constants {
     public static final String COLLEGE_KEY = "database root21";
+    public static final String ACCEPT_RULES_KEY = "accept rules";
     public final static String VOTE_FIELD_NAME = "voteCount";
     public final static String UPVOTE_FIELD_NAME = "upvotes";
     public final static String DOWNVOTE_FIELD_NAME = "downvotes";
