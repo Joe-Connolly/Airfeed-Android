@@ -65,6 +65,7 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_HOT);
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
+                hideContactInfo();
             }
         });
         Button showNewButton = (Button) mRootView.findViewById(R.id.shownew);
@@ -73,6 +74,7 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_NEW);
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
+                hideContactInfo();
             }
         });
         Button showYoursButton = (Button) mRootView.findViewById(R.id.showyours);
@@ -82,6 +84,7 @@ public class ChatFragment extends Fragment {
 //                Log.d(TAG, "setting post type to yours");
                 PostDatabaseHelper.setPostType(Constants.POSTS_TYPE_YOURS);
                 customBaseAdapter.setEntries(PostDatabaseHelper.getPosts());
+                showContactInfo();
             }
         });
         ImageButton refreshButton = (ImageButton) mRootView.findViewById(R.id.refresh);
@@ -219,6 +222,15 @@ public class ChatFragment extends Fragment {
         wrapperLayout.setVisibility(RelativeLayout.VISIBLE);
         mPostButtonLayout.setVisibility(LinearLayout.VISIBLE);
         ((MapsActivity) getActivity()).showTabs();
+    }
+
+    public void showContactInfo(){
+        RelativeLayout wrapperLayout = (RelativeLayout) mRootView.findViewById(R.id.wrapper_contact);
+        wrapperLayout.setVisibility(RelativeLayout.VISIBLE);
+    }
+    public void hideContactInfo(){
+        RelativeLayout wrapperLayout = (RelativeLayout) mRootView.findViewById(R.id.wrapper_contact);
+        wrapperLayout.setVisibility(RelativeLayout.GONE);
     }
 
     @Override
