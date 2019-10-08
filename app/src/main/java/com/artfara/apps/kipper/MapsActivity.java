@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -32,7 +33,10 @@ import com.artfara.apps.kipper.models.College;
 import com.artfara.apps.kipper.models.CustomPlace;
 import com.artfara.apps.kipper.models.Latlng;
 import com.artfara.apps.kipper.models.Place;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,6 +59,8 @@ public class MapsActivity extends AppCompatActivity {
     private SharedPreferences mPrefs;
     private boolean mLocationDialogVisible;
     private Bundle mSavedInstanceState;
+    private FusedLocationProviderClient mFusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,28 +72,88 @@ public class MapsActivity extends AppCompatActivity {
         Constants.prepare();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        Log.d(TAG, "database " + Globals.DATABASE_ROOT_NAME + " " + Globals.ACCOUNTS_TABLE_NAME);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         boolean databaseSet = Utils.setDatabaseIfPossible(this);
 //        Log.d(TAG, "databaseSet " + databaseSet);
         if (!databaseSet) {
-//            Log.d(TAG, "launching select College ");
+            Log.d(TAG, "launching select College ");
             Intent intent = new Intent(this, SelectCollegeActivity.class);
             startActivity(intent);
             finish();
             return;
         }
-        Log.d(TAG, "database " + Globals.DATABASE_ROOT_NAME + " " + Globals.ACCOUNTS_TABLE_NAME);
-
+//        if (Build.VERSION.SDK_INT < 22) requestLocationAndStartApp();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         PostDatabaseHelper.initialize(Utils.getAndroidID(this));
-        initializeApplication();
-
-
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            //permission was granted, yay!
+            //Start tracking users location
+            initializeApplication();
+
+        } else {
+            // permission denied, boo!
+            // Tell the user that they are a jackass for disabling the permission
+            // must request the permission.
+            showDialog();
+//            Log.d(TAG, "permission denied");
+            //When user presses OK in dialog, onStop() is executed and MapsActivity is restarted, calling onCreate()
+        }
+        return;
+    }
+
+    private void showDialog() {
+        mLocationDialogVisible = true;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.location_explanation_message)
+                .setCancelable(false)
+                .setPositiveButton(
+                        "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                mLocationDialogVisible = false;
+                                dialog.dismiss();
+                                requestLocationAndStartApp();
+                            }
+                        })
+                .create()
+                .show();
+        initializeApplication();
+    }
+
+    public void requestLocationAndStartApp() {
+        //Only start app if we have the permissions we need to access location
+        if (Build.VERSION.SDK_INT >= 22 && ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            //We need to request permission
+            if (!mLocationDialogVisible) {
+//                Log.d(TAG, "requesting permission");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        0);
+            }
+        } else {
+            //No need to ask for permission
+            initializeApplication();
+        }
+    }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (Build.VERSION.SDK_INT >= 22) requestLocationAndStartApp();
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (prefs.getString(Constants.ACCEPT_RULES_KEY, null) == null) {
@@ -97,27 +163,56 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     private void initializeApplication() {
-//        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-//        viewPager.setAdapter(new CustomFragmentPageAdapter(getSupportFragmentManager()));
-//        mTabLayout.setupWithViewPager(viewPager);
-//        mTabLayout.setOnTabSelectedListener(
-//                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-//                    @Override
-//                    public void onTabSelected(TabLayout.Tab tab) {
-//                        super.onTabSelected(tab);
-//                        int currentTabIndex = tab.getPosition();
-//                        mPrefs.edit().putInt(Constants.LAST_TAB_SELECTED_KEY, currentTabIndex).apply();
-//                    }
-//                });
-//        int lastTabSelectedIndex = mPrefs.getInt(Constants.LAST_TAB_SELECTED_KEY, -1);
-//        if (lastTabSelectedIndex != -1){
-//            TabLayout.Tab selectedTab = mTabLayout.getTabAt(lastTabSelectedIndex);
-//            selectedTab.select();
-//        }
-//        else {
-//            TabLayout.Tab feedTab = mTabLayout.getTabAt(1);
-//            feedTab.select();
-//        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+           requestLocationAndStartApp();
+        }
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            mLocation = location;
+                            // Logic to handle location object
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child(Globals.COLLEGES_TABLE_NAME)
+                                    .addListenerForSingleValueEvent(
+                                            new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    College closestCollege = new College();
+                                                    float minDistance = -1;
+                                                    for (DataSnapshot collegeSnapshot : dataSnapshot.getChildren()) {
+                                                        College college = collegeSnapshot.getValue(College.class);
+                                                        float[] distance = new float[3];
+                                                        Location.distanceBetween(mLocation.getLatitude(),
+                                                                mLocation.getLongitude(),
+                                                                college.latitude,
+                                                                college.longitude, distance);
+                                                        if(minDistance == -1 || distance[0] < minDistance){
+                                                            closestCollege = college;
+                                                            minDistance = distance[0];
+                                                        }
+                                                    }
+
+                                                    closestCollege.databaseRoot = closestCollege.databaseRoot + "/";
+                                                    Gson gson = new Gson();
+                                                    mPrefs.edit().putString(Constants.COLLEGE_KEY,
+                                                            gson.toJson(closestCollege)).apply();
+                                                    Log.d(TAG, "college closest " + closestCollege.name);
+                                                    finish();
+                                                    startActivity(getIntent());
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+                                                    Log.e(TAG, databaseError.getMessage());
+                                                }
+                                            }
+                                    );
+                        }
+                    }
+                });
 
         Intent intent = getIntent();
 //        && mSavedInstanceState == null
@@ -133,19 +228,6 @@ public class MapsActivity extends AppCompatActivity {
 //        scheduleLocationTracking();
         Utils.sendFCMTokenToServer(getApplicationContext()); //Did these two commands cause the
         // not loading problem?
-        initializeAccountIfNessicary();
-    }
-
-    private void initializeAccountIfNessicary() {
-        //If account has not been initialized
-        if (!mPrefs.getBoolean(Constants.ACCOUNT_INIATILIZED_KEY, false)) {
-            mPrefs.edit().putBoolean(Constants.ACCOUNT_INIATILIZED_KEY, true).apply();
-            Log.d(TAG, "initializing account " + Globals.ACCOUNTS_INITIALIZED_TABLE_NAME);
-            String androidID = Utils.getAndroidID(this);
-            Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put(androidID, androidID);
-            mDatabase.child(Globals.ACCOUNTS_INITIALIZED_TABLE_NAME).updateChildren(childUpdates);
-        }
     }
 
     public void onPause() {
