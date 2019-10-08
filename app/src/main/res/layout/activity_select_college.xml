@@ -7,22 +7,10 @@
     android:orientation="vertical"
     tools:context="com.artfara.apps.kipper.SelectCollegeActivity">
 
-    <TextView
-        android:id="@+id/chooseSchoolMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"
-        android:layout_gravity="center_vertical"
-        android:text="@string/choose_you_re_school"
-        android:textColor="@color/darkGray"
-        android:textSize="30dp"
-        android:padding="10dp"/>
-
     <ListView
         android:id="@+id/ListViewColleges"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/chooseSchoolMsg"
         android:layout_above="@+id/wrapper_post"
         android:fadingEdge="vertical" />
 

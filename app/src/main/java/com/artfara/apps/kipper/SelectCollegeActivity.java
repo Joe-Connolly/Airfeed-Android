@@ -43,6 +43,7 @@ public class SelectCollegeActivity extends AppCompatActivity {
     private Location mLocation;
     private SharedPreferences mPrefs;
     private boolean mLocationDialogVisible;
+    private boolean mFinishedLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,15 @@ public class SelectCollegeActivity extends AppCompatActivity {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         findCollege();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        Log.d(TAG, "onResume");
+        //Update colleges as soon as they become available
+        mHandler = new Handler();
+        mHandler.postDelayed(mPopulateListViewRunnable, Constants.MILLISECONDS_BEFORE_POLLING);
     }
 
     private void showDialog() {
@@ -175,6 +185,33 @@ public class SelectCollegeActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Override to disable
     }
+
+
+    Runnable mPopulateListViewRunnable = new Runnable() {
+        public void run() {
+            //If data has not yet been downloaded, try again later
+            if (!mFinishedLoading) {
+//                Log.d(TAG, "colleges still null");
+                mHandler.postDelayed(this, Constants.MILLISECONDS_BETWEEN_POLLING);
+                if (mProgressDialog == null) {
+                    //Display loading spinner
+                    mProgressDialog = new ProgressDialog(SelectCollegeActivity.this);
+                    mProgressDialog.setMessage(getString(R.string.loading_message));
+                    mProgressDialog.show();
+                }
+            }
+            else {
+                if (SelectCollegeActivity.this != null && mProgressDialog != null
+                        && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+            }
+        }
+    };
+
+
+
 }
 
 
