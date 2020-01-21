@@ -7,7 +7,7 @@ Airfeed (previously called Kipper) is an anonymous location based chat app, like
 
 Users can find parties as well as post, comment, and vote on other users' content anonymously. Find the Android version on [Google Play](https://play.google.com/store/apps/details?id=com.artfara.apps.kipper). 
 
-![](https://i.imgur.com/wLajyqS.png =300x)
+![](https://i.imgur.com/wLajyqS.png)
 
 
 
