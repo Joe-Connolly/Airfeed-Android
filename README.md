@@ -28,7 +28,7 @@ The app was launched at Dartmouth in Fall 2017 and the app's user base reached 2
 
 1) Clone the repo
 2) Open the repo's root folder in Android Studio
-3) Build the app and install the necessary dependencies.   
+3) Follow the prompts to build the app and install the necessary dependencies.   
 4) Use the "Run" menu to run the app on an Android emulator or a physical Android device
 
 ## Authors
